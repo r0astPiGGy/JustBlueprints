@@ -11,6 +11,7 @@ import com.chihsuanwu.freescroll.rememberFreeScrollState
 @Composable
 fun ViewPort(
     modifier: Modifier = Modifier,
+    viewPortModifier: Modifier = Modifier,
     initialX: Int = 0,
     initialY: Int = 0,
     content: @Composable () -> Unit
@@ -24,7 +25,7 @@ fun ViewPort(
             .clipToBounds()
             .freeScroll(scrollState)
     ) {
-        ViewPortLayout(content = content)
+        ViewPortLayout(content = content, modifier = viewPortModifier)
     }
 }
 

@@ -1,21 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="AutoImportSettings">
-    <option name="autoReloadType" value="NONE" />
+    <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2dcd41d4-f8bf-40bc-a529-7e5909b7b723" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/local.properties" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/jvmMain/kotlin/com/rodev/jbpkmp/Screen.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/jvmMain/resources/logo.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="2dcd41d4-f8bf-40bc-a529-7e5909b7b723" name="Changes" comment="Add ViewPort, ViewPortLayout, fix FreeScroll">
+      <change afterPath="$PROJECT_DIR$/src/jvmMain/kotlin/com/rodev/jbpkmp/presentation/Node.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/jvmMain/kotlin/com/rodev/jbpkmp/Main.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/jvmMain/kotlin/com/rodev/jbpkmp/Main.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/jvmMain/kotlin/com/rodev/jbpkmp/WelcomeScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/jvmMain/kotlin/com/rodev/jbpkmp/WelcomeScreen.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/jvmMain/kotlin/com/rodev/jbpkmp/theme/Color.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/jvmMain/kotlin/com/rodev/jbpkmp/theme/Color.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/jvmMain/kotlin/com/rodev/jbpkmp/theme/Theme.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/jvmMain/kotlin/com/rodev/jbpkmp/theme/Theme.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/jvmMain/kotlin/com/rodev/jbpkmp/presentation/ViewPort.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/jvmMain/kotlin/com/rodev/jbpkmp/presentation/ViewPort.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -68,7 +61,6 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Kotlin File" />
-        <option value="Kotlin Class" />
       </list>
     </option>
   </component>
@@ -78,41 +70,34 @@
   <component name="KotlinCodeInsightWorkspaceSettings">
     <option name="optimizeImportsOnTheFly" value="true" />
   </component>
-  <component name="MarkdownSettingsMigration">
-    <option name="stateVersion" value="1" />
-  </component>
   <component name="ProjectId" id="2SQNTV3JPe32yu85IvfBfDy6MGR" />
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
-    <ConfirmationsSetting value="2" id="Add" />
-  </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.cidr.known.project.marker": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "cidr.known.project.marker": "true",
-    "git-widget-placeholder": "master",
-    "project.structure.last.edited": "Project",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "editor.preferences.import"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/src/jvmMain/resources" />
-      <recent name="$PROJECT_DIR$/src/jvmMain/kotlin/com/rodev/jbpkmp/resources" />
+      <recent name="$PROJECT_DIR$/src/jvmMain/kotlin/com/rodev/jbpkmp/presentation" />
       <recent name="$PROJECT_DIR$/src/jvmMain/kotlin/com/rodev/jbpkmp" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
       <recent name="com.rodev.jbpkmp.layout" />
     </key>
   </component>
-  <component name="RunManager" selected="Kotlin.MainKt">
+  <component name="RunManager" selected="Kotlin.NodeKt">
     <configuration name="JustBlueprints [packageReleaseDeb]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -132,6 +117,7 @@
       <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
       <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
       <DebugAllEnabled>false</DebugAllEnabled>
+      <ForceTestExec>false</ForceTestExec>
       <method v="2" />
     </configuration>
     <configuration name="MainKt" type="JetRunConfigurationType" temporary="true" nameIsGenerated="true">
@@ -141,8 +127,24 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="NodeKt" type="JetRunConfigurationType" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.rodev.jbpkmp.presentation.NodeKt" />
+      <module name="JustBlueprints.jvmMain" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ViewPortTestKt" type="JetRunConfigurationType" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.rodev.test.ViewPortTestKt" />
+      <module name="JustBlueprints.jvmTest" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Kotlin.NodeKt" />
+        <item itemvalue="Kotlin.ViewPortTestKt" />
         <item itemvalue="Kotlin.MainKt" />
         <item itemvalue="Gradle.JustBlueprints [packageReleaseDeb]" />
       </list>
@@ -157,18 +159,27 @@
       <option name="presentableId" value="Default" />
       <updated>1689074857730</updated>
     </task>
+    <task id="LOCAL-00001" summary="Initial commit">
+      <created>1689162615269</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1689162615269</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Add ViewPort, ViewPortLayout, fix FreeScroll">
+      <created>1689168522392</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1689168522392</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
-  <component name="Vcs.Log.Tabs.Properties">
-    <option name="TAB_STATES">
-      <map>
-        <entry key="MAIN">
-          <value>
-            <State />
-          </value>
-        </entry>
-      </map>
-    </option>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Initial commit" />
+    <MESSAGE value="Add ViewPort, ViewPortLayout, fix FreeScroll" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add ViewPort, ViewPortLayout, fix FreeScroll" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
