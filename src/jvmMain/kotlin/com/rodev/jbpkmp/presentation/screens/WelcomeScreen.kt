@@ -1,9 +1,18 @@
-package com.rodev.jbpkmp
+package com.rodev.jbpkmp.presentation.screens
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -22,7 +31,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 @Preview
-fun Screen() {
+fun WelcomeScreen() {
     Row {
         WelcomePanel(modifier = Modifier.weight(2f))
         ProjectsPanel(modifier = Modifier.weight(1f))
@@ -55,7 +64,7 @@ private fun WelcomePanel(modifier: Modifier = Modifier) {
         )
 
         Text(
-            text = "Made by к0фыеЗшППн, Gdewedrro."
+            text = "Made by toastPig, Dewerro"
         )
 
         Spacer(Modifier.height(spacerHeight))
@@ -79,7 +88,9 @@ private fun WelcomePanel(modifier: Modifier = Modifier) {
 @Composable
 private fun ProjectsPanel(modifier: Modifier = Modifier) {
     LazyColumn(
-        modifier = modifier.background(MaterialTheme.colors.surface)
+        modifier = modifier
+            .fillMaxHeight()
+            .background(MaterialTheme.colors.surface)
     ) {
         items(10) {
             ProjectsPanelColumnItem(
@@ -118,12 +129,14 @@ private fun ProjectsPanelColumnItem(
     ) {
         Text(
             text = title,
-            style = MaterialTheme.typography.h5
+            style = MaterialTheme.typography.h4,
+            color = MaterialTheme.colors.onSurface
         )
 
         Text(
             text = path,
-            style = MaterialTheme.typography.h6
+            style = MaterialTheme.typography.h5,
+            color = MaterialTheme.colors.onSurface
         )
     }
 }

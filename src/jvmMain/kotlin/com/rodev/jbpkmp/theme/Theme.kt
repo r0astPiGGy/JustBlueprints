@@ -11,7 +11,8 @@ private val LightColors = lightColors(
     primary = blue,
     onPrimary = Color.White,
     secondary = cyan,
-    surface = gray
+    surface = gray,
+    onSurface = Color.White
 )
 
 private val DarkColors = darkColors(
@@ -19,7 +20,8 @@ private val DarkColors = darkColors(
     onPrimary = Color.White,
     secondary = cyan,
     background = gray,
-    surface = black
+    surface = black,
+    onSurface = Color.White
 )
 
 @Composable
@@ -35,6 +37,7 @@ fun AppTheme(
 
     MaterialTheme(
         colors = colors,
+        typography = Typography,
         content = content
     )
 }
