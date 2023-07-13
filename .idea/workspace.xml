@@ -4,12 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2dcd41d4-f8bf-40bc-a529-7e5909b7b723" name="Changes" comment="Delete WelcomeScreen.kt">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+    <list default="true" id="2dcd41d4-f8bf-40bc-a529-7e5909b7b723" name="Changes" comment="Fix Node layout">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/local.properties" beforeDir="false" afterPath="$PROJECT_DIR$/local.properties" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/jvmMain/kotlin/com/rodev/jbpkmp/Main.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/jvmMain/kotlin/com/rodev/jbpkmp/Main.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/jvmMain/kotlin/com/rodev/jbpkmp/presentation/Node.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/jvmMain/kotlin/com/rodev/jbpkmp/presentation/Node.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/jvmMain/kotlin/com/rodev/jbpkmp/presentation/Node.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/jvmMain/kotlin/com/rodev/jbpkmp/presentation/components/Node.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/jvmMain/kotlin/com/rodev/jbpkmp/presentation/components/Node.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -92,6 +92,7 @@
 }</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/jvmMain/kotlin/com/rodev/jbpkmp/presentation/components" />
       <recent name="$PROJECT_DIR$/src/jvmMain/kotlin/com/rodev/jbpkmp/presentation" />
       <recent name="$PROJECT_DIR$/src/jvmMain/kotlin/com/rodev/jbpkmp" />
     </key>
@@ -130,7 +131,7 @@
       </method>
     </configuration>
     <configuration name="NodeKt" type="JetRunConfigurationType" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="com.rodev.jbpkmp.presentation.NodeKt" />
+      <option name="MAIN_CLASS_NAME" value="com.rodev.jbpkmp.presentation.components.NodeKt" />
       <module name="JustBlueprints.jvmMain" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -189,7 +190,14 @@
       <option name="project" value="LOCAL" />
       <updated>1689181763583</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Fix Node layout">
+      <created>1689237069827</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1689237069827</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -208,7 +216,8 @@
     <MESSAGE value="Add ViewPort, ViewPortLayout, fix FreeScroll" />
     <MESSAGE value="Summary commit" />
     <MESSAGE value="Delete WelcomeScreen.kt" />
-    <option name="LAST_COMMIT_MESSAGE" value="Delete WelcomeScreen.kt" />
+    <MESSAGE value="Fix Node layout" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fix Node layout" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
