@@ -19,8 +19,8 @@ private val DarkColors = darkColors(
     primary = blue,
     onPrimary = Color.White,
     secondary = cyan,
-    background = gray,
-    surface = black,
+    background = black,
+    surface = gray,
     onSurface = Color.White
 )
 

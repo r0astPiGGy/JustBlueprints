@@ -16,8 +16,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -42,6 +46,9 @@ fun WelcomeScreen() {
 private fun WelcomePanel(modifier: Modifier = Modifier) {
     val buttonWidth = 300.dp
     val spacerHeight = 25.dp
+
+    val openDialog = remember { mutableStateOf(false) }
+    val projectName = remember { mutableStateOf("") }
 
     Column(
         modifier = modifier.fillMaxHeight(),
@@ -70,7 +77,7 @@ private fun WelcomePanel(modifier: Modifier = Modifier) {
         Spacer(Modifier.height(spacerHeight))
 
         Button(
-            onClick = {},
+            onClick = { openDialog.value = true },
             modifier = Modifier.width(buttonWidth)
         ) {
             Text("Создать новый проект")
@@ -82,6 +89,15 @@ private fun WelcomePanel(modifier: Modifier = Modifier) {
         ) {
             Text("Открыть существующий проект")
         }
+    }
+
+    if (openDialog.value) {
+        CreateProjectDialog(
+            openDialog = openDialog.value,
+            onDismissRequest = { openDialog.value = false },
+            projectName = projectName.value,
+            onProjectNameChange = { projectName.value = it }
+        )
     }
 }
 
@@ -137,6 +153,62 @@ private fun ProjectsPanelColumnItem(
             text = path,
             style = MaterialTheme.typography.h5,
             color = MaterialTheme.colors.onSurface
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+private fun CreateProjectDialog(
+    openDialog: Boolean,
+    onDismissRequest: () -> Unit,
+    projectName: String,
+    onProjectNameChange: (String) -> Unit
+) {
+    if (openDialog) {
+        val dialogWidth = 300.dp
+        val buttonWidth = 100.dp
+
+        AlertDialog(
+            onDismissRequest = onDismissRequest,
+            modifier = Modifier.width(dialogWidth),
+            buttons = {
+                Column(
+                    modifier = Modifier
+                        .background(MaterialTheme.colors.background)
+                        .fillMaxWidth()
+                        .padding(10.dp),
+                ) {
+                    OutlinedTextField(
+                        value = projectName,
+                        onValueChange = onProjectNameChange,
+                        placeholder = { Text("Название") },
+                        singleLine = true,
+                    )
+
+                    Spacer(Modifier.height(25.dp))
+
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Button(
+                            onClick = onDismissRequest,
+                            modifier = Modifier.width(buttonWidth),
+                            colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.surface)
+                        ) {
+                            Text("Отмена")
+                        }
+
+                        Button(
+                            onClick = {},
+                            modifier = Modifier.width(buttonWidth)
+                        ) {
+                            Text("Создать")
+                        }
+                    }
+                }
+            }
         )
     }
 }
