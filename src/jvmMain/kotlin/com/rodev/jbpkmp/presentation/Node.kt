@@ -6,27 +6,31 @@ import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.layout.MeasurePolicy
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import com.rodev.jbpkmp.theme.AppTheme
+import kotlin.math.max
 import kotlin.math.roundToInt
 
 fun main() = application {
     Window(onCloseRequest = ::exitApplication) {
         AppTheme(useDarkTheme = true) {
             Surface {
-//                ViewPort(
-//                    modifier = Modifier
-//                        .fillMaxSize(),
-//                    viewPortModifier = Modifier
+                ViewPort(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    viewPortModifier = Modifier
 //                        .drawWithCache {
 //                            onDrawWithContent {
 //
@@ -43,18 +47,21 @@ fun main() = application {
 //                                )
 //                            }
 //                        }
-//                ) {
-//                    Node()
-//                }
-                Column(
-                    modifier = Modifier.fillMaxSize()
                 ) {
                     Node()
                 }
+//                Box(
+//                    modifier = Modifier.fillMaxSize()
+//                ) {
+//                    Node()
+//                    Node()
+//                }
             }
         }
     }
 }
+
+private const val nodeOutlinePadding = 8
 
 @Composable
 @Preview
@@ -62,13 +69,10 @@ fun Node() {
     var offsetX by remember { mutableStateOf(0f) }
     var offsetY by remember { mutableStateOf(0f) }
 
-    val outlinePadding = 8.dp
-
     Card(
         shape = RoundedCornerShape(8.dp),
         modifier = Modifier
-//            .size(width = 250.dp, 140.dp)
-            .absoluteOffset { IntOffset(offsetX.roundToInt(), offsetY.roundToInt()) }
+            .offset { IntOffset(offsetX.roundToInt(), offsetY.roundToInt()) }
             .wrapContentSize()
             .pointerInput(Unit) {
                 detectDragGestures { change, dragAmount ->
@@ -78,46 +82,70 @@ fun Node() {
                 }
             }
     ) {
-        Column(
+        NodeBody(
             modifier = Modifier
-                .wrapContentSize()
+                .background(MaterialTheme.colors.background)
         ) {
-            // Node Header
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(40.dp)
                     .background(Color.Blue)
-                    .padding(outlinePadding)
+                    .padding(nodeOutlinePadding.dp)
             ) {
                 Text(
                     text = "Header",
                     modifier = Modifier
-                        .fillMaxWidth()
                 )
             }
-            Row(
+
+            Box(
                 modifier = Modifier
-                    .padding(outlinePadding),
-                horizontalArrangement = Arrangement.SpaceBetween
+                    .size(100.dp)
+                    .background(Color.Yellow)
+                    .padding(nodeOutlinePadding.dp)
             ) {
-                // Input Pins
-                Column(
-                    modifier = Modifier
-                        .requiredSize(300.dp)
-                        .background(Color.Yellow)
-                ) {
 
-                }
-                // Output Pins
-                Column(
-                    modifier = Modifier
-                        .requiredSize(400.dp)
-                        .background(Color.Red)
-                ) {
-
-                }
             }
+
+            Box(
+                modifier = Modifier
+                    .size(150.dp)
+                    .background(Color.Yellow)
+                    .padding(nodeOutlinePadding.dp)
+            ) {
+
+            }
+        }
+    }
+
+}
+
+@Composable
+fun NodeBody(modifier: Modifier, content: @Composable () -> Unit) {
+    Layout(
+        content = content,
+        modifier = modifier,
+        measurePolicy = nodeBodyMeasurePolicy()
+    )
+}
+
+@Composable
+private fun nodeBodyMeasurePolicy(): MeasurePolicy = remember {
+    MeasurePolicy { measurables, constraints ->
+        val inputContainer = measurables[1].measure(constraints)
+        val outputContainer = measurables[2].measure(constraints)
+
+        val containersWidth = inputContainer.width + outputContainer.width
+
+        val header = measurables[0].measure(constraints.copy(minWidth = containersWidth))
+
+        val spaceBetweenContainers = max(0, header.width - containersWidth)
+        val height = header.height + max(inputContainer.height, outputContainer.height)
+        val width = max(header.width, containersWidth)
+
+        layout(width = width, height = height) {
+            header.placeRelative(0, 0)
+            inputContainer.placeRelative(0, header.height)
+            outputContainer.placeRelative(inputContainer.width + spaceBetweenContainers, header.height)
         }
     }
 }
