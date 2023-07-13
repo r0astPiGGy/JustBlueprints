@@ -1,4 +1,4 @@
-package com.rodev.jbpkmp.presentation.screens
+package com.rodev.jbpkmp.presentation.screens.welcome_screen
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.Image

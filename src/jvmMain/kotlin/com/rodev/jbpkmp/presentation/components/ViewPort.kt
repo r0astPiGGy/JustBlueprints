@@ -1,4 +1,4 @@
-package com.rodev.jbpkmp.presentation
+package com.rodev.jbpkmp.presentation.components
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
