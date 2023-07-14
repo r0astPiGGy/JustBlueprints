@@ -10,10 +10,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.MeasurePolicy
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -22,35 +26,57 @@ import androidx.compose.ui.window.application
 import com.rodev.jbpkmp.presentation.components.ViewPort
 import com.rodev.jbpkmp.presentation.components.pin.InputPin
 import com.rodev.jbpkmp.presentation.components.pin.OutputPin
+import com.rodev.jbpkmp.presentation.components.pin.PinDragHandler
 import com.rodev.jbpkmp.presentation.components.pin.PinState
 import com.rodev.jbpkmp.presentation.viewmodel.ViewPortViewModel
 import com.rodev.jbpkmp.theme.AppTheme
+import com.rodev.jbpkmp.util.MutableCoordinate
 import kotlin.math.max
 import kotlin.math.roundToInt
 
 fun main() = application {
-    val viewPortModel = remember { ViewPortViewModel() }
-
     Window(onCloseRequest = ::exitApplication) {
         AppTheme(useDarkTheme = true) {
             Surface {
-                ViewPort(
+                Column(
                     modifier = Modifier
-                        .fillMaxSize(),
-                    viewPortModifier = Modifier,
-                    viewModel = viewPortModel
+                        .fillMaxSize()
                 ) {
-                    nodeStates.forEach {
-                        // TODO нужен remember {} для state ?
-                        Node(it)
-                    }
-                }
-                Button(onClick = {
-                    viewPortModel.onNodeAdd()
-                }) {
-                    Text(text = "Add node")
+                    ViewPortPreview()
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun ViewPortPreview() {
+    val viewPortModel = remember { ViewPortViewModel() }
+
+    Button(onClick = {
+        viewPortModel.onNodeAdd()
+    }) {
+        Text(text = "Add node")
+    }
+
+    ViewPort(
+        modifier = Modifier
+            .fillMaxSize(),
+        viewPortModifier = Modifier
+            .drawBehind {
+                viewPortModel.temporaryLine.value?.let {
+                    drawLine(
+                        Color.Red,
+                        start = Offset(it.startX, it.startY),
+                        end = Offset(it.endX, it.endY)
+                    )
+                }
+            },
+        viewModel = viewPortModel,
+    ) {
+        nodeStates.forEach {
+            // TODO нужен remember {} для state ?
+            Node(it, viewPortModel)
         }
     }
 }
@@ -77,8 +103,10 @@ private const val nodeOutlinePadding = 6
 @Composable
 @Preview
 fun Node(
-    nodeState: NodeState
+    nodeState: NodeState,
+    pinDragHandler: PinDragHandler
 ) {
+    val coord = remember { MutableCoordinate() }
     Card(
         shape = RoundedCornerShape(8.dp),
         modifier = Modifier
@@ -94,12 +122,24 @@ fun Node(
                     nodeState.y += dragAmount.y
                 }
             }
+            .onGloballyPositioned {
+                it.positionInParent().apply {
+                    coord.x = x
+                    coord.y = y
+                }
+            }
     ) {
         NodeBody(
             modifier = Modifier
                 .background(MaterialTheme.colors.background)
                 .defaultMinSize(minWidth = 100.dp)
                 .wrapContentHeight()
+                .onGloballyPositioned {
+                    it.positionInParent().apply {
+                        coord.x += x
+                        coord.y += y
+                    }
+                }
         ) {
             Column(
                 horizontalAlignment = Alignment.Start,
@@ -118,23 +158,38 @@ fun Node(
                 )
             }
 
+            val inputPosition = remember { MutableCoordinate() }
+            val outputPosition = remember { MutableCoordinate() }
+
             PinContainer(
                 modifier = Modifier
                     .wrapContentSize(align = Alignment.TopStart)
+                    .onGloballyPositioned {
+                        it.positionInParent().apply {
+                            inputPosition.x = coord.x + x
+                            inputPosition.y = coord.y + y
+                        }
+                    }
             ) {
                 nodeState.nodeEntity.inputPins.forEach {
                     // TODO нужен remember {} для state ?
-                    InputPin(PinState(it))
+                    InputPin(PinState(it), inputPosition, pinDragHandler)
                 }
             }
 
             PinContainer (
                 modifier = Modifier
                     .wrapContentSize(align = Alignment.TopEnd)
+                    .onGloballyPositioned {
+                        it.positionInParent().apply {
+                            outputPosition.x = coord.x + x
+                            outputPosition.y = coord.y + y
+                        }
+                    }
             ) {
                 nodeState.nodeEntity.outputPins.forEach {
                     // TODO нужен remember {} для state ?
-                    OutputPin(PinState(it))
+                    OutputPin(PinState(it), outputPosition, pinDragHandler)
                 }
             }
         }
@@ -148,9 +203,10 @@ private fun PinContainer(
 ) {
     Column (
         content = content,
-        modifier = modifier
+        modifier = Modifier
             .defaultMinSize(minWidth = 50.dp, minHeight = 50.dp)
             .padding(nodeOutlinePadding.dp)
+            .then(modifier)
     )
 }
 

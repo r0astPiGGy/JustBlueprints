@@ -49,7 +49,7 @@ fun ViewPortLayout(modifier: Modifier = Modifier, content: @Composable () -> Uni
             it.measure(constraints)
         }
 
-        layout(Int.MAX_VALUE, Int.MAX_VALUE) {
+        layout(Short.MAX_VALUE - 1, Short.MAX_VALUE - 1) {
             placeables.forEach { placeable ->
                 placeable.placeRelative(x = 0, y = 0)
             }
