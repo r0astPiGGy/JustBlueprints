@@ -1,6 +1,5 @@
 package com.rodev.jbpkmp.presentation.screens.welcome_screen
 
-import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -24,8 +23,10 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,9 +34,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.rodev.jbpkmp.presentation.ResString
+import com.rodev.jbpkmp.presentation.screens.welcome_screen.components.FileDialog
 
 @Composable
-@Preview
 fun WelcomeScreen() {
     Row {
         WelcomePanel(modifier = Modifier.weight(2f))
@@ -48,8 +49,9 @@ private fun WelcomePanel(modifier: Modifier = Modifier) {
     val buttonWidth = 300.dp
     val spacerHeight = 25.dp
 
-    val openDialog = remember { mutableStateOf(false) }
-    val projectName = remember { mutableStateOf("") }
+    var isCreateProjectDialogOpen by remember { mutableStateOf(false) }
+
+    var isFileDialogOpen by remember { mutableStateOf(false) }
 
     Column(
         modifier = modifier.fillMaxHeight(),
@@ -76,26 +78,33 @@ private fun WelcomePanel(modifier: Modifier = Modifier) {
         Spacer(Modifier.height(spacerHeight))
 
         Button(
-            onClick = { openDialog.value = true },
+            onClick = { isCreateProjectDialogOpen = true },
             modifier = Modifier.width(buttonWidth)
         ) {
             Text(ResString.createNewProject)
         }
 
         Button(
-            onClick = {},
+            onClick = { isFileDialogOpen = true },
             modifier = Modifier.width(buttonWidth)
         ) {
             Text(ResString.openProject)
         }
     }
 
-    if (openDialog.value) {
+    if (isCreateProjectDialogOpen) {
         CreateProjectDialog(
-            openDialog = openDialog.value,
-            onDismissRequest = { openDialog.value = false },
-            projectName = projectName.value,
-            onProjectNameChange = { projectName.value = it }
+            onDismissRequest = { isCreateProjectDialogOpen = false }
+        )
+    }
+
+    if (isFileDialogOpen) {
+        FileDialog(
+            openParam = java.awt.FileDialog.LOAD,
+            onCloseRequest = {
+                isFileDialogOpen = false
+                println("Result $it")
+            }
         )
     }
 }
@@ -159,55 +168,77 @@ private fun ProjectsPanelColumnItem(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun CreateProjectDialog(
-    openDialog: Boolean,
-    onDismissRequest: () -> Unit,
-    projectName: String,
-    onProjectNameChange: (String) -> Unit
+    onDismissRequest: () -> Unit
 ) {
-    if (openDialog) {
-        val dialogWidth = 300.dp
-        val buttonWidth = 100.dp
+    val dialogWidth = 300.dp
+    val buttonWidth = 100.dp
+    val errorModifier = Modifier.padding(top = 5.dp)
 
-        AlertDialog(
-            onDismissRequest = onDismissRequest,
-            modifier = Modifier.width(dialogWidth),
-            buttons = {
-                Column(
-                    modifier = Modifier
-                        .background(MaterialTheme.colors.background)
-                        .fillMaxWidth()
-                        .padding(10.dp),
-                ) {
-                    OutlinedTextField(
-                        value = projectName,
-                        onValueChange = onProjectNameChange,
-                        placeholder = { Text(ResString.name) },
-                        singleLine = true,
+    var projectName by remember { mutableStateOf("") }
+    var isFileDialogOpen by remember { mutableStateOf(false) }
+    val isError = projectName.isEmpty() && projectName.isBlank()
+
+    AlertDialog(
+        onDismissRequest = onDismissRequest,
+        modifier = Modifier.width(dialogWidth),
+        buttons = {
+            Column(
+                modifier = Modifier
+                    .background(MaterialTheme.colors.background)
+                    .fillMaxWidth()
+                    .padding(10.dp),
+            ) {
+                OutlinedTextField(
+                    value = projectName,
+                    onValueChange = { projectName = it },
+                    placeholder = { Text(ResString.name) },
+                    singleLine = true,
+                    isError = isError
+                )
+
+                if (isError) Text(
+                    text = ResString.errorMessage,
+                    modifier = errorModifier,
+                    color = MaterialTheme.colors.error,
+                    style = MaterialTheme.typography.h5
+                ) else {
+                    Text(
+                        text = "",
+                        modifier = errorModifier,
+                        style = MaterialTheme.typography.h5
                     )
+                }
 
-                    Spacer(Modifier.height(25.dp))
+                Spacer(Modifier.height(25.dp))
 
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier.fillMaxWidth()
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Button(
+                        onClick = onDismissRequest,
+                        modifier = Modifier.width(buttonWidth),
+                        colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.surface)
                     ) {
-                        Button(
-                            onClick = onDismissRequest,
-                            modifier = Modifier.width(buttonWidth),
-                            colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.surface)
-                        ) {
-                            Text(ResString.cancel)
-                        }
+                        Text(ResString.cancel)
+                    }
 
-                        Button(
-                            onClick = {},
-                            modifier = Modifier.width(buttonWidth)
-                        ) {
-                            Text(ResString.create)
-                        }
+                    Button(
+                        onClick = { isFileDialogOpen = true },
+                        modifier = Modifier.width(buttonWidth)
+                    ) {
+                        Text(ResString.create)
                     }
                 }
             }
+        }
+    )
+
+    if (isFileDialogOpen && projectName.isNotEmpty() && projectName.isNotBlank()) {
+        FileDialog(
+            openParam = java.awt.FileDialog.SAVE,
+            fileName = projectName,
+            onCloseRequest = { isFileDialogOpen = false }
         )
     }
 }
