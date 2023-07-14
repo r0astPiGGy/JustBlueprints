@@ -1,30 +1,36 @@
-package com.rodev.jbpkmp.presentation.components
+package com.rodev.jbpkmp.presentation.components.node
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.material.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.Fill
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.MeasurePolicy
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
+import com.rodev.jbpkmp.presentation.components.ViewPort
+import com.rodev.jbpkmp.presentation.components.pin.InputPin
+import com.rodev.jbpkmp.presentation.components.pin.OutputPin
+import com.rodev.jbpkmp.presentation.components.pin.PinDragHandler
+import com.rodev.jbpkmp.presentation.components.pin.PinState
+import com.rodev.jbpkmp.presentation.viewmodel.ViewPortViewModel
 import com.rodev.jbpkmp.theme.AppTheme
+import com.rodev.jbpkmp.util.MutableCoordinate
 import kotlin.math.max
 import kotlin.math.roundToInt
 
@@ -32,11 +38,52 @@ fun main() = application {
     Window(onCloseRequest = ::exitApplication) {
         AppTheme(useDarkTheme = true) {
             Surface {
-                ViewPort(
+                Column(
                     modifier = Modifier
-                        .fillMaxSize(),
-                    viewPortModifier = Modifier
-//                        .drawWithCache {
+                        .fillMaxSize()
+                ) {
+                    ViewPortPreview()
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ViewPortPreview() {
+    val viewPortModel = remember { ViewPortViewModel() }
+
+    Button(onClick = {
+        viewPortModel.onNodeAdd()
+    }) {
+        Text(text = "Add node")
+    }
+
+    ViewPort(
+        modifier = Modifier
+            .fillMaxSize(),
+        viewPortModifier = Modifier
+            .drawBehind {
+                viewPortModel.temporaryLine.value?.let {
+                    drawLine(
+                        Color.Red,
+                        start = Offset(it.startX, it.startY),
+                        end = Offset(it.endX, it.endY)
+                    )
+                }
+            },
+        viewModel = viewPortModel,
+    ) {
+        nodeStates.forEach {
+            // TODO нужен remember {} для state ?
+            Node(it, viewPortModel)
+        }
+    }
+}
+
+private const val nodeOutlinePadding = 6
+
+//    .drawWithCache {
 //                            onDrawWithContent {
 //
 //                            }
@@ -52,33 +99,33 @@ fun main() = application {
 //                                )
 //                            }
 //                        }
-                ) {
-                    Node()
-                }
-            }
-        }
-    }
-}
-
-private const val nodeOutlinePadding = 6
-private const val pinSize = 15
 
 @Composable
 @Preview
-fun Node() {
-    var offsetX by remember { mutableStateOf(0f) }
-    var offsetY by remember { mutableStateOf(0f) }
-
+fun Node(
+    nodeState: NodeState,
+    pinDragHandler: PinDragHandler
+) {
+    val coord = remember { MutableCoordinate() }
     Card(
         shape = RoundedCornerShape(8.dp),
         modifier = Modifier
-            .offset { IntOffset(offsetX.roundToInt(), offsetY.roundToInt()) }
+            .offset { IntOffset(
+                nodeState.x.roundToInt().coerceAtLeast(0),
+                nodeState.y.roundToInt().coerceAtLeast(0)
+            ) }
             .wrapContentSize()
             .pointerInput(Unit) {
                 detectDragGestures { change, dragAmount ->
                     change.consume()
-                    offsetX += dragAmount.x
-                    offsetY += dragAmount.y
+                    nodeState.x += dragAmount.x
+                    nodeState.y += dragAmount.y
+                }
+            }
+            .onGloballyPositioned {
+                it.positionInParent().apply {
+                    coord.x = x
+                    coord.y = y
                 }
             }
     ) {
@@ -87,37 +134,80 @@ fun Node() {
                 .background(MaterialTheme.colors.background)
                 .defaultMinSize(minWidth = 100.dp)
                 .wrapContentHeight()
+                .onGloballyPositioned {
+                    it.positionInParent().apply {
+                        coord.x += x
+                        coord.y += y
+                    }
+                }
         ) {
             Column(
                 horizontalAlignment = Alignment.Start,
                 verticalArrangement = Arrangement.Top,
                 modifier = Modifier
-                    .background(Color.Blue)
+                    .background(
+                        Color(nodeState.nodeEntity.headerColor)
+                    )
                     .padding(nodeOutlinePadding.dp)
                     .padding(end = 50.dp)
             ) {
                 Text(
-                    text = "Header",
+                    text = nodeState.nodeEntity.header,
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 1
                 )
             }
 
+            val inputPosition = remember { MutableCoordinate() }
+            val outputPosition = remember { MutableCoordinate() }
+
             PinContainer(
                 modifier = Modifier
                     .wrapContentSize(align = Alignment.TopStart)
+                    .onGloballyPositioned {
+                        it.positionInParent().apply {
+                            inputPosition.x = coord.x + x
+                            inputPosition.y = coord.y + y
+                        }
+                    }
             ) {
-                InputPin()
+                nodeState.nodeEntity.inputPins.forEach {
+                    // TODO нужен remember {} для state ?
+                    InputPin(PinState(it), inputPosition, pinDragHandler)
+                }
             }
 
             PinContainer (
                 modifier = Modifier
                     .wrapContentSize(align = Alignment.TopEnd)
+                    .onGloballyPositioned {
+                        it.positionInParent().apply {
+                            outputPosition.x = coord.x + x
+                            outputPosition.y = coord.y + y
+                        }
+                    }
             ) {
-                OutputPin()
+                nodeState.nodeEntity.outputPins.forEach {
+                    // TODO нужен remember {} для state ?
+                    OutputPin(PinState(it), outputPosition, pinDragHandler)
+                }
             }
         }
     }
+}
+
+@Composable
+private fun PinContainer(
+    modifier: Modifier = Modifier,
+    content: @Composable ColumnScope.() -> Unit
+) {
+    Column (
+        content = content,
+        modifier = Modifier
+            .defaultMinSize(minWidth = 50.dp, minHeight = 50.dp)
+            .padding(nodeOutlinePadding.dp)
+            .then(modifier)
+    )
 }
 
 @Composable
@@ -148,65 +238,5 @@ private fun nodeBodyMeasurePolicy(): MeasurePolicy = remember {
             inputContainer.place(0, header.height)
             outputContainer.place(inputContainer.width + spaceBetweenContainers, header.height)
         }
-    }
-}
-
-@Composable
-private fun PinContainer(
-    modifier: Modifier = Modifier,
-    content: @Composable ColumnScope.() -> Unit
-) {
-    Column (
-        content = content,
-        modifier = modifier
-            .defaultMinSize(minWidth = 50.dp, minHeight = 50.dp)
-            .padding(nodeOutlinePadding.dp)
-    )
-}
-
-@Composable
-fun InputPin() {
-    Row(
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Pin(color = Color.Red)
-        Spacer(modifier = Modifier.size(6.dp))
-        Column(
-            modifier = Modifier.requiredSizeIn(maxWidth = 180.dp)
-        ) {
-            Text(
-                text = "Input pin"
-            )
-//            var inputText by remember { mutableStateOf("") }
-//            TextField(value = inputText, onValueChange = { inputText = it }, singleLine = true)
-        }
-    }
-}
-
-@Composable
-fun OutputPin() {
-    Row(
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Column(
-            modifier = Modifier.requiredSizeIn(maxWidth = 180.dp)
-        ) {
-            Text(
-                text = "Return value"
-            )
-        }
-        Spacer(modifier = Modifier.size(6.dp))
-        Pin(color = Color.Red, connected = true)
-    }
-}
-
-@Composable
-fun Pin(
-    color: Color,
-    connected: Boolean = false
-) {
-    Canvas(modifier = Modifier.size(pinSize.dp)) {
-
-        drawCircle(color = color, style = if (connected) Fill else Stroke(width = 2f))
     }
 }
