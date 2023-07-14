@@ -1,4 +1,4 @@
-package com.rodev.jbpkmp.presentation.components
+package com.rodev.jbpkmp.presentation.components.graph
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
@@ -8,16 +8,15 @@ import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.layout.Layout
 import com.chihsuanwu.freescroll.freeScroll
 import com.chihsuanwu.freescroll.rememberFreeScrollState
-import com.rodev.jbpkmp.presentation.viewmodel.ViewPortViewModel
 
 @Composable
-fun ViewPort(
+fun GraphViewPort(
     modifier: Modifier = Modifier,
-    viewPortModifier: Modifier = Modifier,
+    graphModifier: Modifier = Modifier,
     initialX: Int = 0,
     initialY: Int = 0,
-    viewModel: ViewPortViewModel = rememberViewPortViewModel(),
-    content: @Composable ViewPortViewModel.() -> Unit
+    viewModel: GraphViewModel = rememberGraphViewModel(),
+    content: @Composable GraphViewModel.() -> Unit
 ) {
     val scrollState = rememberFreeScrollState(
         initialX = initialX,
@@ -28,19 +27,19 @@ fun ViewPort(
             .clipToBounds()
             .freeScroll(scrollState)
     ) {
-        ViewPortLayout(modifier = viewPortModifier) {
+        GraphLayout(modifier = graphModifier) {
             content(viewModel)
         }
     }
 }
 
 @Composable
-fun rememberViewPortViewModel() = remember {
-    ViewPortViewModel()
+fun rememberGraphViewModel() = remember {
+    GraphViewModel()
 }
 
 @Composable
-fun ViewPortLayout(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+fun GraphLayout(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
     Layout(
         content = content,
         modifier = modifier,
@@ -49,7 +48,7 @@ fun ViewPortLayout(modifier: Modifier = Modifier, content: @Composable () -> Uni
             it.measure(constraints)
         }
 
-        layout(Short.MAX_VALUE - 1, Short.MAX_VALUE - 1) {
+        layout(Int.MAX_VALUE, Int.MAX_VALUE) {
             placeables.forEach { placeable ->
                 placeable.placeRelative(x = 0, y = 0)
             }

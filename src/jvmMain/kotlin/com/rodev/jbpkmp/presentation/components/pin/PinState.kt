@@ -8,7 +8,8 @@ import com.rodev.jbpkmp.util.MutableCoordinate
 
 class PinState(
     val entity: PinEntity,
-    val position: MutableCoordinate = MutableCoordinate()
+    val position: MutableCoordinate = MutableCoordinate(),
+    val center: MutableCoordinate = MutableCoordinate()
 ) {
     var connected by mutableStateOf(false)
 }

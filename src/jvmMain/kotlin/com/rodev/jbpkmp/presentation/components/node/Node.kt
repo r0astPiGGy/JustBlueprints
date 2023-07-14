@@ -23,14 +23,16 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
-import com.rodev.jbpkmp.presentation.components.ViewPort
+import com.rodev.jbpkmp.presentation.components.graph.GraphViewModel
+import com.rodev.jbpkmp.presentation.components.graph.GraphViewPort
+import com.rodev.jbpkmp.presentation.components.graph.NodeAddEvent
 import com.rodev.jbpkmp.presentation.components.pin.InputPin
 import com.rodev.jbpkmp.presentation.components.pin.OutputPin
 import com.rodev.jbpkmp.presentation.components.pin.PinDragHandler
 import com.rodev.jbpkmp.presentation.components.pin.PinState
-import com.rodev.jbpkmp.presentation.viewmodel.ViewPortViewModel
 import com.rodev.jbpkmp.theme.AppTheme
 import com.rodev.jbpkmp.util.MutableCoordinate
+import com.rodev.jbpkmp.util.randomNode
 import kotlin.math.max
 import kotlin.math.roundToInt
 
@@ -51,18 +53,18 @@ fun main() = application {
 
 @Composable
 private fun ViewPortPreview() {
-    val viewPortModel = remember { ViewPortViewModel() }
+    val viewPortModel = remember { GraphViewModel() }
 
     Button(onClick = {
-        viewPortModel.onNodeAdd()
+        viewPortModel.onEvent(NodeAddEvent(randomNode()))
     }) {
         Text(text = "Add node")
     }
 
-    ViewPort(
+    GraphViewPort(
         modifier = Modifier
             .fillMaxSize(),
-        viewPortModifier = Modifier
+        graphModifier = Modifier
             .drawBehind {
                 viewPortModel.temporaryLine.value?.let {
                     drawLine(
@@ -106,7 +108,7 @@ fun Node(
     nodeState: NodeState,
     pinDragHandler: PinDragHandler
 ) {
-    val coord = remember { MutableCoordinate() }
+    val nodeBodyRelativeCoordinates = remember { MutableCoordinate() }
     Card(
         shape = RoundedCornerShape(8.dp),
         modifier = Modifier
@@ -124,8 +126,8 @@ fun Node(
             }
             .onGloballyPositioned {
                 it.positionInParent().apply {
-                    coord.x = x
-                    coord.y = y
+                    nodeBodyRelativeCoordinates.x = x
+                    nodeBodyRelativeCoordinates.y = y
                 }
             }
     ) {
@@ -136,8 +138,8 @@ fun Node(
                 .wrapContentHeight()
                 .onGloballyPositioned {
                     it.positionInParent().apply {
-                        coord.x += x
-                        coord.y += y
+                        nodeBodyRelativeCoordinates.x += x
+                        nodeBodyRelativeCoordinates.y += y
                     }
                 }
         ) {
@@ -158,38 +160,38 @@ fun Node(
                 )
             }
 
-            val inputPosition = remember { MutableCoordinate() }
-            val outputPosition = remember { MutableCoordinate() }
+            val inputPinContainerCoordinates = remember { MutableCoordinate() }
+            val outputPinContainerCoordinates = remember { MutableCoordinate() }
 
             PinContainer(
                 modifier = Modifier
                     .wrapContentSize(align = Alignment.TopStart)
                     .onGloballyPositioned {
                         it.positionInParent().apply {
-                            inputPosition.x = coord.x + x
-                            inputPosition.y = coord.y + y
+                            inputPinContainerCoordinates.x = nodeBodyRelativeCoordinates.x + x
+                            inputPinContainerCoordinates.y = nodeBodyRelativeCoordinates.y + y
                         }
                     }
             ) {
                 nodeState.nodeEntity.inputPins.forEach {
                     // TODO нужен remember {} для state ?
-                    InputPin(PinState(it), inputPosition, pinDragHandler)
+                    InputPin(PinState(it), inputPinContainerCoordinates, pinDragHandler)
                 }
             }
 
-            PinContainer (
+            PinContainer(
                 modifier = Modifier
                     .wrapContentSize(align = Alignment.TopEnd)
                     .onGloballyPositioned {
                         it.positionInParent().apply {
-                            outputPosition.x = coord.x + x
-                            outputPosition.y = coord.y + y
+                            outputPinContainerCoordinates.x = nodeBodyRelativeCoordinates.x + x
+                            outputPinContainerCoordinates.y = nodeBodyRelativeCoordinates.y + y
                         }
                     }
             ) {
                 nodeState.nodeEntity.outputPins.forEach {
                     // TODO нужен remember {} для state ?
-                    OutputPin(PinState(it), outputPosition, pinDragHandler)
+                    OutputPin(PinState(it), outputPinContainerCoordinates, pinDragHandler)
                 }
             }
         }

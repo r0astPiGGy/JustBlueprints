@@ -98,11 +98,16 @@ fun Pin(
         modifier = Modifier
             .size(pinSize.dp)
             .onGloballyPositioned {
+
                 it.boundsInParent().center.apply {
+                    pinState.center.x = pinState.position.x + x
+                    pinState.center.y = pinState.position.y + y
+                }
+
+                it.positionInParent().apply {
                     pinState.position.x += x
                     pinState.position.y += y
                 }
-                println("[${pinState.entity.name}] position in layout = ${pinState.position.x}, ${pinState.position.y}")
             }
             .pointerInput(Unit) {
                 detectDragGestures(
