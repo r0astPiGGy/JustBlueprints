@@ -32,6 +32,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.rodev.jbpkmp.presentation.ResString
 
 @Composable
 @Preview
@@ -56,7 +57,7 @@ private fun WelcomePanel(modifier: Modifier = Modifier) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
-            painterResource("logo.png"),
+            painterResource("images/logo.png"),
             contentDescription = null,
             modifier = Modifier
                 .size(150.dp)
@@ -66,13 +67,11 @@ private fun WelcomePanel(modifier: Modifier = Modifier) {
         Spacer(Modifier.height(spacerHeight))
 
         Text(
-            text = "JustBlueprints",
+            text = ResString.appName,
             style = MaterialTheme.typography.h2
         )
 
-        Text(
-            text = "Made by toastPig, Dewerro"
-        )
+        Text(ResString.authors)
 
         Spacer(Modifier.height(spacerHeight))
 
@@ -80,14 +79,14 @@ private fun WelcomePanel(modifier: Modifier = Modifier) {
             onClick = { openDialog.value = true },
             modifier = Modifier.width(buttonWidth)
         ) {
-            Text("Создать новый проект")
+            Text(ResString.createNewProject)
         }
 
         Button(
             onClick = {},
             modifier = Modifier.width(buttonWidth)
         ) {
-            Text("Открыть существующий проект")
+            Text(ResString.openProject)
         }
     }
 
@@ -182,7 +181,7 @@ private fun CreateProjectDialog(
                     OutlinedTextField(
                         value = projectName,
                         onValueChange = onProjectNameChange,
-                        placeholder = { Text("Название") },
+                        placeholder = { Text(ResString.name) },
                         singleLine = true,
                     )
 
@@ -197,14 +196,14 @@ private fun CreateProjectDialog(
                             modifier = Modifier.width(buttonWidth),
                             colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.surface)
                         ) {
-                            Text("Отмена")
+                            Text(ResString.cancel)
                         }
 
                         Button(
                             onClick = {},
                             modifier = Modifier.width(buttonWidth)
                         ) {
-                            Text("Создать")
+                            Text(ResString.create)
                         }
                     }
                 }
