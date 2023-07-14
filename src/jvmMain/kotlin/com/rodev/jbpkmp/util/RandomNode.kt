@@ -22,7 +22,7 @@ fun randomNode(): NodeEntity {
 }
 
 private fun randomPins(): List<PinEntity> {
-    val size = Random.nextInt(-1, 2)
+    val size = Random.nextInt(1, 2)
 
     val list = ArrayList<PinEntity>()
 

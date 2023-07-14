@@ -11,7 +11,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.Layout
@@ -26,10 +25,7 @@ import androidx.compose.ui.window.application
 import com.rodev.jbpkmp.presentation.components.graph.GraphViewModel
 import com.rodev.jbpkmp.presentation.components.graph.GraphViewPort
 import com.rodev.jbpkmp.presentation.components.graph.NodeAddEvent
-import com.rodev.jbpkmp.presentation.components.pin.InputPin
-import com.rodev.jbpkmp.presentation.components.pin.OutputPin
-import com.rodev.jbpkmp.presentation.components.pin.PinDragHandler
-import com.rodev.jbpkmp.presentation.components.pin.PinState
+import com.rodev.jbpkmp.presentation.components.pin.*
 import com.rodev.jbpkmp.theme.AppTheme
 import com.rodev.jbpkmp.util.MutableCoordinate
 import com.rodev.jbpkmp.util.randomNode
@@ -67,18 +63,13 @@ private fun ViewPortPreview() {
         graphModifier = Modifier
             .drawBehind {
                 viewPortModel.temporaryLine.value?.let {
-                    drawLine(
-                        Color.Red,
-                        start = Offset(it.startX, it.startY),
-                        end = Offset(it.endX, it.endY)
-                    )
+                    it.drawFunction().invoke(this)
                 }
             },
         viewModel = viewPortModel,
     ) {
         nodeStates.forEach {
-            // TODO нужен remember {} для state ?
-            Node(it, viewPortModel)
+            Node(it, viewPortModel, viewPortModel)
         }
     }
 }
@@ -106,9 +97,12 @@ private const val nodeOutlinePadding = 6
 @Preview
 fun Node(
     nodeState: NodeState,
-    pinDragHandler: PinDragHandler
+    pinDragListener: PinDragListener,
+    snapshotRequester: SnapshotRequester
 ) {
-    val nodeBodyRelativeCoordinates = remember { MutableCoordinate() }
+    val nodeBodyRelativeCoordinates = remember {
+        MutableCoordinate()
+    }
     Card(
         shape = RoundedCornerShape(8.dp),
         modifier = Modifier
@@ -174,8 +168,12 @@ fun Node(
                     }
             ) {
                 nodeState.nodeEntity.inputPins.forEach {
-                    // TODO нужен remember {} для state ?
-                    InputPin(PinState(it), inputPinContainerCoordinates, pinDragHandler)
+                    InputPin(
+                        remember { PinState(nodeState, it) },
+                        inputPinContainerCoordinates,
+                        pinDragListener,
+                        snapshotRequester
+                    )
                 }
             }
 
@@ -190,8 +188,12 @@ fun Node(
                     }
             ) {
                 nodeState.nodeEntity.outputPins.forEach {
-                    // TODO нужен remember {} для state ?
-                    OutputPin(PinState(it), outputPinContainerCoordinates, pinDragHandler)
+                    OutputPin(
+                        remember { PinState(nodeState, it) },
+                        outputPinContainerCoordinates,
+                        pinDragListener,
+                        snapshotRequester
+                    )
                 }
             }
         }
