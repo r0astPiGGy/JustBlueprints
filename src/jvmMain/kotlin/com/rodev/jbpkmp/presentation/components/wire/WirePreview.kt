@@ -1,5 +1,6 @@
 package com.rodev.jbpkmp.presentation.components.wire
 
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
@@ -18,8 +19,11 @@ data class WirePreview(
 
         drawPath(
             path = path,
-            // todo fix gradient
-            brush = Brush.linearGradient(0.0f to Color(color), 1f to Color(colorEnd)),
+            brush = Brush.linearGradient(
+                listOf(Color(color), Color(colorEnd)),
+                start = Offset(startX, startY),
+                end = Offset(endX, endY)
+            ),
             alpha = 0.4f,
             style = Stroke(width = Wire.STROKE_WIDTH),
         )

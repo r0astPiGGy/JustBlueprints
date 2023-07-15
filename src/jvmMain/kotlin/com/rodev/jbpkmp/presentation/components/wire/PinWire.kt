@@ -1,5 +1,6 @@
 package com.rodev.jbpkmp.presentation.components.wire
 
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
@@ -20,8 +21,11 @@ data class PinWire(
 
         drawPath(
             path = path,
-            // TODO add gradient
-            brush = Brush.linearGradient(0.5f to Color(inputPin.entity.color), 1f to Color(outputPin.entity.color)),
+            brush = Brush.linearGradient(
+                listOf(Color(inputPin.entity.color), Color(outputPin.entity.color)),
+                start = Offset(inputPin.center.x, inputPin.center.y),
+                end = Offset(outputPin.center.x, outputPin.center.y)
+            ),
             style = Stroke(width = Wire.STROKE_WIDTH),
         )
     }

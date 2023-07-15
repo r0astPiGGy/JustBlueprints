@@ -38,8 +38,10 @@ fun InputPin(
         snapshotRequester,
         input = true
     ) {
-            var inputText by remember { mutableStateOf("") }
+        var inputText by remember { mutableStateOf("") }
+        if (!pinState.connected) {
             TextField(value = inputText, onValueChange = { inputText = it }, singleLine = false)
+        }
     }
 }
 
