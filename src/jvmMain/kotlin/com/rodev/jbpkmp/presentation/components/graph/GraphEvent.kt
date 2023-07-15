@@ -7,3 +7,5 @@ sealed interface GraphEvent
 data class NodeAddEvent(
     val nodeEntity: NodeEntity
 ) : GraphEvent
+
+object NodeClearEvent : GraphEvent

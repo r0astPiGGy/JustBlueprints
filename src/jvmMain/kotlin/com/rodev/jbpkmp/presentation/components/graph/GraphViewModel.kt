@@ -14,6 +14,7 @@ import com.rodev.jbpkmp.presentation.components.wire.WirePreview
 
 class GraphViewModel : PinDragListener, SnapshotRequester {
 
+    private val pinConnectionHandler = PinConnectionHandler()
     private val _nodeStates = mutableStateListOf<NodeState>()
     val nodeStates: List<NodeState>
         get() = _nodeStates
@@ -22,10 +23,15 @@ class GraphViewModel : PinDragListener, SnapshotRequester {
     val temporaryLine: State<Wire?>
         get() = _temporaryLine
 
+    val lines: List<Wire>
+        get() = pinConnectionHandler.wires
+
     private var _snapshotRequested by mutableStateOf(false)
 
     override val snapshotRequested: Boolean
         get() = _snapshotRequested
+
+    private var cachedHitTest: PinRowSnapshot? = null
 
     private var currentDraggingPin: PinState? = null
     private var currentHoveringPin: PinState? = null
@@ -37,27 +43,23 @@ class GraphViewModel : PinDragListener, SnapshotRequester {
             is NodeAddEvent -> {
                 _nodeStates.add(NodeState(event.nodeEntity))
             }
+            NodeClearEvent -> {
+                _nodeStates.clear()
+            }
         }
     }
 
     override fun onPinDragStart(pinState: PinState) {
+        pinConnectionHandler.onDragStart(pinState)
+
         currentDraggingPin = pinState
         _snapshotRequested = true
     }
 
     override fun addSnapshot(snapshot: PinRowSnapshot) {
-        val currentDraggingPin = currentDraggingPin
-
-        require(currentDraggingPin != null) { "Snapshot is available only when pin is being dragged" }
-
-        val pinState = snapshot.pinState
-
-        // Pre-filter
-        if (pinState == currentDraggingPin) return
-
-        if (pinState.parent == currentDraggingPin.parent) return
-
-        pinSnapshots.add(snapshot)
+        if (pinConnectionHandler.shouldAddSnapshot(snapshot, currentDraggingPin)) {
+            pinSnapshots.add(snapshot)
+        }
     }
 
     override fun onPinDrag(pinState: PinState, offset: Offset, change: PointerInputChange) {
@@ -108,20 +110,32 @@ class GraphViewModel : PinDragListener, SnapshotRequester {
     }
 
     private fun hitTest(x: Float, y: Float): PinState? {
-        for (pinSnapshot in pinSnapshots) {
-            val top = pinSnapshot.topBound
-            val bottom = pinSnapshot.bottomBound
+        val lastHitTest = cachedHitTest
+        if (lastHitTest != null && lastHitTest.isInBounds(x, y)) {
+            return lastHitTest.pinState
+        } else {
+            cachedHitTest = null
+        }
 
-            if (x in top.x..bottom.x && y in top.y..bottom.y) {
+        for (pinSnapshot in pinSnapshots) {
+            if (pinSnapshot.isInBounds(x, y)) {
+                cachedHitTest = pinSnapshot
                 return pinSnapshot.pinState
             }
         }
         return null
     }
 
+    private fun PinRowSnapshot.isInBounds(x: Float, y: Float): Boolean {
+        return x in topBound.x..bottomBound.x && y in topBound.y..bottomBound.y
+    }
+
     override fun onPinDragEnd() {
+        pinConnectionHandler.onConnection(currentDraggingPin!!, currentHoveringPin)
+
         _snapshotRequested = false
         currentDraggingPin = null
+        cachedHitTest = null
         clearCurrentHoveringPin()
         _temporaryLine.value = null
 

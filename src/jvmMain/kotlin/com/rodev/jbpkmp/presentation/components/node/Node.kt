@@ -25,6 +25,7 @@ import androidx.compose.ui.window.application
 import com.rodev.jbpkmp.presentation.components.graph.GraphViewModel
 import com.rodev.jbpkmp.presentation.components.graph.GraphViewPort
 import com.rodev.jbpkmp.presentation.components.graph.NodeAddEvent
+import com.rodev.jbpkmp.presentation.components.graph.NodeClearEvent
 import com.rodev.jbpkmp.presentation.components.pin.*
 import com.rodev.jbpkmp.theme.AppTheme
 import com.rodev.jbpkmp.util.MutableCoordinate
@@ -51,10 +52,17 @@ fun main() = application {
 private fun ViewPortPreview() {
     val viewPortModel = remember { GraphViewModel() }
 
-    Button(onClick = {
-        viewPortModel.onEvent(NodeAddEvent(randomNode()))
-    }) {
-        Text(text = "Add node")
+    Row {
+        Button(onClick = {
+            viewPortModel.onEvent(NodeAddEvent(randomNode()))
+        }) {
+            Text(text = "Add node")
+        }
+        Button(onClick = {
+            viewPortModel.onEvent(NodeClearEvent)
+        }) {
+            Text(text = "Clear")
+        }
     }
 
     GraphViewPort(
@@ -62,9 +70,8 @@ private fun ViewPortPreview() {
             .fillMaxSize(),
         graphModifier = Modifier
             .drawBehind {
-                viewPortModel.temporaryLine.value?.let {
-                    it.drawFunction().invoke(this)
-                }
+                viewPortModel.temporaryLine.value?.drawFunction()?.invoke(this)
+                viewPortModel.lines.forEach { it.drawFunction().invoke(this) }
             },
         viewModel = viewPortModel,
     ) {
