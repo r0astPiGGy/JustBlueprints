@@ -1,7 +1,7 @@
 package com.rodev.jbpkmp.presentation.components.pin.row
 
 import androidx.compose.ui.geometry.Offset
-import com.rodev.jbpkmp.presentation.components.pin.PinState
+import com.rodev.jbpkmp.presentation.components.node.NodeState
 
 interface SnapshotRequester {
 
@@ -12,32 +12,32 @@ interface SnapshotRequester {
 }
 
 fun PinRowSnapshot(
+    nodeState: NodeState,
     pinRowState: PinRowState,
-    pinState: PinState,
     topBound: Offset,
     bottomBound: Offset
 ): PinRowSnapshot {
     return PinRowSnapshotImpl(
+        nodeState,
         pinRowState,
-        pinState,
         topBound,
         bottomBound
     )
 }
 
 interface PinRowSnapshot {
+    val nodeState: NodeState
     val pinRowState: PinRowState
-    val pinState: PinState
     val topBound: Offset
     val bottomBound: Offset
 
     companion object {
 
         fun lazy(
-            pinState: PinState,
+            nodeState: NodeState,
             pinRowState: PinRowState,
             pinRowSnapshotProvider: PinRowSnapshotProvider
-        ): PinRowSnapshot = LazyPinRowSnapshot(pinState, pinRowState, pinRowSnapshotProvider)
+        ): PinRowSnapshot = LazyPinRowSnapshot(nodeState, pinRowState, pinRowSnapshotProvider)
 
     }
 }
@@ -45,7 +45,7 @@ interface PinRowSnapshot {
 private typealias PinRowSnapshotProvider = () -> PinRowSnapshot
 
 private class LazyPinRowSnapshot(
-    override val pinState: PinState,
+    override val nodeState: NodeState,
     override val pinRowState: PinRowState,
     private val pinRowSnapshotProvider: PinRowSnapshotProvider
 ) : PinRowSnapshot {
@@ -72,8 +72,8 @@ private class LazyPinRowSnapshot(
 }
 
 data class PinRowSnapshotImpl(
+    override val nodeState: NodeState,
     override val pinRowState: PinRowState,
-    override val pinState: PinState,
     override val topBound: Offset,
     override val bottomBound: Offset
 ) : PinRowSnapshot

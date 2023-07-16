@@ -22,7 +22,7 @@ fun defaultDrawFunction(): PinDrawFunction = DefaultDrawFunction
 private object DefaultDrawFunction : PinDrawFunction() {
     override fun DrawScope.onDraw(pinState: PinState) {
         drawCircle(
-            color = Color(pinState.entity.color),
+            color = Color(pinState.pinRepresentation.color),
             style = if (pinState.connected) Fill else Stroke(width = 2f)
         )
     }

@@ -15,9 +15,9 @@ import com.rodev.jbpkmp.presentation.components.graph.GraphViewModel
 import com.rodev.jbpkmp.presentation.components.graph.GraphViewPort
 import com.rodev.jbpkmp.presentation.components.graph.NodeAddEvent
 import com.rodev.jbpkmp.presentation.components.graph.NodeClearEvent
-import com.rodev.jbpkmp.presentation.components.node.Node
+import com.rodev.jbpkmp.presentation.components.node.DefaultNodeStateFactory
 import com.rodev.jbpkmp.presentation.components.pin.DefaultPinStateFactory
-import com.rodev.jbpkmp.presentation.components.pin.row.DefaultRowStateFactory
+import com.rodev.jbpkmp.presentation.components.pin.row.DefaultPinRowStateFactory
 import com.rodev.jbpkmp.theme.AppTheme
 import com.rodev.jbpkmp.util.randomNode
 
@@ -38,9 +38,15 @@ fun main() = application {
 
 @Composable
 private fun ViewPortPreview() {
-    val viewPortModel = remember { GraphViewModel() }
-    val pinRowStateFactory = remember { DefaultRowStateFactory }
-    val pinStateFactory = remember { DefaultPinStateFactory }
+    val viewPortModel = remember {
+        GraphViewModel(
+            nodeStateFactory = DefaultNodeStateFactory(
+                pinRowStateFactory = DefaultPinRowStateFactory(
+                    pinStateFactory = DefaultPinStateFactory()
+                )
+            )
+        )
+    }
 
     // LaunchedEffect {
     //    viewPortModel.loadFromJson(json)
@@ -64,7 +70,7 @@ private fun ViewPortPreview() {
         viewModel = viewPortModel,
     ) {
         nodeStates.forEach {
-            Node(it, viewPortModel, viewPortModel, pinRowStateFactory, pinStateFactory)
+            it.nodeRepresentation.onDraw(it, viewPortModel, viewPortModel)
         }
     }
 }

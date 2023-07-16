@@ -2,7 +2,6 @@ package com.rodev.jbpkmp.presentation.components.graph
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.drawBehind
@@ -10,13 +9,15 @@ import androidx.compose.ui.layout.Layout
 import com.chihsuanwu.freescroll.freeScroll
 import com.chihsuanwu.freescroll.rememberFreeScrollState
 
+
+// TODO переместить все файлы в отдельный модуль (Node-UI)
 @Composable
 fun GraphViewPort(
     modifier: Modifier = Modifier,
     graphModifier: Modifier = Modifier,
     initialX: Int = 0,
     initialY: Int = 0,
-    viewModel: GraphViewModel = rememberGraphViewModel(),
+    viewModel: GraphViewModel,
     content: @Composable GraphViewModel.() -> Unit
 ) {
     val scrollState = rememberFreeScrollState(
@@ -38,11 +39,6 @@ fun GraphViewPort(
             content(viewModel)
         }
     }
-}
-
-@Composable
-fun rememberGraphViewModel() = remember {
-    GraphViewModel()
 }
 
 @Composable

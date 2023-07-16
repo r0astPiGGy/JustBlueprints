@@ -5,9 +5,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
-import com.rodev.jbpkmp.presentation.components.node.NodeState
 import com.rodev.jbpkmp.presentation.components.pin.PinState
-import com.rodev.jbpkmp.presentation.components.pin.getNode
 import java.util.*
 
 data class PinWire(
@@ -26,7 +24,7 @@ data class PinWire(
         drawPath(
             path = path,
             brush = Brush.linearGradient(
-                listOf(Color(inputPin.entity.color), Color(outputPin.entity.color)),
+                listOf(Color(inputPin.pinRepresentation.color), Color(outputPin.pinRepresentation.color)),
                 start = Offset(inputPin.center.x, inputPin.center.y),
                 end = Offset(outputPin.center.x, outputPin.center.y)
             ),
@@ -50,12 +48,4 @@ data class PinWire(
 
 fun PinWire.getOpposite(pinState: PinState): PinState {
     return if (inputPin == pinState) outputPin else inputPin
-}
-
-fun PinWire.getPin(owner: NodeState): PinState? {
-    return when (owner) {
-        inputPin.getNode() -> inputPin
-        outputPin.getNode() -> outputPin
-        else -> null
-    }
 }

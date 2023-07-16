@@ -4,10 +4,10 @@ import androidx.compose.runtime.mutableStateListOf
 import com.rodev.jbpkmp.presentation.components.node.NodeState
 import com.rodev.jbpkmp.presentation.components.pin.*
 import com.rodev.jbpkmp.presentation.components.pin.row.PinRowSnapshot
+import com.rodev.jbpkmp.presentation.components.pin.row.PinRowState
 import com.rodev.jbpkmp.presentation.components.wire.PinWire
 import com.rodev.jbpkmp.presentation.components.wire.Wire
 import com.rodev.jbpkmp.presentation.components.wire.getOpposite
-import com.rodev.jbpkmp.presentation.components.wire.getPin
 
 class PinConnectionHandler(
     private val pinTypeComparator: PinTypeComparator
@@ -17,16 +17,22 @@ class PinConnectionHandler(
     val wires: List<Wire>
         get() = _wires
 
-    fun shouldAddSnapshot(snapshot: PinRowSnapshot, currentDraggingPin: PinState?): Boolean {
-        require(currentDraggingPin != null) { "Snapshot is available only when pin is being dragged" }
+    fun shouldAddSnapshot(
+        snapshot: PinRowSnapshot,
+        currentDraggingPin: PinState?,
+        currentDraggingPinOwner: NodeState?
+    ): Boolean {
+        require(currentDraggingPin != null && currentDraggingPinOwner != null) {
+            "Snapshot is available only when pin is being dragged"
+        }
 
-        val pinState = snapshot.pinState
+        val pinState = snapshot.pinRowState.pinState
 
         // Pre-filter
         if (pinState == currentDraggingPin) return false
 
         // Shouldn't connect pins with same node
-        if (pinState.getNode() == currentDraggingPin.getNode()) return false
+        if (snapshot.nodeState == currentDraggingPinOwner) return false
 
         // Shouldn't connect pins with same connection type
         if (pinState.connectionTypeEquals(currentDraggingPin)) return false
@@ -102,6 +108,8 @@ class PinConnectionHandler(
     }
 
     private fun disconnectAll(pinState: PinState) {
+        if (!pinState.isConnected()) return
+
         _wires.removeAll(pinState.connections)
         pinState.connections.forEach {
             val opposite = it.getOpposite(pinState)
@@ -114,11 +122,12 @@ class PinConnectionHandler(
     }
 
     fun disconnectAll(nodeState: NodeState) {
-        getConnectedPins(nodeState).forEach(::disconnectAll)
+        disconnectAll(nodeState.inputPins)
+        disconnectAll(nodeState.outputPins)
     }
 
-    fun getConnectedPins(nodeState: NodeState): Collection<PinState> {
-        return _wires.mapNotNull { it.getPin(owner = nodeState) }
+    private fun disconnectAll(pins: List<PinRowState>) {
+        pins.forEach { disconnectAll(it.pinState) }
     }
 
     private fun PinState.isConnected(): Boolean {
@@ -126,7 +135,7 @@ class PinConnectionHandler(
     }
 
     private fun PinState.supportsMultipleConnection(): Boolean {
-        return entity.supportsMultipleConnection
+        return pinRepresentation.supportsMultipleConnection
     }
 
     private fun PinState.connectedTo(pinState: PinState): Boolean {

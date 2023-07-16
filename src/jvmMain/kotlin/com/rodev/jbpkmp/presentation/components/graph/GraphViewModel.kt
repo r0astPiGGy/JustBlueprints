@@ -4,6 +4,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.PointerInputChange
 import com.rodev.jbpkmp.presentation.components.node.NodeState
+import com.rodev.jbpkmp.presentation.components.node.NodeStateFactory
 import com.rodev.jbpkmp.presentation.components.pin.PinDragListener
 import com.rodev.jbpkmp.presentation.components.pin.PinState
 import com.rodev.jbpkmp.presentation.components.pin.row.PinRowSnapshot
@@ -14,7 +15,8 @@ import com.rodev.jbpkmp.presentation.components.wire.Wire
 import com.rodev.jbpkmp.presentation.components.wire.WirePreview
 
 class GraphViewModel(
-    pinTypeComparator: PinTypeComparator = PinTypeComparator.Default
+    pinTypeComparator: PinTypeComparator = PinTypeComparator.Default,
+    private val nodeStateFactory: NodeStateFactory
 ) : PinDragListener, SnapshotRequester {
 
     private val pinConnectionHandler = PinConnectionHandler(pinTypeComparator)
@@ -36,7 +38,9 @@ class GraphViewModel(
 
     private var cachedHitTest: PinRowSnapshot? = null
 
+    private var currentDraggingPinOwner: NodeState? = null
     private var currentDraggingPin: PinState? = null
+
     private var currentHoveringPin: PinState? = null
     private var currentHoveringRow: PinRowState? = null
 
@@ -45,24 +49,28 @@ class GraphViewModel(
     fun onEvent(event: GraphEvent) {
         when (event) {
             is NodeAddEvent -> {
-                _nodeStates.add(NodeState(event.nodeEntity))
+                val node = nodeStateFactory.createNodeState(event.node)
+                _nodeStates.add(node)
             }
             NodeClearEvent -> {
                 _nodeStates.forEach(pinConnectionHandler::disconnectAll)
                 _nodeStates.clear()
             }
+
+            is NodeDeleteEvent -> TODO()
         }
     }
 
-    override fun onPinDragStart(pinState: PinState) {
+    override fun onPinDragStart(pinOwner: NodeState, pinState: PinState) {
         pinConnectionHandler.onDragStart(pinState)
 
+        currentDraggingPinOwner = pinOwner
         currentDraggingPin = pinState
         _snapshotRequested = true
     }
 
     override fun addSnapshot(snapshot: PinRowSnapshot) {
-        if (pinConnectionHandler.shouldAddSnapshot(snapshot, currentDraggingPin)) {
+        if (pinConnectionHandler.shouldAddSnapshot(snapshot, currentDraggingPin, currentDraggingPinOwner)) {
             pinSnapshots.add(snapshot)
         }
     }
@@ -77,17 +85,17 @@ class GraphViewModel(
         val endY = pos.y + change.position.y
 
         val pinRowSnapshot = hitTest(endX, endY)
-        val hoveredPin = pinRowSnapshot?.pinState
         val hoveredRow = pinRowSnapshot?.pinRowState
+        val hoveredPin = hoveredRow?.pinState
 
-        if (hoveredPin != null && hoveredRow != null) {
+        if (hoveredRow != null && hoveredPin != null) {
             if (hoveredPin == currentDraggingPin) return
 
             clearCurrentHoveringRow()
 
             _temporaryLine.value = WirePreview(
-                pinState.entity.color,
-                hoveredPin.entity.color,
+                pinState.pinRepresentation.color,
+                hoveredPin.pinRepresentation.color,
                 start.x,
                 start.y,
                 hoveredPin.center.x,
@@ -101,7 +109,7 @@ class GraphViewModel(
             clearCurrentHoveringRow()
             currentHoveringPin = null
             _temporaryLine.value = TemporaryWire(
-                pinState.entity.color,
+                pinState.pinRepresentation.color,
                 start.x,
                 start.y,
                 endX,
@@ -144,6 +152,7 @@ class GraphViewModel(
 
         _snapshotRequested = false
         currentDraggingPin = null
+        currentDraggingPinOwner = null
         currentHoveringPin = null
         cachedHitTest = null
         clearCurrentHoveringRow()
