@@ -10,7 +10,7 @@ import java.awt.Frame
 fun FileDialog(
     parent: Frame? = null,
     fileName: String = "*",
-    onCloseRequest: (result: String?) -> Unit,
+    onCloseRequest: (file: String?, directory: String?) -> Unit,
     openParam: Int
 ) = AwtWindow(
     create = {
@@ -18,7 +18,7 @@ fun FileDialog(
             override fun setVisible(value: Boolean) {
                 super.setVisible(value)
 
-                if (value) onCloseRequest(file)
+                if (value) onCloseRequest(file, directory) // TODO: Fix
             }
         }.apply {
             // Windows

@@ -8,6 +8,7 @@ object ResString {
     val createNewProject: String
     val openProject: String
     val chooseFile: String
+    val noRecentProjects: String
 
     // CreateProjectDialog
     val name: String
@@ -22,6 +23,7 @@ object ResString {
             createNewProject = "Создать новый проект"
             openProject = "Открыть проект"
             chooseFile = "Выберите файл"
+            noRecentProjects = "Нет недавних проектов"
 
             // CreateProjectDialog
             name = "Название"
@@ -34,6 +36,7 @@ object ResString {
             authors = "Made by r0astPiGGy, Dewerro"
             openProject = "Open a project"
             chooseFile = "Choose a file"
+            noRecentProjects = "No recent projects"
 
             // CreateProjectDialog
             name = "Name"

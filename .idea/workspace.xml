@@ -1,15 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="AutoImportSettings">
-    <option name="autoReloadType" value="SELECTIVE" />
+    <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2dcd41d4-f8bf-40bc-a529-7e5909b7b723" name="Changes" comment="Fix Node layout">
+    <list default="true" id="2dcd41d4-f8bf-40bc-a529-7e5909b7b723" name="Changes" comment="Add save and open file dialog">
+      <change afterPath="$PROJECT_DIR$/src/jvmMain/kotlin/com/rodev/jbpkmp/data/ProgramDataRepositoryImpl.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/jvmMain/kotlin/com/rodev/jbpkmp/domain/model/ProgramData.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/jvmMain/kotlin/com/rodev/jbpkmp/domain/repository/ProgramDataRepository.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/jvmMain/kotlin/com/rodev/jbpkmp/presentation/screens/welcome_screen/WelcomeScreenEvent.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/jvmMain/kotlin/com/rodev/jbpkmp/presentation/screens/welcome_screen/WelcomeScreenState.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/jvmMain/kotlin/com/rodev/jbpkmp/presentation/screens/welcome_screen/WelcomeScreenViewModel.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/jvmMain/resources/cache/ProjectData.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/local.properties" beforeDir="false" afterPath="$PROJECT_DIR$/local.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/jvmMain/kotlin/com/rodev/jbpkmp/Main.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/jvmMain/kotlin/com/rodev/jbpkmp/Main.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/jvmMain/kotlin/com/rodev/jbpkmp/presentation/Node.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/jvmMain/kotlin/com/rodev/jbpkmp/presentation/components/Node.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/jvmMain/kotlin/com/rodev/jbpkmp/presentation/components/Node.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/jvmMain/kotlin/com/rodev/jbpkmp/presentation/R.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/jvmMain/kotlin/com/rodev/jbpkmp/presentation/R.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/jvmMain/kotlin/com/rodev/jbpkmp/presentation/screens/welcome_screen/WelcomeScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/jvmMain/kotlin/com/rodev/jbpkmp/presentation/screens/welcome_screen/WelcomeScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/jvmMain/kotlin/com/rodev/jbpkmp/presentation/screens/welcome_screen/components/FileDialog.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/jvmMain/kotlin/com/rodev/jbpkmp/presentation/screens/welcome_screen/components/FileDialog.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -61,18 +70,28 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
+        <option value="Kotlin Sealed Class" />
+        <option value="Kotlin Data Class" />
+        <option value="Kotlin Interface" />
+        <option value="Kotlin Class" />
         <option value="Kotlin File" />
       </list>
     </option>
   </component>
   <component name="Git.Settings">
+    <option name="PUSH_AUTO_UPDATE" value="true" />
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="KotlinCodeInsightWorkspaceSettings">
     <option name="optimizeImportsOnTheFly" value="true" />
   </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
   <component name="ProjectId" id="2SQNTV3JPe32yu85IvfBfDy6MGR" />
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -81,7 +100,9 @@
   &quot;keyToString&quot;: {
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
     &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;master&quot;,
     &quot;last_opened_file_path&quot;: &quot;/home/la1ne/IdeaProjects/JustBlueprints-FX&quot;,
     &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
@@ -92,15 +113,18 @@
 }</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/src/jvmMain/kotlin/com/rodev/jbpkmp/presentation/components" />
+      <recent name="$PROJECT_DIR$/src/jvmMain/resources/images" />
       <recent name="$PROJECT_DIR$/src/jvmMain/kotlin/com/rodev/jbpkmp/presentation" />
       <recent name="$PROJECT_DIR$/src/jvmMain/kotlin/com/rodev/jbpkmp" />
+    </key>
+    <key name="MoveKotlinTopLevelDeclarationsDialog.RECENTS_KEY">
+      <recent name="com.rodev.jbpkmp.data" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
       <recent name="com.rodev.jbpkmp.layout" />
     </key>
   </component>
-  <component name="RunManager" selected="Kotlin.NodeKt">
+  <component name="RunManager" selected="Kotlin.MainKt">
     <configuration name="JustBlueprints [packageReleaseDeb]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -120,7 +144,6 @@
       <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
       <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
       <DebugAllEnabled>false</DebugAllEnabled>
-      <ForceTestExec>false</ForceTestExec>
       <method v="2" />
     </configuration>
     <configuration name="MainKt" type="JetRunConfigurationType" temporary="true" nameIsGenerated="true">
@@ -131,7 +154,7 @@
       </method>
     </configuration>
     <configuration name="NodeKt" type="JetRunConfigurationType" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="com.rodev.jbpkmp.presentation.components.NodeKt" />
+      <option name="MAIN_CLASS_NAME" value="com.rodev.jbpkmp.presentation.NodeKt" />
       <module name="JustBlueprints.jvmMain" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -146,8 +169,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Kotlin.NodeKt" />
         <item itemvalue="Kotlin.MainKt" />
+        <item itemvalue="Kotlin.NodeKt" />
         <item itemvalue="Kotlin.ViewPortTestKt" />
         <item itemvalue="Gradle.JustBlueprints [packageReleaseDeb]" />
       </list>
@@ -190,14 +213,28 @@
       <option name="project" value="LOCAL" />
       <updated>1689181763583</updated>
     </task>
-    <task id="LOCAL-00005" summary="Fix Node layout">
-      <created>1689237069827</created>
+    <task id="LOCAL-00005" summary="Add CreateProjectDialog">
+      <created>1689246046480</created>
       <option name="number" value="00005" />
       <option name="presentableId" value="LOCAL-00005" />
       <option name="project" value="LOCAL" />
-      <updated>1689237069827</updated>
+      <updated>1689246046480</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Add string resources">
+      <created>1689323547313</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1689323547313</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Add save and open file dialog">
+      <created>1689333513347</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1689333513347</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -216,8 +253,10 @@
     <MESSAGE value="Add ViewPort, ViewPortLayout, fix FreeScroll" />
     <MESSAGE value="Summary commit" />
     <MESSAGE value="Delete WelcomeScreen.kt" />
-    <MESSAGE value="Fix Node layout" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fix Node layout" />
+    <MESSAGE value="Add CreateProjectDialog" />
+    <MESSAGE value="Add string resources" />
+    <MESSAGE value="Add save and open file dialog" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add save and open file dialog" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

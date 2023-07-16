@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("multiplatform")
+    kotlin("plugin.serialization") version "1.8.0"
     id("org.jetbrains.compose")
 }
 
@@ -47,4 +48,6 @@ compose.desktop {
 
 dependencies {
     commonMainImplementation("androidx.compose.material:material-icons-extended:1.3.0")
+    commonMainImplementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
+    commonMainImplementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
 }

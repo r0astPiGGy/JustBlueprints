@@ -8,7 +8,7 @@ import com.rodev.jbpkmp.theme.AppTheme
 
 fun main() = application {
     Window(onCloseRequest = ::exitApplication) {
-        AppTheme(useDarkTheme = false) {
+        AppTheme(useDarkTheme = true) {
             Scaffold {
                 WelcomeScreen()
             }

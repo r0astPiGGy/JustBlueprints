@@ -2,6 +2,7 @@ package com.rodev.jbpkmp.presentation.screens.welcome_screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,15 +14,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,24 +37,37 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.rodev.jbpkmp.data.ProgramDataRepositoryImpl
 import com.rodev.jbpkmp.presentation.ResString
 import com.rodev.jbpkmp.presentation.screens.welcome_screen.components.FileDialog
 
 @Composable
 fun WelcomeScreen() {
+
+    val viewModel = WelcomeScreenViewModel(ProgramDataRepositoryImpl())
+
     Row {
-        WelcomePanel(modifier = Modifier.weight(2f))
-        ProjectsPanel(modifier = Modifier.weight(1f))
+        WelcomePanel(
+            modifier = Modifier.weight(2f),
+            viewModel = viewModel
+        )
+
+        ProjectsPanel(
+            modifier = Modifier.weight(1f),
+            viewModel = viewModel
+        )
     }
 }
 
 @Composable
-private fun WelcomePanel(modifier: Modifier = Modifier) {
+private fun WelcomePanel(
+    modifier: Modifier = Modifier,
+    viewModel: WelcomeScreenViewModel
+) {
     val buttonWidth = 300.dp
     val spacerHeight = 25.dp
 
     var isCreateProjectDialogOpen by remember { mutableStateOf(false) }
-
     var isFileDialogOpen by remember { mutableStateOf(false) }
 
     Column(
@@ -94,33 +111,86 @@ private fun WelcomePanel(modifier: Modifier = Modifier) {
 
     if (isCreateProjectDialogOpen) {
         CreateProjectDialog(
-            onDismissRequest = { isCreateProjectDialogOpen = false }
+            onDismissRequest = { isCreateProjectDialogOpen = false },
+            viewModel = viewModel
         )
     }
 
     if (isFileDialogOpen) {
         FileDialog(
             openParam = java.awt.FileDialog.LOAD,
-            onCloseRequest = {
+            onCloseRequest = { file, directory ->
+                if (file != null && directory != null) {
+                    val event = WelcomeScreenEvent.LoadProject(directory + file)
+                    viewModel.onEvent(event)
+                }
+
                 isFileDialogOpen = false
-                println("Result $it")
             }
         )
     }
 }
 
 @Composable
-private fun ProjectsPanel(modifier: Modifier = Modifier) {
-    LazyColumn(
-        modifier = modifier
-            .fillMaxHeight()
-            .background(MaterialTheme.colors.surface)
-    ) {
-        items(10) {
-            ProjectsPanelColumnItem(
-                modifier = Modifier.padding(5.dp),
-                title = "Projects",
-                path = "Path"
+private fun ProjectsPanel(
+    modifier: Modifier = Modifier,
+    viewModel: WelcomeScreenViewModel
+) {
+    val state = viewModel.state.value
+
+    var selectedProjectPath by remember { mutableStateOf("") }
+    val onSelectionChange = { text: String ->
+        if (selectedProjectPath == text) {
+            println("double click")
+        }
+
+        selectedProjectPath = text
+    }
+
+    if (state.recentProjects.isNotEmpty()) {
+        LazyColumn(
+            modifier = modifier
+                .fillMaxHeight()
+                .background(MaterialTheme.colors.surface)
+        ) {
+            items(state.recentProjects.size) { index ->
+                val path = state.recentProjects[index].project.path
+                val selected = path == selectedProjectPath
+
+                ProjectsPanelColumnItem(
+                    modifier = Modifier
+                        .padding(5.dp)
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(5.dp))
+                        .background(
+                            if (path == selectedProjectPath) {
+                                MaterialTheme.colors.primary
+                            } else {
+                                Color.Transparent
+                            }
+                        )
+                        .clickable { onSelectionChange(path) },
+                    name = state.recentProjects[index].project.name,
+                    path = state.recentProjects[index].project.path,
+                    selected = selected,
+                    onDeleteClick = {
+                        val event = WelcomeScreenEvent.RemoveProject(state.recentProjects[index])
+                        viewModel.onEvent(event)
+                    }
+                )
+            }
+        }
+    } else {
+        Column(
+            modifier = Modifier
+                .fillMaxHeight()
+                .background(MaterialTheme.colors.surface),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = ResString.noRecentProjects,
+                modifier = Modifier.padding(horizontal = 10.dp)
             )
         }
     }
@@ -129,46 +199,50 @@ private fun ProjectsPanel(modifier: Modifier = Modifier) {
 @Composable
 private fun ProjectsPanelColumnItem(
     modifier: Modifier = Modifier,
-    title: String,
-    path: String
+    name: String,
+    path: String,
+    selected: Boolean,
+    onDeleteClick: () -> Unit = {}
 ) {
-    val selected = remember { mutableStateOf(false) }
-
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(5.dp))
-            .background(
-                if (selected.value) {
-                    MaterialTheme.colors.primary
-                } else {
-                    Color.Transparent
-                }
-            )
-            .padding(5.dp)
-            .selectable(
-                selected = selected.value,
-                onClick = { selected.value = !selected.value }
-            )
+    Row(
+        modifier = modifier.padding(5.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(
-            text = title,
-            style = MaterialTheme.typography.h4,
-            color = MaterialTheme.colors.onSurface
-        )
+        Column {
+            Text(
+                text = name,
+                style = MaterialTheme.typography.h4,
+                color = MaterialTheme.colors.onSurface
+            )
 
-        Text(
-            text = path,
-            style = MaterialTheme.typography.h5,
-            color = MaterialTheme.colors.onSurface
-        )
+            Text(
+                text = path,
+                style = MaterialTheme.typography.h5,
+                color = MaterialTheme.colors.onSurface
+            )
+        }
+
+        if (selected) {
+            IconButton(
+                onClick = onDeleteClick,
+                modifier = Modifier.size(25.dp)
+            ) {
+                Icon(
+                    Icons.Default.Close,
+                    contentDescription = null,
+                    tint = MaterialTheme.colors.onPrimary
+                )
+            }
+        }
     }
 }
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun CreateProjectDialog(
-    onDismissRequest: () -> Unit
+    onDismissRequest: () -> Unit,
+    viewModel: WelcomeScreenViewModel
 ) {
     val dialogWidth = 300.dp
     val buttonWidth = 100.dp
@@ -238,7 +312,15 @@ private fun CreateProjectDialog(
         FileDialog(
             openParam = java.awt.FileDialog.SAVE,
             fileName = projectName,
-            onCloseRequest = { isFileDialogOpen = false }
+            onCloseRequest = { file, directory ->
+                isFileDialogOpen = false
+                onDismissRequest()
+
+                if (file != null && directory != null) {
+                    val event = WelcomeScreenEvent.CreateProject(projectName, directory + file)
+                    viewModel.onEvent(event)
+                }
+            }
         )
     }
 }
