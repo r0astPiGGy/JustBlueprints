@@ -5,9 +5,13 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
+import com.rodev.jbpkmp.presentation.components.node.NodeState
 import com.rodev.jbpkmp.presentation.components.pin.PinState
+import com.rodev.jbpkmp.presentation.components.pin.getNode
+import java.util.*
 
 data class PinWire(
+    val uuid: UUID = UUID.randomUUID(),
     val inputPin: PinState,
     val outputPin: PinState
 ): Wire {
@@ -28,5 +32,30 @@ data class PinWire(
             ),
             style = Stroke(width = Wire.STROKE_WIDTH),
         )
+    }
+
+    override fun hashCode(): Int {
+        return uuid.hashCode()
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as PinWire
+
+        return uuid == other.uuid
+    }
+}
+
+fun PinWire.getOpposite(pinState: PinState): PinState {
+    return if (inputPin == pinState) outputPin else inputPin
+}
+
+fun PinWire.getPin(owner: NodeState): PinState? {
+    return when (owner) {
+        inputPin.getNode() -> inputPin
+        outputPin.getNode() -> outputPin
+        else -> null
     }
 }

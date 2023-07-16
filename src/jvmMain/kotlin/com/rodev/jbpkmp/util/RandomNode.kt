@@ -27,6 +27,14 @@ private fun randomPins(connectionType: ConnectionType): List<PinEntity> {
 
     val list = ArrayList<PinEntity>()
 
+    list += PinEntity(
+        id = UUID.randomUUID().toString(),
+        color = Color.White.toArgb(),
+        name = "Exec",
+        connectionType = connectionType,
+        supportsMultipleConnection = false
+    )
+
     for (i in 0..size) {
         list += randomPinEntity(i, connectionType)
     }

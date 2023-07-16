@@ -1,9 +1,12 @@
 package com.rodev.jbpkmp.presentation.components.graph
 
 import androidx.compose.runtime.mutableStateListOf
+import com.rodev.jbpkmp.presentation.components.node.NodeState
 import com.rodev.jbpkmp.presentation.components.pin.*
 import com.rodev.jbpkmp.presentation.components.wire.PinWire
 import com.rodev.jbpkmp.presentation.components.wire.Wire
+import com.rodev.jbpkmp.presentation.components.wire.getOpposite
+import com.rodev.jbpkmp.presentation.components.wire.getPin
 
 class PinConnectionHandler {
 
@@ -20,15 +23,12 @@ class PinConnectionHandler {
         if (pinState == currentDraggingPin) return false
 
         // Shouldn't connect pins with same node
-        if (pinState.parent == currentDraggingPin.parent) return false
+        if (pinState.getNode() == currentDraggingPin.getNode()) return false
 
         // Shouldn't connect pins with same connection type
         if (pinState.connectionTypeEquals(currentDraggingPin)) return false
 
-        // todo Shouldn't add connected INPUT pins
-        if (pinState.connectedTo(currentDraggingPin)) return false
-
-        return true
+        return !pinState.connectedTo(currentDraggingPin)
     }
 
     fun onConnection(initiator: PinState, connection: PinState?) {
@@ -46,7 +46,6 @@ class PinConnectionHandler {
         }
     }
 
-    // TODO add check for multiple connection
     private fun handleConnection(initiator: PinState, inputPin: PinState, outputPin: PinState) {
         require(inputPin != outputPin)
         require(inputPin.connectionTypeNotEquals(outputPin))
@@ -54,17 +53,26 @@ class PinConnectionHandler {
         // check types
         if (!PinTypeComparator.connectable(inputPin, outputPin)) return
 
-        if (initiator.isOutput() && inputPin.isConnected()) {
-            // inputPin can be connected, so it needs disconnection
+        val opposite = initiator.getOpposite(inputPin, outputPin)
 
-            disconnectAll(inputPin)
+        if (!opposite.supportsMultipleConnection() && opposite.isConnected()) {
+            // it can be connected, so it needs disconnection
+
+            disconnectAll(opposite)
         }
 
         connect(inputPin, outputPin)
     }
 
+    private fun PinState.getOpposite(first: PinState, second: PinState): PinState {
+        return if (first == this) second else first
+    }
+
     private fun connect(inputPin: PinState, outputPin: PinState) {
-        val wire = PinWire(inputPin, outputPin)
+        val wire = PinWire(
+            inputPin = inputPin,
+            outputPin = outputPin
+        )
 
         inputPin.addWire(wire)
         outputPin.addWire(wire)
@@ -93,13 +101,21 @@ class PinConnectionHandler {
     private fun disconnectAll(pinState: PinState) {
         _wires.removeAll(pinState.connections)
         pinState.connections.forEach {
-            val other = if (it.inputPin == pinState) it.outputPin else it.inputPin
-            require(other != pinState)
+            val opposite = it.getOpposite(pinState)
+            require(opposite != pinState)
 
-            other.removeWire(it)
+            opposite.removeWire(it)
         }
         pinState.connections.clear()
         pinState.connected = false
+    }
+
+    fun disconnectAll(nodeState: NodeState) {
+        getConnectedPins(nodeState).forEach(::disconnectAll)
+    }
+
+    fun getConnectedPins(nodeState: NodeState): Collection<PinState> {
+        return _wires.mapNotNull { it.getPin(owner = nodeState) }
     }
 
     private fun PinState.isConnected(): Boolean {

@@ -27,6 +27,8 @@ import com.rodev.jbpkmp.presentation.components.graph.GraphViewPort
 import com.rodev.jbpkmp.presentation.components.graph.NodeAddEvent
 import com.rodev.jbpkmp.presentation.components.graph.NodeClearEvent
 import com.rodev.jbpkmp.presentation.components.pin.*
+import com.rodev.jbpkmp.presentation.components.pin.row.DefaultRowStateFactory
+import com.rodev.jbpkmp.presentation.components.pin.row.PinRowStateFactory
 import com.rodev.jbpkmp.theme.AppTheme
 import com.rodev.jbpkmp.util.MutableCoordinate
 import com.rodev.jbpkmp.util.randomNode
@@ -51,6 +53,8 @@ fun main() = application {
 @Composable
 private fun ViewPortPreview() {
     val viewPortModel = remember { GraphViewModel() }
+    val pinRowStateFactory = remember { DefaultRowStateFactory }
+    val pinStateFactory = remember { DefaultPinStateFactory }
 
     Row {
         Button(onClick = {
@@ -76,10 +80,11 @@ private fun ViewPortPreview() {
         viewModel = viewPortModel,
     ) {
         nodeStates.forEach {
-            Node(it, viewPortModel, viewPortModel)
+            Node(it, viewPortModel, viewPortModel, pinRowStateFactory, pinStateFactory)
         }
     }
 }
+
 
 private const val nodeOutlinePadding = 6
 
@@ -88,7 +93,9 @@ private const val nodeOutlinePadding = 6
 fun Node(
     nodeState: NodeState,
     pinDragListener: PinDragListener,
-    snapshotRequester: SnapshotRequester
+    snapshotRequester: SnapshotRequester,
+    pinRowStateFactory: PinRowStateFactory = DefaultRowStateFactory,
+    pinStateFactory: PinStateFactory = DefaultPinStateFactory
 ) {
     val nodeBodyRelativeCoordinates = remember {
         MutableCoordinate()
@@ -158,8 +165,12 @@ fun Node(
                     }
             ) {
                 nodeState.nodeEntity.inputPins.forEach {
-                    InputPin(
-                        remember { PinState(nodeState, it) },
+                    val pinRowState = remember { pinRowStateFactory.createPinRowState(nodeState) }
+                    val pinState = remember { pinStateFactory.createPinState(pinRowState, it) }
+
+                    PinRow(
+                        pinRowState,
+                        pinState,
                         inputPinContainerCoordinates,
                         pinDragListener,
                         snapshotRequester
@@ -178,8 +189,12 @@ fun Node(
                     }
             ) {
                 nodeState.nodeEntity.outputPins.forEach {
-                    OutputPin(
-                        remember { PinState(nodeState, it) },
+                    val pinRowState = remember { pinRowStateFactory.createPinRowState(nodeState) }
+                    val pinState = remember { pinStateFactory.createPinState(pinRowState, it) }
+
+                    PinRow(
+                        pinRowState,
+                        pinState,
                         outputPinContainerCoordinates,
                         pinDragListener,
                         snapshotRequester

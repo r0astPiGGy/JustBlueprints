@@ -4,15 +4,11 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
-import androidx.compose.material.TextField
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.Fill
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.LayoutCoordinates
@@ -20,55 +16,18 @@ import androidx.compose.ui.layout.boundsInParent
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.unit.dp
+import com.rodev.jbpkmp.presentation.components.pin.row.PinRowState
 import com.rodev.jbpkmp.util.MutableCoordinate
 
 private const val pinSize = 15
 
 @Composable
-fun InputPin(
+fun PinRow(
+    pinRowState: PinRowState,
     pinState: PinState,
     containerPosition: MutableCoordinate,
     pinDragListener: PinDragListener,
     snapshotRequester: SnapshotRequester
-) {
-    PinRow(
-        pinState,
-        containerPosition,
-        pinDragListener,
-        snapshotRequester,
-        input = true
-    ) {
-        var inputText by remember { mutableStateOf("") }
-        if (!pinState.connected) {
-            TextField(value = inputText, onValueChange = { inputText = it }, singleLine = false)
-        }
-    }
-}
-
-@Composable
-fun OutputPin(
-    pinState: PinState,
-    containerPosition: MutableCoordinate,
-    pinDragListener: PinDragListener,
-    snapshotRequester: SnapshotRequester
-) {
-    PinRow(
-        pinState,
-        containerPosition,
-        pinDragListener,
-        snapshotRequester,
-        input = false
-    )
-}
-
-@Composable
-private fun PinRow(
-    pinState: PinState,
-    containerPosition: MutableCoordinate,
-    pinDragListener: PinDragListener,
-    snapshotRequester: SnapshotRequester,
-    input: Boolean,
-    pinContent: @Composable ColumnScope.() -> Unit = {}
 ) {
     var lastRowMeasurement by remember { mutableStateOf<LayoutCoordinates?>(null) }
 
@@ -84,31 +43,37 @@ private fun PinRow(
                 }
                 lastRowMeasurement = it
             }
-            .alpha(if (pinState.rowHovered) 0.8f else 1f)
+            .alpha(if (pinRowState.hovered) 0.8f else 1f)
     ) {
         if (snapshotRequester.snapshotRequested) {
-            val rowMeasurement = lastRowMeasurement!!
-            val positionInParent = rowMeasurement.positionInParent()
-            val bounds = rowMeasurement.boundsInParent()
-
-            val topBound = Offset(
-                x = containerPosition.x + positionInParent.x,
-                y = containerPosition.y + positionInParent.y
-            )
-
-            // todo: filter if snapshot is outside of the window
+            // todo: filter if snapshot is outside the window
             snapshotRequester.addSnapshot(
-                PinRowSnapshot(
-                    pinState,
-                    topBound,
-                    topBound.let {
-                        Offset(it.x + bounds.width, it.y + bounds.height)
-                    }
-                )
+                LazyPinRowSnapshot(
+                    pinRowState = pinRowState,
+                    pinState = pinState
+                ) {
+                    val rowMeasurement = lastRowMeasurement!!
+                    val positionInParent = rowMeasurement.positionInParent()
+                    val bounds = rowMeasurement.boundsInParent()
+
+                    val topBound = Offset(
+                        x = containerPosition.x + positionInParent.x,
+                        y = containerPosition.y + positionInParent.y
+                    )
+
+                    PinRowSnapshotImpl(
+                        pinRowState,
+                        pinState,
+                        topBound,
+                        topBound.let {
+                            Offset(it.x + bounds.width, it.y + bounds.height)
+                        }
+                    )
+                }
             )
         }
 
-        if (input) {
+        if (pinState.isInput()) {
             Pin(pinState, pinDragListener)
             Spacer(modifier = Modifier.size(6.dp))
         }
@@ -119,10 +84,10 @@ private fun PinRow(
             Text(
                 text = pinState.entity.name
             )
-            pinContent()
+            pinState.defaultValueComposable.draw(pinState)
         }
 
-        if (!input) {
+        if (pinState.isOutput()) {
             Spacer(modifier = Modifier.size(6.dp))
             Pin(pinState, pinDragListener)
         }
@@ -147,11 +112,50 @@ interface SnapshotRequester {
 
 }
 
-data class PinRowSnapshot(
-    val pinState: PinState,
-    val topBound: Offset,
+interface PinRowSnapshot {
+    val pinRowState: PinRowState
+    val pinState: PinState
+    val topBound: Offset
     val bottomBound: Offset
-)
+
+}
+
+private typealias PinRowSnapshotProvider = () -> PinRowSnapshot
+
+// TODO: убрать в другой файл
+private class LazyPinRowSnapshot(
+    override val pinState: PinState,
+    override val pinRowState: PinRowState,
+    private val pinRowSnapshotProvider: PinRowSnapshotProvider
+) : PinRowSnapshot {
+
+    private var pinRowSnapshot: PinRowSnapshot? = null
+
+    private fun initIfNull(): PinRowSnapshot {
+        var snapshot = pinRowSnapshot
+
+        if (snapshot != null) return snapshot
+
+        snapshot = pinRowSnapshotProvider()
+        pinRowSnapshot = snapshot
+
+        return snapshot
+    }
+
+    override val topBound: Offset
+        get() = initIfNull().topBound
+
+    override val bottomBound: Offset
+        get() = initIfNull().bottomBound
+
+}
+
+data class PinRowSnapshotImpl(
+    override val pinRowState: PinRowState,
+    override val pinState: PinState,
+    override val topBound: Offset,
+    override val bottomBound: Offset
+) : PinRowSnapshot
 
 @Composable
 fun Pin(
@@ -186,9 +190,6 @@ fun Pin(
                 }
             }
     ) {
-        drawCircle(
-            color = Color(pinState.entity.color),
-            style = if (pinState.connected) Fill else Stroke(width = 2f)
-        )
+        pinState.drawFunction.draw(this, pinState)
     }
 }

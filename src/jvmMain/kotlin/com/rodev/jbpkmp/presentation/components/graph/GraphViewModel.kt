@@ -8,6 +8,7 @@ import com.rodev.jbpkmp.presentation.components.pin.PinDragListener
 import com.rodev.jbpkmp.presentation.components.pin.PinRowSnapshot
 import com.rodev.jbpkmp.presentation.components.pin.PinState
 import com.rodev.jbpkmp.presentation.components.pin.SnapshotRequester
+import com.rodev.jbpkmp.presentation.components.pin.row.PinRowState
 import com.rodev.jbpkmp.presentation.components.wire.TemporaryWire
 import com.rodev.jbpkmp.presentation.components.wire.Wire
 import com.rodev.jbpkmp.presentation.components.wire.WirePreview
@@ -35,6 +36,7 @@ class GraphViewModel : PinDragListener, SnapshotRequester {
 
     private var currentDraggingPin: PinState? = null
     private var currentHoveringPin: PinState? = null
+    private var currentHoveringRow: PinRowState? = null
 
     private val pinSnapshots = mutableSetOf<PinRowSnapshot>()
 
@@ -44,6 +46,7 @@ class GraphViewModel : PinDragListener, SnapshotRequester {
                 _nodeStates.add(NodeState(event.nodeEntity))
             }
             NodeClearEvent -> {
+                _nodeStates.forEach(pinConnectionHandler::disconnectAll)
                 _nodeStates.clear()
             }
         }
@@ -71,12 +74,14 @@ class GraphViewModel : PinDragListener, SnapshotRequester {
         val endX = pos.x + change.position.x
         val endY = pos.y + change.position.y
 
-        val hoveredPin = hitTest(endX, endY)
+        val pinRowSnapshot = hitTest(endX, endY)
+        val hoveredPin = pinRowSnapshot?.pinState
+        val hoveredRow = pinRowSnapshot?.pinRowState
 
-        if (hoveredPin != null) {
+        if (hoveredPin != null && hoveredRow != null) {
             if (hoveredPin == currentDraggingPin) return
 
-            clearCurrentHoveringPin()
+            clearCurrentHoveringRow()
 
             _temporaryLine.value = WirePreview(
                 pinState.entity.color,
@@ -87,10 +92,12 @@ class GraphViewModel : PinDragListener, SnapshotRequester {
                 hoveredPin.center.y
             )
 
+            currentHoveringRow = hoveredRow
             currentHoveringPin = hoveredPin
-            hoveredPin.rowHovered = true
+            hoveredRow.hovered = true
         } else {
-            clearCurrentHoveringPin()
+            clearCurrentHoveringRow()
+            currentHoveringPin = null
             _temporaryLine.value = TemporaryWire(
                 pinState.entity.color,
                 start.x,
@@ -101,18 +108,18 @@ class GraphViewModel : PinDragListener, SnapshotRequester {
         }
     }
 
-    private fun clearCurrentHoveringPin() {
-        val lastHoveredPin = currentHoveringPin
-        if (lastHoveredPin != null) {
-            lastHoveredPin.rowHovered = false
-            currentHoveringPin = null
+    private fun clearCurrentHoveringRow() {
+        val lastHoveredRow = currentHoveringRow
+        if (lastHoveredRow != null) {
+            lastHoveredRow.hovered = false
+            currentHoveringRow = null
         }
     }
 
-    private fun hitTest(x: Float, y: Float): PinState? {
+    private fun hitTest(x: Float, y: Float): PinRowSnapshot? {
         val lastHitTest = cachedHitTest
         if (lastHitTest != null && lastHitTest.isInBounds(x, y)) {
-            return lastHitTest.pinState
+            return lastHitTest
         } else {
             cachedHitTest = null
         }
@@ -120,7 +127,7 @@ class GraphViewModel : PinDragListener, SnapshotRequester {
         for (pinSnapshot in pinSnapshots) {
             if (pinSnapshot.isInBounds(x, y)) {
                 cachedHitTest = pinSnapshot
-                return pinSnapshot.pinState
+                return pinSnapshot
             }
         }
         return null
@@ -135,8 +142,9 @@ class GraphViewModel : PinDragListener, SnapshotRequester {
 
         _snapshotRequested = false
         currentDraggingPin = null
+        currentHoveringPin = null
         cachedHitTest = null
-        clearCurrentHoveringPin()
+        clearCurrentHoveringRow()
         _temporaryLine.value = null
 
         pinSnapshots.clear()

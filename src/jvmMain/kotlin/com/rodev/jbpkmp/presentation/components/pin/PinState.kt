@@ -5,22 +5,24 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.rodev.jbpkmp.data.ConnectionType
 import com.rodev.jbpkmp.data.PinEntity
-import com.rodev.jbpkmp.presentation.components.node.NodeState
+import com.rodev.jbpkmp.presentation.components.pin.row.PinRowState
 import com.rodev.jbpkmp.presentation.components.wire.PinWire
 import com.rodev.jbpkmp.util.MutableCoordinate
 
-// todo: PinRowState
 class PinState(
-    val parent: NodeState,
+    val parent: PinRowState,
     val entity: PinEntity,
-    val position: MutableCoordinate = MutableCoordinate(),
-    val center: MutableCoordinate = MutableCoordinate(),
+    val defaultValueComposable: DefaultValueComposable = EmptyDefaultValueComposable,
+    val drawFunction: PinDrawFunction = defaultDrawFunction()
 ) {
     val connections = mutableListOf<PinWire>()
+    val position: MutableCoordinate = MutableCoordinate()
+    val center: MutableCoordinate = MutableCoordinate()
 
     var connected by mutableStateOf(false)
-    var rowHovered by mutableStateOf(false)
 }
+
+fun PinState.getNode() = parent.node
 
 fun PinState.isInput(): Boolean {
     return entity.connectionType == ConnectionType.INPUT

@@ -5,6 +5,7 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 
 interface Wire {
 
+    // TODO refactor
     fun drawFunction(): DrawScope.() -> Unit
 
     fun DrawScope.getLinePath(x1: Float, y1: Float, x2: Float, y2: Float): Path {
@@ -17,13 +18,6 @@ interface Wire {
 
         val controlPointX2 = (x1 + x2) * 0.5f // upper
         val controlPointY2 = y2
-
-//        val debugCircle: DrawScope.(Float, Float) -> Unit = { x, y ->
-//            drawCircle(Color.Red, radius = 5f, center = Offset(x, y))
-//        }
-//
-//        debugCircle(controlPointX1, controlPointY1)
-//        debugCircle(controlPointX2, controlPointY2)
 
         path.cubicTo(
             x1 = controlPointX1,
