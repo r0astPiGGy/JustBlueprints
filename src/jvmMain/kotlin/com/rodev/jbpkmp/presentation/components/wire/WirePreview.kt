@@ -13,8 +13,8 @@ data class WirePreview(
     val startY: Float,
     val endX: Float,
     val endY: Float
-): Wire {
-    override fun drawFunction(): DrawScope.() -> Unit = {
+): Wire() {
+    override fun DrawScope.drawFunction() {
         val path = getLinePath(startX, startY, endX, endY)
 
         drawPath(
@@ -25,7 +25,7 @@ data class WirePreview(
                 end = Offset(endX, endY)
             ),
             alpha = 0.4f,
-            style = Stroke(width = Wire.STROKE_WIDTH),
+            style = Stroke(width = STROKE_WIDTH),
         )
     }
 }

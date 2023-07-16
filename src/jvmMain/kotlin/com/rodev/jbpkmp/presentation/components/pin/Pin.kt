@@ -16,7 +16,9 @@ import androidx.compose.ui.layout.boundsInParent
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.unit.dp
+import com.rodev.jbpkmp.presentation.components.pin.row.PinRowSnapshot
 import com.rodev.jbpkmp.presentation.components.pin.row.PinRowState
+import com.rodev.jbpkmp.presentation.components.pin.row.SnapshotRequester
 import com.rodev.jbpkmp.util.MutableCoordinate
 
 private const val pinSize = 15
@@ -48,7 +50,7 @@ fun PinRow(
         if (snapshotRequester.snapshotRequested) {
             // todo: filter if snapshot is outside the window
             snapshotRequester.addSnapshot(
-                LazyPinRowSnapshot(
+                PinRowSnapshot.lazy(
                     pinRowState = pinRowState,
                     pinState = pinState
                 ) {
@@ -61,7 +63,7 @@ fun PinRow(
                         y = containerPosition.y + positionInParent.y
                     )
 
-                    PinRowSnapshotImpl(
+                    PinRowSnapshot(
                         pinRowState,
                         pinState,
                         topBound,
@@ -103,59 +105,6 @@ interface PinDragListener {
     fun onPinDragEnd()
 
 }
-
-interface SnapshotRequester {
-
-    val snapshotRequested: Boolean
-
-    fun addSnapshot(snapshot: PinRowSnapshot)
-
-}
-
-interface PinRowSnapshot {
-    val pinRowState: PinRowState
-    val pinState: PinState
-    val topBound: Offset
-    val bottomBound: Offset
-
-}
-
-private typealias PinRowSnapshotProvider = () -> PinRowSnapshot
-
-// TODO: убрать в другой файл
-private class LazyPinRowSnapshot(
-    override val pinState: PinState,
-    override val pinRowState: PinRowState,
-    private val pinRowSnapshotProvider: PinRowSnapshotProvider
-) : PinRowSnapshot {
-
-    private var pinRowSnapshot: PinRowSnapshot? = null
-
-    private fun initIfNull(): PinRowSnapshot {
-        var snapshot = pinRowSnapshot
-
-        if (snapshot != null) return snapshot
-
-        snapshot = pinRowSnapshotProvider()
-        pinRowSnapshot = snapshot
-
-        return snapshot
-    }
-
-    override val topBound: Offset
-        get() = initIfNull().topBound
-
-    override val bottomBound: Offset
-        get() = initIfNull().bottomBound
-
-}
-
-data class PinRowSnapshotImpl(
-    override val pinRowState: PinRowState,
-    override val pinState: PinState,
-    override val topBound: Offset,
-    override val bottomBound: Offset
-) : PinRowSnapshot
 
 @Composable
 fun Pin(

@@ -10,14 +10,14 @@ data class TemporaryWire(
     val startY: Float,
     val endX: Float,
     val endY: Float
-): Wire {
-    override fun drawFunction(): DrawScope.() -> Unit = {
+): Wire() {
+    override fun DrawScope.drawFunction() {
         val path = getLinePath(startX, startY, endX, endY)
 
         drawPath(
             path = path,
             color = Color(color),
-            style = Stroke(width = Wire.STROKE_WIDTH),
+            style = Stroke(width = STROKE_WIDTH),
         )
     }
 }

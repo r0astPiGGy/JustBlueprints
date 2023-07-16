@@ -5,12 +5,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.Card
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.Layout
@@ -20,71 +21,16 @@ import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Window
-import androidx.compose.ui.window.application
-import com.rodev.jbpkmp.presentation.components.graph.GraphViewModel
-import com.rodev.jbpkmp.presentation.components.graph.GraphViewPort
-import com.rodev.jbpkmp.presentation.components.graph.NodeAddEvent
-import com.rodev.jbpkmp.presentation.components.graph.NodeClearEvent
-import com.rodev.jbpkmp.presentation.components.pin.*
+import com.rodev.jbpkmp.presentation.components.pin.DefaultPinStateFactory
+import com.rodev.jbpkmp.presentation.components.pin.PinDragListener
+import com.rodev.jbpkmp.presentation.components.pin.PinRow
+import com.rodev.jbpkmp.presentation.components.pin.PinStateFactory
 import com.rodev.jbpkmp.presentation.components.pin.row.DefaultRowStateFactory
 import com.rodev.jbpkmp.presentation.components.pin.row.PinRowStateFactory
-import com.rodev.jbpkmp.theme.AppTheme
+import com.rodev.jbpkmp.presentation.components.pin.row.SnapshotRequester
 import com.rodev.jbpkmp.util.MutableCoordinate
-import com.rodev.jbpkmp.util.randomNode
 import kotlin.math.max
 import kotlin.math.roundToInt
-
-fun main() = application {
-    Window(onCloseRequest = ::exitApplication) {
-        AppTheme(useDarkTheme = true) {
-            Surface {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                ) {
-                    ViewPortPreview()
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun ViewPortPreview() {
-    val viewPortModel = remember { GraphViewModel() }
-    val pinRowStateFactory = remember { DefaultRowStateFactory }
-    val pinStateFactory = remember { DefaultPinStateFactory }
-
-    Row {
-        Button(onClick = {
-            viewPortModel.onEvent(NodeAddEvent(randomNode()))
-        }) {
-            Text(text = "Add node")
-        }
-        Button(onClick = {
-            viewPortModel.onEvent(NodeClearEvent)
-        }) {
-            Text(text = "Clear")
-        }
-    }
-
-    GraphViewPort(
-        modifier = Modifier
-            .fillMaxSize(),
-        graphModifier = Modifier
-            .drawBehind {
-                viewPortModel.temporaryLine.value?.drawFunction()?.invoke(this)
-                viewPortModel.lines.forEach { it.drawFunction().invoke(this) }
-            },
-        viewModel = viewPortModel,
-    ) {
-        nodeStates.forEach {
-            Node(it, viewPortModel, viewPortModel, pinRowStateFactory, pinStateFactory)
-        }
-    }
-}
-
 
 private const val nodeOutlinePadding = 6
 

@@ -5,17 +5,19 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.PointerInputChange
 import com.rodev.jbpkmp.presentation.components.node.NodeState
 import com.rodev.jbpkmp.presentation.components.pin.PinDragListener
-import com.rodev.jbpkmp.presentation.components.pin.PinRowSnapshot
 import com.rodev.jbpkmp.presentation.components.pin.PinState
-import com.rodev.jbpkmp.presentation.components.pin.SnapshotRequester
+import com.rodev.jbpkmp.presentation.components.pin.row.PinRowSnapshot
 import com.rodev.jbpkmp.presentation.components.pin.row.PinRowState
+import com.rodev.jbpkmp.presentation.components.pin.row.SnapshotRequester
 import com.rodev.jbpkmp.presentation.components.wire.TemporaryWire
 import com.rodev.jbpkmp.presentation.components.wire.Wire
 import com.rodev.jbpkmp.presentation.components.wire.WirePreview
 
-class GraphViewModel : PinDragListener, SnapshotRequester {
+class GraphViewModel(
+    pinTypeComparator: PinTypeComparator = PinTypeComparator.Default
+) : PinDragListener, SnapshotRequester {
 
-    private val pinConnectionHandler = PinConnectionHandler()
+    private val pinConnectionHandler = PinConnectionHandler(pinTypeComparator)
     private val _nodeStates = mutableStateListOf<NodeState>()
     val nodeStates: List<NodeState>
         get() = _nodeStates

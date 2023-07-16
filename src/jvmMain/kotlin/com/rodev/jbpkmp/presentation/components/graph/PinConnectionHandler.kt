@@ -3,12 +3,15 @@ package com.rodev.jbpkmp.presentation.components.graph
 import androidx.compose.runtime.mutableStateListOf
 import com.rodev.jbpkmp.presentation.components.node.NodeState
 import com.rodev.jbpkmp.presentation.components.pin.*
+import com.rodev.jbpkmp.presentation.components.pin.row.PinRowSnapshot
 import com.rodev.jbpkmp.presentation.components.wire.PinWire
 import com.rodev.jbpkmp.presentation.components.wire.Wire
 import com.rodev.jbpkmp.presentation.components.wire.getOpposite
 import com.rodev.jbpkmp.presentation.components.wire.getPin
 
-class PinConnectionHandler {
+class PinConnectionHandler(
+    private val pinTypeComparator: PinTypeComparator
+) {
 
     private val _wires = mutableStateListOf<PinWire>()
     val wires: List<Wire>
@@ -51,7 +54,7 @@ class PinConnectionHandler {
         require(inputPin.connectionTypeNotEquals(outputPin))
 
         // check types
-        if (!PinTypeComparator.connectable(inputPin, outputPin)) return
+        if (!pinTypeComparator.connectable(inputPin, outputPin)) return
 
         val opposite = initiator.getOpposite(inputPin, outputPin)
 

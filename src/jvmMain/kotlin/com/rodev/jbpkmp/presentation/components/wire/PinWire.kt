@@ -14,8 +14,8 @@ data class PinWire(
     val uuid: UUID = UUID.randomUUID(),
     val inputPin: PinState,
     val outputPin: PinState
-): Wire {
-    override fun drawFunction(): DrawScope.() -> Unit = {
+): Wire() {
+    override fun DrawScope.drawFunction() {
         val path = getLinePath(
             inputPin.center.x,
             inputPin.center.y,
@@ -30,7 +30,7 @@ data class PinWire(
                 start = Offset(inputPin.center.x, inputPin.center.y),
                 end = Offset(outputPin.center.x, outputPin.center.y)
             ),
-            style = Stroke(width = Wire.STROKE_WIDTH),
+            style = Stroke(width = STROKE_WIDTH),
         )
     }
 

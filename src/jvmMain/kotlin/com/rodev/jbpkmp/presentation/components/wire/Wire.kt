@@ -3,12 +3,17 @@ package com.rodev.jbpkmp.presentation.components.wire
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
 
-interface Wire {
+abstract class Wire {
 
-    // TODO refactor
-    fun drawFunction(): DrawScope.() -> Unit
+    protected abstract fun DrawScope.drawFunction()
 
-    fun DrawScope.getLinePath(x1: Float, y1: Float, x2: Float, y2: Float): Path {
+    fun draw(drawScope: DrawScope) {
+        with(drawScope) {
+            drawFunction()
+        }
+    }
+
+    protected fun getLinePath(x1: Float, y1: Float, x2: Float, y2: Float): Path {
         val path = Path()
 
         path.moveTo(x1, y1)

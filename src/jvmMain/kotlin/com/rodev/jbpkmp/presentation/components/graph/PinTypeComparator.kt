@@ -2,10 +2,12 @@ package com.rodev.jbpkmp.presentation.components.graph
 
 import com.rodev.jbpkmp.presentation.components.pin.PinState
 
-object PinTypeComparator {
+interface PinTypeComparator {
 
-    fun connectable(input: PinState, output: PinState): Boolean {
-        return true
+    fun connectable(inputPin: PinState, outputPin: PinState): Boolean
+
+    object Default : PinTypeComparator {
+        override fun connectable(inputPin: PinState, outputPin: PinState) = true
     }
 
 }

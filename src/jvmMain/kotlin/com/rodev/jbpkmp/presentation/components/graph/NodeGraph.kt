@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.layout.Layout
 import com.chihsuanwu.freescroll.freeScroll
 import com.chihsuanwu.freescroll.rememberFreeScrollState
@@ -27,7 +28,13 @@ fun GraphViewPort(
             .clipToBounds()
             .freeScroll(scrollState)
     ) {
-        GraphLayout(modifier = graphModifier) {
+        GraphLayout(
+            modifier = graphModifier
+                .drawBehind {
+                    viewModel.temporaryLine.value?.draw(this)
+                    viewModel.lines.forEach { it.draw(this) }
+                },
+        ) {
             content(viewModel)
         }
     }
