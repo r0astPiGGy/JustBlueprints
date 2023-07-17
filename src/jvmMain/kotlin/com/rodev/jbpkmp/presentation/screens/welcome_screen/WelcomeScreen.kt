@@ -36,6 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.rodev.jbpkmp.data.ProgramDataRepositoryImpl
 import com.rodev.jbpkmp.presentation.ResString
@@ -213,13 +214,17 @@ private fun ProjectsPanelColumnItem(
             Text(
                 text = name,
                 style = MaterialTheme.typography.h4,
-                color = MaterialTheme.colors.onSurface
+                color = MaterialTheme.colors.onSurface,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
 
             Text(
                 text = path,
                 style = MaterialTheme.typography.h5,
-                color = MaterialTheme.colors.onSurface
+                color = MaterialTheme.colors.onSurface,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
         }
 
@@ -317,6 +322,8 @@ private fun CreateProjectDialog(
             if (it != null) {
                 val event = WelcomeScreenEvent.CreateProject(projectName, it)
                 viewModel.onEvent(event)
+
+                onDismissRequest()
             }
             isFileDialogOpen = false
         }
