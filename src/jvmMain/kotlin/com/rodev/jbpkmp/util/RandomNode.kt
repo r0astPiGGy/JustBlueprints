@@ -2,41 +2,42 @@ package com.rodev.jbpkmp.util
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import com.rodev.jbpkmp.data.ConnectionType
-import com.rodev.jbpkmp.data.NodeEntity
-import com.rodev.jbpkmp.data.PinEntity
+import com.rodev.jbpkmp.data.*
 import java.util.*
 import kotlin.random.Random
 
 var counter = 0
 
-fun randomNode(): NodeEntity {
-    return NodeEntity(
-        id = UUID.randomUUID().toString(),
-        header = "Header${counter++}",
-        headerColor = randomColor(),
-        x = Random.nextFloat() * 800f,
-        y = Random.nextFloat() * 800f,
-        inputPins = randomPins(ConnectionType.INPUT),
-        outputPins = randomPins(ConnectionType.OUTPUT)
+fun randomNode(): Node {
+    return Node(
+        x = 0f,
+        y = 0f,
+        uniqueId = UUID.randomUUID().toString(),
+        typeId = "bebra",
+        inputPins = randomPins(),
+        outputPins = randomPins()
     )
 }
 
-private fun randomPins(connectionType: ConnectionType): List<PinEntity> {
+fun randomNodeEntity(): NodeEntity {
+    return NodeEntity(
+        id = UUID.randomUUID().toString(),
+        header = "Header${counter++}",
+        headerColor = randomColor()
+    )
+}
+
+private fun randomPins(): List<Pin> {
     val size = Random.nextInt(1, 2)
 
-    val list = ArrayList<PinEntity>()
-
-    list += PinEntity(
-        id = UUID.randomUUID().toString(),
-        color = Color.White.toArgb(),
-        name = "Exec",
-        connectionType = connectionType,
-        supportsMultipleConnection = false
-    )
+    val list = ArrayList<Pin>()
 
     for (i in 0..size) {
-        list += randomPinEntity(i, connectionType)
+        list += Pin(
+            uniqueId = UUID.randomUUID().toString(),
+            typeId = UUID.randomUUID().toString(),
+            value = null
+        )
     }
 
     return list
@@ -50,11 +51,11 @@ private fun randomColor(): Int {
     ).toArgb()
 }
 
-private fun randomPinEntity(index: Int, connectionType: ConnectionType): PinEntity {
+fun randomPinEntity(connectionType: ConnectionType): PinEntity {
     return PinEntity(
         id = UUID.randomUUID().toString(),
         color = randomColor(),
-        name = "Pin${index}",
+        name = "Pin${Random.nextInt()}",
         connectionType = connectionType
     )
 }

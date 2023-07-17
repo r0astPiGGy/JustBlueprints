@@ -9,6 +9,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.LayoutCoordinates
@@ -16,6 +17,7 @@ import androidx.compose.ui.layout.boundsInParent
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.unit.dp
+import com.rodev.jbpkmp.presentation.components.node.NodeState
 import com.rodev.jbpkmp.presentation.components.pin.row.PinRowSnapshot
 import com.rodev.jbpkmp.presentation.components.pin.row.PinRowState
 import com.rodev.jbpkmp.presentation.components.pin.row.SnapshotRequester
@@ -25,8 +27,8 @@ private const val pinSize = 15
 
 @Composable
 fun PinRow(
+    nodeState: NodeState,
     pinRowState: PinRowState,
-    pinState: PinState,
     containerPosition: MutableCoordinate,
     pinDragListener: PinDragListener,
     snapshotRequester: SnapshotRequester
@@ -40,8 +42,8 @@ fun PinRow(
                 val positionInParent = it.positionInParent()
 
                 positionInParent.apply {
-                    pinState.position.x = containerPosition.x + x
-                    pinState.position.y = containerPosition.y + y
+                    pinRowState.pinState.position.x = containerPosition.x + x
+                    pinRowState.pinState.position.y = containerPosition.y + y
                 }
                 lastRowMeasurement = it
             }
@@ -52,7 +54,7 @@ fun PinRow(
             snapshotRequester.addSnapshot(
                 PinRowSnapshot.lazy(
                     pinRowState = pinRowState,
-                    pinState = pinState
+                    nodeState = nodeState
                 ) {
                     val rowMeasurement = lastRowMeasurement!!
                     val positionInParent = rowMeasurement.positionInParent()
@@ -64,8 +66,8 @@ fun PinRow(
                     )
 
                     PinRowSnapshot(
+                        nodeState,
                         pinRowState,
-                        pinState,
                         topBound,
                         topBound.let {
                             Offset(it.x + bounds.width, it.y + bounds.height)
@@ -75,8 +77,8 @@ fun PinRow(
             )
         }
 
-        if (pinState.isInput()) {
-            Pin(pinState, pinDragListener)
+        if (pinRowState.pinState.isInput()) {
+            pinRowState.pinState.pinRepresentation.onDraw(nodeState, pinRowState.pinState, pinDragListener)
             Spacer(modifier = Modifier.size(6.dp))
         }
 
@@ -84,21 +86,21 @@ fun PinRow(
             modifier = Modifier.requiredSizeIn(maxWidth = 180.dp)
         ) {
             Text(
-                text = pinState.entity.name
+                text = pinRowState.pinState.pinRepresentation.name
             )
-            pinState.defaultValueComposable.draw(pinState)
+            pinRowState.pinState.defaultValueComposable.draw(pinRowState.pinState)
         }
 
-        if (pinState.isOutput()) {
+        if (pinRowState.pinState.isOutput()) {
             Spacer(modifier = Modifier.size(6.dp))
-            Pin(pinState, pinDragListener)
+            pinRowState.pinState.pinRepresentation.onDraw(nodeState, pinRowState.pinState, pinDragListener)
         }
     }
 }
 
 interface PinDragListener {
 
-    fun onPinDragStart(pinState: PinState)
+    fun onPinDragStart(pinOwner: NodeState, pinState: PinState)
 
     fun onPinDrag(pinState: PinState, offset: Offset, change: PointerInputChange)
 
@@ -108,8 +110,10 @@ interface PinDragListener {
 
 @Composable
 fun Pin(
+    nodeState: NodeState,
     pinState: PinState,
-    pinDragListener: PinDragListener
+    pinDragListener: PinDragListener,
+    onDraw: DrawScope.() -> Unit
 ) {
     Canvas(
         modifier = Modifier
@@ -128,7 +132,7 @@ fun Pin(
             .pointerInput(Unit) {
                 detectDragGestures(
                     onDragStart = {
-                        pinDragListener.onPinDragStart(pinState)
+                        pinDragListener.onPinDragStart(nodeState, pinState)
                     },
                     onDragEnd = {
                         pinDragListener.onPinDragEnd()
@@ -137,8 +141,7 @@ fun Pin(
                     pinDragListener.onPinDrag(pinState, dragAmount, change)
                     change.consume()
                 }
-            }
-    ) {
-        pinState.drawFunction.draw(this, pinState)
-    }
+            },
+        onDraw = onDraw
+    )
 }

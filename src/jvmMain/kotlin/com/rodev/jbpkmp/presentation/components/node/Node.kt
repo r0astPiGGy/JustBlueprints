@@ -21,12 +21,8 @@ import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import com.rodev.jbpkmp.presentation.components.pin.DefaultPinStateFactory
+import com.rodev.jbpkmp.data.NodeEntity
 import com.rodev.jbpkmp.presentation.components.pin.PinDragListener
-import com.rodev.jbpkmp.presentation.components.pin.PinRow
-import com.rodev.jbpkmp.presentation.components.pin.PinStateFactory
-import com.rodev.jbpkmp.presentation.components.pin.row.DefaultRowStateFactory
-import com.rodev.jbpkmp.presentation.components.pin.row.PinRowStateFactory
 import com.rodev.jbpkmp.presentation.components.pin.row.SnapshotRequester
 import com.rodev.jbpkmp.util.MutableCoordinate
 import kotlin.math.max
@@ -36,12 +32,11 @@ private const val nodeOutlinePadding = 6
 
 @Composable
 @Preview
-fun Node(
+fun SimpleNode(
     nodeState: NodeState,
+    nodeEntity: NodeEntity,
     pinDragListener: PinDragListener,
-    snapshotRequester: SnapshotRequester,
-    pinRowStateFactory: PinRowStateFactory = DefaultRowStateFactory,
-    pinStateFactory: PinStateFactory = DefaultPinStateFactory
+    snapshotRequester: SnapshotRequester
 ) {
     val nodeBodyRelativeCoordinates = remember {
         MutableCoordinate()
@@ -85,13 +80,13 @@ fun Node(
                 verticalArrangement = Arrangement.Top,
                 modifier = Modifier
                     .background(
-                        Color(nodeState.nodeEntity.headerColor)
+                        Color(nodeEntity.headerColor)
                     )
                     .padding(nodeOutlinePadding.dp)
                     .padding(end = 50.dp)
             ) {
                 Text(
-                    text = nodeState.nodeEntity.header,
+                    text = nodeEntity.header,
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 1
                 )
@@ -101,6 +96,7 @@ fun Node(
             val outputPinContainerCoordinates = remember { MutableCoordinate() }
 
             PinContainer(
+                alignment = Alignment.Start,
                 modifier = Modifier
                     .wrapContentSize(align = Alignment.TopStart)
                     .onGloballyPositioned {
@@ -110,21 +106,19 @@ fun Node(
                         }
                     }
             ) {
-                nodeState.nodeEntity.inputPins.forEach {
-                    val pinRowState = remember { pinRowStateFactory.createPinRowState(nodeState) }
-                    val pinState = remember { pinStateFactory.createPinState(pinRowState, it) }
-
-                    PinRow(
-                        pinRowState,
-                        pinState,
-                        inputPinContainerCoordinates,
-                        pinDragListener,
-                        snapshotRequester
+                nodeState.inputPins.forEach {
+                    it.pinRowRepresentation.onDraw(
+                        nodeState = nodeState,
+                        pinRowState = remember { it },
+                        pinDragListener = pinDragListener,
+                        snapshotRequester = snapshotRequester,
+                        parentCoordinate = inputPinContainerCoordinates
                     )
                 }
             }
 
             PinContainer(
+                alignment = Alignment.End,
                 modifier = Modifier
                     .wrapContentSize(align = Alignment.TopEnd)
                     .onGloballyPositioned {
@@ -134,16 +128,13 @@ fun Node(
                         }
                     }
             ) {
-                nodeState.nodeEntity.outputPins.forEach {
-                    val pinRowState = remember { pinRowStateFactory.createPinRowState(nodeState) }
-                    val pinState = remember { pinStateFactory.createPinState(pinRowState, it) }
-
-                    PinRow(
-                        pinRowState,
-                        pinState,
-                        outputPinContainerCoordinates,
-                        pinDragListener,
-                        snapshotRequester
+                nodeState.outputPins.forEach {
+                    it.pinRowRepresentation.onDraw(
+                        nodeState = nodeState,
+                        pinRowState = remember { it },
+                        pinDragListener = pinDragListener,
+                        snapshotRequester = snapshotRequester,
+                        parentCoordinate = outputPinContainerCoordinates
                     )
                 }
             }
@@ -153,11 +144,13 @@ fun Node(
 
 @Composable
 private fun PinContainer(
+    alignment: Alignment.Horizontal,
     modifier: Modifier = Modifier,
     content: @Composable ColumnScope.() -> Unit
 ) {
     Column (
         content = content,
+        horizontalAlignment = alignment,
         modifier = Modifier
             .defaultMinSize(minWidth = 50.dp, minHeight = 50.dp)
             .padding(nodeOutlinePadding.dp)
