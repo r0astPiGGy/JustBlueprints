@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import com.rodev.jbpkmp.data.ProgramDataRepositoryImpl
 import com.rodev.jbpkmp.presentation.ResString
 import com.rodev.jbpkmp.presentation.screens.welcome_screen.components.FileDialog
+import javax.swing.JFileChooser
 
 @Composable
 fun WelcomeScreen() {
@@ -118,16 +119,15 @@ private fun WelcomePanel(
 
     if (isFileDialogOpen) {
         FileDialog(
-            openParam = java.awt.FileDialog.LOAD,
-            onCloseRequest = { file, directory ->
-                if (file != null && directory != null) {
-                    val event = WelcomeScreenEvent.LoadProject(directory + file)
-                    viewModel.onEvent(event)
-                }
-
-                isFileDialogOpen = false
+            title = ResString.chooseFile,
+            type = JFileChooser.OPEN_DIALOG
+        ) {
+            if (it != null) {
+                val event = WelcomeScreenEvent.LoadProject(it)
+                viewModel.onEvent(event)
             }
-        )
+            isFileDialogOpen = false
+        }
     }
 }
 
@@ -310,17 +310,15 @@ private fun CreateProjectDialog(
 
     if (isFileDialogOpen && projectName.isNotEmpty() && projectName.isNotBlank()) {
         FileDialog(
-            openParam = java.awt.FileDialog.SAVE,
-            fileName = projectName,
-            onCloseRequest = { file, directory ->
-                isFileDialogOpen = false
-                onDismissRequest()
-
-                if (file != null && directory != null) {
-                    val event = WelcomeScreenEvent.CreateProject(projectName, directory + file)
-                    viewModel.onEvent(event)
-                }
+            title = "",
+            type = JFileChooser.SAVE_DIALOG,
+            selectionMode = JFileChooser.DIRECTORIES_ONLY
+        ) {
+            if (it != null) {
+                val event = WelcomeScreenEvent.CreateProject(projectName, it)
+                viewModel.onEvent(event)
             }
-        )
+            isFileDialogOpen = false
+        }
     }
 }

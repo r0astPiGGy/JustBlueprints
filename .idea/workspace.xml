@@ -4,20 +4,11 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2dcd41d4-f8bf-40bc-a529-7e5909b7b723" name="Changes" comment="Add save and open file dialog">
-      <change afterPath="$PROJECT_DIR$/src/jvmMain/kotlin/com/rodev/jbpkmp/data/ProgramDataRepositoryImpl.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/jvmMain/kotlin/com/rodev/jbpkmp/domain/model/ProgramData.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/jvmMain/kotlin/com/rodev/jbpkmp/domain/repository/ProgramDataRepository.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/jvmMain/kotlin/com/rodev/jbpkmp/presentation/screens/welcome_screen/WelcomeScreenEvent.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/jvmMain/kotlin/com/rodev/jbpkmp/presentation/screens/welcome_screen/WelcomeScreenState.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/jvmMain/kotlin/com/rodev/jbpkmp/presentation/screens/welcome_screen/WelcomeScreenViewModel.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/jvmMain/resources/cache/ProjectData.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="2dcd41d4-f8bf-40bc-a529-7e5909b7b723" name="Changes" comment="Add recent projects">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/jvmMain/kotlin/com/rodev/jbpkmp/Main.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/jvmMain/kotlin/com/rodev/jbpkmp/Main.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/jvmMain/kotlin/com/rodev/jbpkmp/presentation/R.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/jvmMain/kotlin/com/rodev/jbpkmp/presentation/R.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/jvmMain/kotlin/com/rodev/jbpkmp/presentation/screens/welcome_screen/WelcomeScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/jvmMain/kotlin/com/rodev/jbpkmp/presentation/screens/welcome_screen/WelcomeScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/jvmMain/kotlin/com/rodev/jbpkmp/presentation/screens/welcome_screen/WelcomeScreenEvent.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/jvmMain/kotlin/com/rodev/jbpkmp/presentation/screens/welcome_screen/WelcomeScreenEvent.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/jvmMain/kotlin/com/rodev/jbpkmp/presentation/screens/welcome_screen/WelcomeScreenViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/jvmMain/kotlin/com/rodev/jbpkmp/presentation/screens/welcome_screen/WelcomeScreenViewModel.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/jvmMain/kotlin/com/rodev/jbpkmp/presentation/screens/welcome_screen/components/FileDialog.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/jvmMain/kotlin/com/rodev/jbpkmp/presentation/screens/welcome_screen/components/FileDialog.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -234,7 +225,14 @@
       <option name="project" value="LOCAL" />
       <updated>1689333513347</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="Add recent projects">
+      <created>1689514822983</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1689514822983</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -256,7 +254,8 @@
     <MESSAGE value="Add CreateProjectDialog" />
     <MESSAGE value="Add string resources" />
     <MESSAGE value="Add save and open file dialog" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add save and open file dialog" />
+    <MESSAGE value="Add recent projects" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add recent projects" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

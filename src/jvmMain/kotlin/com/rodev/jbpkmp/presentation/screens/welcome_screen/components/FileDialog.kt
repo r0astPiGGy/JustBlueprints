@@ -1,32 +1,29 @@
 package com.rodev.jbpkmp.presentation.screens.welcome_screen.components
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.window.AwtWindow
-import com.rodev.jbpkmp.presentation.ResString
-import java.awt.FileDialog
-import java.awt.Frame
+import javax.swing.JFileChooser
+import javax.swing.SwingUtilities
+import javax.swing.filechooser.FileNameExtensionFilter
 
 @Composable
 fun FileDialog(
-    parent: Frame? = null,
-    fileName: String = "*",
-    onCloseRequest: (file: String?, directory: String?) -> Unit,
-    openParam: Int
-) = AwtWindow(
-    create = {
-        object : FileDialog(parent, ResString.chooseFile, openParam) {
-            override fun setVisible(value: Boolean) {
-                super.setVisible(value)
+    title: String,
+    selectionMode: Int = JFileChooser.FILES_ONLY,
+    type: Int,
+    onCloseRequest: (path: String?) -> Unit
+) = SwingUtilities.invokeLater {
+    JFileChooser().apply {
+        dialogTitle = title
+        dialogType = type
+        fileSelectionMode = selectionMode
 
-                if (value) onCloseRequest(file, directory) // TODO: Fix
-            }
-        }.apply {
-            // Windows
-            file = "$fileName.json"
+        if (fileSelectionMode == JFileChooser.FILES_ONLY)
+            fileFilter = FileNameExtensionFilter("JSON", "json")
 
-            // Linux/macOS
-            setFilenameFilter { _, name -> name.endsWith("json") }
-        }
-    },
-    dispose = FileDialog::dispose
-)
+        val code = showSaveDialog(null)
+        if (code == JFileChooser.APPROVE_OPTION)
+            onCloseRequest(selectedFile.path)
+        else
+            onCloseRequest(null)
+    }
+}

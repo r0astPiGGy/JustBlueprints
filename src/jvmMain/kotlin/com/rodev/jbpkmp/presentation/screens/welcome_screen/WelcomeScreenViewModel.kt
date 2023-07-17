@@ -43,8 +43,11 @@ class WelcomeScreenViewModel(
             }
 
             is WelcomeScreenEvent.CreateProject -> {
+                val directory = "${event.directory}/${event.name}"
+                val filePath = "$directory/${event.name}.json"
+
                 val project = Project(
-                    name = event.name, path = event.path
+                    name = event.name, path = directory
                 )
                 val recentProject = RecentProject(
                     project = project,
@@ -53,7 +56,11 @@ class WelcomeScreenViewModel(
 
                 val json = Json { prettyPrint = true }
                 val projectJson = json.encodeToString(project)
-                File(event.path).writeText(projectJson)
+                File(directory).mkdirs()
+                File(filePath).apply {
+                    createNewFile()
+                    writeText(projectJson)
+                }
 
                 val programData = repository.load()
                 programData.projects.add(project)
