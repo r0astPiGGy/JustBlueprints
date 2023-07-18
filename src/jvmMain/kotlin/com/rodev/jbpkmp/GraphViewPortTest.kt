@@ -11,15 +11,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
-import com.rodev.jbpkmp.presentation.components.graph.GraphViewModel
-import com.rodev.jbpkmp.presentation.components.graph.GraphViewPort
-import com.rodev.jbpkmp.presentation.components.graph.NodeAddEvent
-import com.rodev.jbpkmp.presentation.components.graph.NodeClearEvent
-import com.rodev.jbpkmp.presentation.components.node.DefaultNodeStateFactory
-import com.rodev.jbpkmp.presentation.components.pin.DefaultPinStateFactory
-import com.rodev.jbpkmp.presentation.components.pin.row.DefaultPinRowStateFactory
+import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.DefaultNodeStateFactory
+import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.DefaultPinRowStateFactory
+import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.DefaultPinStateFactory
 import com.rodev.jbpkmp.theme.AppTheme
 import com.rodev.jbpkmp.util.randomNode
+import com.rodev.nodeui.components.graph.GraphViewModel
+import com.rodev.nodeui.components.graph.GraphViewPort
+import com.rodev.nodeui.components.graph.NodeAddEvent
+import com.rodev.nodeui.components.graph.NodeClearEvent
 
 fun main() = application {
     Window(onCloseRequest = ::exitApplication) {

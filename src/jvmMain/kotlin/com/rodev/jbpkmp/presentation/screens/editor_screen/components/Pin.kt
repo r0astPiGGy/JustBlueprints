@@ -1,4 +1,4 @@
-package com.rodev.jbpkmp.presentation.components.pin
+package com.rodev.jbpkmp.presentation.screens.editor_screen.components
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -17,11 +17,15 @@ import androidx.compose.ui.layout.boundsInParent
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.unit.dp
-import com.rodev.jbpkmp.presentation.components.node.NodeState
-import com.rodev.jbpkmp.presentation.components.pin.row.PinRowSnapshot
-import com.rodev.jbpkmp.presentation.components.pin.row.PinRowState
-import com.rodev.jbpkmp.presentation.components.pin.row.SnapshotRequester
-import com.rodev.jbpkmp.util.MutableCoordinate
+import com.rodev.nodeui.components.node.NodeState
+import com.rodev.nodeui.components.pin.PinDragListener
+import com.rodev.nodeui.components.pin.PinState
+import com.rodev.nodeui.components.pin.isInput
+import com.rodev.nodeui.components.pin.isOutput
+import com.rodev.nodeui.components.pin.row.PinRowSnapshot
+import com.rodev.nodeui.components.pin.row.PinRowState
+import com.rodev.nodeui.components.pin.row.SnapshotRequester
+import com.rodev.nodeui.util.MutableCoordinate
 
 private const val pinSize = 15
 
@@ -96,16 +100,6 @@ fun PinRow(
             pinRowState.pinState.pinRepresentation.onDraw(nodeState, pinRowState.pinState, pinDragListener)
         }
     }
-}
-
-interface PinDragListener {
-
-    fun onPinDragStart(pinOwner: NodeState, pinState: PinState)
-
-    fun onPinDrag(pinState: PinState, offset: Offset, change: PointerInputChange)
-
-    fun onPinDragEnd()
-
 }
 
 @Composable

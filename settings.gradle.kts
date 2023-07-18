@@ -14,3 +14,4 @@ pluginManagement {
 
 rootProject.name = "JustBlueprints"
 
+include(":node-ui")

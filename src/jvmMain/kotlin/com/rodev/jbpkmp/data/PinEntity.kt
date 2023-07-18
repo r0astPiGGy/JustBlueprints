@@ -1,5 +1,7 @@
 package com.rodev.jbpkmp.data
 
+import com.rodev.nodeui.model.ConnectionType
+
 data class PinEntity(
     val id: String,
     val color: Int,
@@ -7,8 +9,3 @@ data class PinEntity(
     val connectionType: ConnectionType,
     val supportsMultipleConnection: Boolean = connectionType != ConnectionType.INPUT
 )
-
-enum class ConnectionType {
-    INPUT,
-    OUTPUT
-}

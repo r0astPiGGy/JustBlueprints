@@ -1,4 +1,4 @@
-package com.rodev.jbpkmp.presentation.components.node
+package com.rodev.jbpkmp.presentation.screens.editor_screen.components
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
@@ -22,9 +22,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.rodev.jbpkmp.data.NodeEntity
-import com.rodev.jbpkmp.presentation.components.pin.PinDragListener
-import com.rodev.jbpkmp.presentation.components.pin.row.SnapshotRequester
-import com.rodev.jbpkmp.util.MutableCoordinate
+import com.rodev.nodeui.components.node.NodeState
+import com.rodev.nodeui.components.pin.PinDragListener
+import com.rodev.nodeui.components.pin.row.SnapshotRequester
+import com.rodev.nodeui.util.MutableCoordinate
 import kotlin.math.max
 import kotlin.math.roundToInt
 
