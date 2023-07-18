@@ -36,10 +36,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.rodev.jbpkmp.data.ProgramDataRepositoryImpl
 import com.rodev.jbpkmp.presentation.ResString
 import com.rodev.jbpkmp.presentation.screens.welcome_screen.components.FileDialog
+import javax.swing.JFileChooser
 
 @Composable
 fun WelcomeScreen() {
@@ -118,16 +120,15 @@ private fun WelcomePanel(
 
     if (isFileDialogOpen) {
         FileDialog(
-            openParam = java.awt.FileDialog.LOAD,
-            onCloseRequest = { file, directory ->
-                if (file != null && directory != null) {
-                    val event = WelcomeScreenEvent.LoadProject(directory + file)
-                    viewModel.onEvent(event)
-                }
-
-                isFileDialogOpen = false
+            title = ResString.chooseFile,
+            type = JFileChooser.OPEN_DIALOG
+        ) {
+            if (it != null) {
+                val event = WelcomeScreenEvent.LoadProject(it)
+                viewModel.onEvent(event)
             }
-        )
+            isFileDialogOpen = false
+        }
     }
 }
 
@@ -213,13 +214,17 @@ private fun ProjectsPanelColumnItem(
             Text(
                 text = name,
                 style = MaterialTheme.typography.h4,
-                color = MaterialTheme.colors.onSurface
+                color = MaterialTheme.colors.onSurface,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
 
             Text(
                 text = path,
                 style = MaterialTheme.typography.h5,
-                color = MaterialTheme.colors.onSurface
+                color = MaterialTheme.colors.onSurface,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
         }
 
@@ -310,17 +315,17 @@ private fun CreateProjectDialog(
 
     if (isFileDialogOpen && projectName.isNotEmpty() && projectName.isNotBlank()) {
         FileDialog(
-            openParam = java.awt.FileDialog.SAVE,
-            fileName = projectName,
-            onCloseRequest = { file, directory ->
-                isFileDialogOpen = false
-                onDismissRequest()
+            title = "",
+            type = JFileChooser.SAVE_DIALOG,
+            selectionMode = JFileChooser.DIRECTORIES_ONLY
+        ) {
+            if (it != null) {
+                val event = WelcomeScreenEvent.CreateProject(projectName, it)
+                viewModel.onEvent(event)
 
-                if (file != null && directory != null) {
-                    val event = WelcomeScreenEvent.CreateProject(projectName, directory + file)
-                    viewModel.onEvent(event)
-                }
+                onDismissRequest()
             }
-        )
+            isFileDialogOpen = false
+        }
     }
 }
