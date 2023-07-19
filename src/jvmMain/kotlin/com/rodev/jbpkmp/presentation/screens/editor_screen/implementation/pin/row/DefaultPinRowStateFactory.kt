@@ -1,4 +1,4 @@
-package com.rodev.jbpkmp.presentation.screens.editor_screen.implementation
+package com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.pin.row
 
 import com.rodev.nodeui.components.pin.PinStateFactory
 import com.rodev.nodeui.components.pin.row.PinRowRepresentation

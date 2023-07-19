@@ -110,7 +110,7 @@ fun SimpleNode(
                 nodeState.inputPins.forEach {
                     it.pinRowRepresentation.onDraw(
                         nodeState = nodeState,
-                        pinRowState = remember { it },
+                        pinRowState = it,
                         pinDragListener = pinDragListener,
                         snapshotRequester = snapshotRequester,
                         parentCoordinate = inputPinContainerCoordinates
@@ -132,7 +132,7 @@ fun SimpleNode(
                 nodeState.outputPins.forEach {
                     it.pinRowRepresentation.onDraw(
                         nodeState = nodeState,
-                        pinRowState = remember { it },
+                        pinRowState = it,
                         pinDragListener = pinDragListener,
                         snapshotRequester = snapshotRequester,
                         parentCoordinate = outputPinContainerCoordinates

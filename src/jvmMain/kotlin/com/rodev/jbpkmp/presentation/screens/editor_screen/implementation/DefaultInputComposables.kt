@@ -21,8 +21,8 @@ class StringInputComposable : DefaultValueComposable {
         return input
     }
 
-    override fun setValue(any: Any?) {
-        input = any as String
+    override fun setValue(any: String?) {
+        input = any ?: ""
     }
 
 }

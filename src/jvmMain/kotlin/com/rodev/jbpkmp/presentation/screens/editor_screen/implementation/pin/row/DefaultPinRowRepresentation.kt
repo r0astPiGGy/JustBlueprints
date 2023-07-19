@@ -1,4 +1,4 @@
-package com.rodev.jbpkmp.presentation.screens.editor_screen.implementation
+package com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.pin.row
 
 import androidx.compose.runtime.Composable
 import com.rodev.jbpkmp.presentation.screens.editor_screen.components.PinRow

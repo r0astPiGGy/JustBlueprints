@@ -1,4 +1,4 @@
-package com.rodev.jbpkmp.presentation.screens.editor_screen.implementation
+package com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.node
 
 import com.rodev.jbpkmp.util.randomNodeEntity
 import com.rodev.nodeui.components.node.NodeRepresentation

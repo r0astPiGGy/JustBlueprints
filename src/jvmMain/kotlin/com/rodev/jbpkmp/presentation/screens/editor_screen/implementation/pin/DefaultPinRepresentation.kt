@@ -1,16 +1,17 @@
-package com.rodev.jbpkmp.presentation.screens.editor_screen.implementation
+package com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.pin
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
 import com.rodev.jbpkmp.data.PinEntity
-import com.rodev.jbpkmp.presentation.screens.editor_screen.components.Pin
 import com.rodev.nodeui.components.node.NodeState
 import com.rodev.nodeui.components.pin.PinDragListener
 import com.rodev.nodeui.components.pin.PinRepresentation
 import com.rodev.nodeui.components.pin.PinState
 import com.rodev.nodeui.model.ConnectionType
+import com.rodev.nodeui.model.Pin
+import com.rodev.jbpkmp.presentation.screens.editor_screen.components.Pin as PinComposable
 
 class DefaultPinRepresentation(
     private val pinEntity: PinEntity,
@@ -27,7 +28,7 @@ class DefaultPinRepresentation(
 
     @Composable
     override fun onDraw(nodeState: NodeState, pinState: PinState, pinDragListener: PinDragListener) {
-        Pin(
+        PinComposable(
             nodeState = nodeState,
             pinState = pinState,
             pinDragListener = pinDragListener,
@@ -37,6 +38,16 @@ class DefaultPinRepresentation(
                 style = if (pinState.connected) Fill else Stroke(width = 2f)
             )
         }
+    }
+
+    override fun toPin(pinState: PinState): Pin {
+        require(pinState.pinRepresentation == this)
+
+        return Pin(
+            uniqueId = pinState.id,
+            typeId = pinEntity.id,
+            value = pinState.defaultValueComposable.getValue()
+        )
     }
 
 }
