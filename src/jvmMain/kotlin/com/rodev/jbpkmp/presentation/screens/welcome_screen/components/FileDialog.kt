@@ -8,8 +8,8 @@ import javax.swing.filechooser.FileNameExtensionFilter
 @Composable
 fun FileDialog(
     title: String,
-    selectionMode: Int = JFileChooser.FILES_ONLY,
     type: Int,
+    selectionMode: Int = JFileChooser.FILES_ONLY,
     onCloseRequest: (path: String?) -> Unit
 ) = SwingUtilities.invokeLater {
     JFileChooser().apply {
@@ -17,11 +17,16 @@ fun FileDialog(
         dialogType = type
         fileSelectionMode = selectionMode
 
-        if (fileSelectionMode == JFileChooser.FILES_ONLY)
+        if (selectionMode == JFileChooser.FILES_ONLY) {
             fileFilter = FileNameExtensionFilter("JSON", "json")
+        }
 
-        val code = showSaveDialog(null)
-        if (code == JFileChooser.APPROVE_OPTION)
+        val result = if (dialogType == JFileChooser.OPEN_DIALOG)
+            showOpenDialog(null)
+        else
+            showSaveDialog(null)
+
+        if (result == JFileChooser.APPROVE_OPTION)
             onCloseRequest(selectedFile.path)
         else
             onCloseRequest(null)

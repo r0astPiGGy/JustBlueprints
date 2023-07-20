@@ -40,23 +40,26 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.rodev.jbpkmp.data.ProgramDataRepositoryImpl
 import com.rodev.jbpkmp.presentation.ResString
+import com.rodev.jbpkmp.presentation.navigation.NavController
+import com.rodev.jbpkmp.presentation.navigation.Screen
 import com.rodev.jbpkmp.presentation.screens.welcome_screen.components.FileDialog
 import javax.swing.JFileChooser
 
 @Composable
-fun WelcomeScreen() {
-
+fun WelcomeScreen(navController: NavController) {
     val viewModel = WelcomeScreenViewModel(ProgramDataRepositoryImpl())
 
     Row {
         WelcomePanel(
             modifier = Modifier.weight(2f),
-            viewModel = viewModel
+            viewModel = viewModel,
+            navController = navController
         )
 
         ProjectsPanel(
             modifier = Modifier.weight(1f),
-            viewModel = viewModel
+            viewModel = viewModel,
+            navController = navController
         )
     }
 }
@@ -64,7 +67,8 @@ fun WelcomeScreen() {
 @Composable
 private fun WelcomePanel(
     modifier: Modifier = Modifier,
-    viewModel: WelcomeScreenViewModel
+    viewModel: WelcomeScreenViewModel,
+    navController: NavController
 ) {
     val buttonWidth = 300.dp
     val spacerHeight = 25.dp
@@ -113,7 +117,11 @@ private fun WelcomePanel(
 
     if (isCreateProjectDialogOpen) {
         CreateProjectDialog(
-            onDismissRequest = { isCreateProjectDialogOpen = false },
+            onDismissRequest = {
+                isCreateProjectDialogOpen = false
+
+                navController.navigate(Screen.EditorScreen.name)
+            },
             viewModel = viewModel
         )
     }
@@ -126,7 +134,10 @@ private fun WelcomePanel(
             if (it != null) {
                 val event = WelcomeScreenEvent.LoadProject(it)
                 viewModel.onEvent(event)
+
+                navController.navigate(Screen.EditorScreen.name)
             }
+
             isFileDialogOpen = false
         }
     }
@@ -135,14 +146,15 @@ private fun WelcomePanel(
 @Composable
 private fun ProjectsPanel(
     modifier: Modifier = Modifier,
-    viewModel: WelcomeScreenViewModel
+    viewModel: WelcomeScreenViewModel,
+    navController: NavController
 ) {
     val state = viewModel.state.value
 
     var selectedProjectPath by remember { mutableStateOf("") }
     val onSelectionChange = { text: String ->
         if (selectedProjectPath == text) {
-            println("double click")
+            navController.navigate(Screen.EditorScreen.name)
         }
 
         selectedProjectPath = text
@@ -315,7 +327,7 @@ private fun CreateProjectDialog(
 
     if (isFileDialogOpen && projectName.isNotEmpty() && projectName.isNotBlank()) {
         FileDialog(
-            title = "",
+            title = ResString.chooseDirectory,
             type = JFileChooser.SAVE_DIALOG,
             selectionMode = JFileChooser.DIRECTORIES_ONLY
         ) {

@@ -15,6 +15,7 @@ object ResString {
     val cancel: String
     val create: String
     val errorMessage: String
+    val chooseDirectory: String
 
     init {
         if (System.getProperty("user.language") == "ru") {
@@ -30,6 +31,7 @@ object ResString {
             cancel = "Отмена"
             create = "Создать"
             errorMessage = "Название не может быть пустым"
+            chooseDirectory = "Выберите директорию"
         } else {
             // WelcomeScreen
             createNewProject = "Create a new project"
@@ -43,6 +45,7 @@ object ResString {
             cancel = "Cancel"
             create = "Create"
             errorMessage = "Name cannot be empty"
+            chooseDirectory = "Choose a directory"
         }
     }
 }
