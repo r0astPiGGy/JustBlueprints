@@ -110,11 +110,7 @@ private fun WelcomePanel(
 
     if (isCreateProjectDialogOpen) {
         CreateProjectDialog(
-            onDismissRequest = {
-                isCreateProjectDialogOpen = false
-
-                navController.navigate(Screen.EditorScreen.name)
-            },
+            onDismissRequest = { isCreateProjectDialogOpen = false },
             viewModel = viewModel
         )
     }
@@ -157,7 +153,7 @@ private fun ProjectsPanel(
         LazyColumn(
             modifier = modifier
                 .fillMaxHeight()
-                .background(MaterialTheme.colors.surface)
+                .background(MaterialTheme.colors.background)
         ) {
             items(state.recentProjects.size) { index ->
                 val path = state.recentProjects[index].project.path
@@ -190,13 +186,14 @@ private fun ProjectsPanel(
         Column(
             modifier = Modifier
                 .fillMaxHeight()
-                .background(MaterialTheme.colors.surface),
+                .background(MaterialTheme.colors.background),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
                 text = ResString.noRecentProjects,
-                modifier = Modifier.padding(horizontal = 10.dp)
+                modifier = Modifier.padding(horizontal = 10.dp),
+                color = MaterialTheme.colors.onBackground
             )
         }
     }

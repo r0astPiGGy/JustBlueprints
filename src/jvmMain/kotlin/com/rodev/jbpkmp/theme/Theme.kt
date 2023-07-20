@@ -11,16 +11,19 @@ private val LightColors = lightColors(
     primary = blue,
     onPrimary = Color.White,
     secondary = cyan,
-    surface = gray,
-    onSurface = Color.White
+    background = gray,
+    onBackground = Color.White,
+    surface = Color.White,
+    onSurface = black
 )
 
 private val DarkColors = darkColors(
     primary = blue,
     onPrimary = Color.White,
     secondary = cyan,
-    background = black,
-    surface = gray,
+    background = gray,
+    onBackground = Color.White,
+    surface = black,
     onSurface = Color.White
 )
 

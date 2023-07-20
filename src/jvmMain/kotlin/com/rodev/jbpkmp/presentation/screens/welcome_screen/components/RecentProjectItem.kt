@@ -34,7 +34,7 @@ fun RecentProjectItem(
             Text(
                 text = name,
                 style = MaterialTheme.typography.h4,
-                color = MaterialTheme.colors.onSurface,
+                color = MaterialTheme.colors.onBackground,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -42,7 +42,7 @@ fun RecentProjectItem(
             Text(
                 text = path,
                 style = MaterialTheme.typography.h5,
-                color = MaterialTheme.colors.onSurface,
+                color = MaterialTheme.colors.onBackground,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )

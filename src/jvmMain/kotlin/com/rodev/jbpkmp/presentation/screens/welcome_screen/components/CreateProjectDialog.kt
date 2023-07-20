@@ -48,7 +48,7 @@ fun CreateProjectDialog(
         buttons = {
             Column(
                 modifier = Modifier
-                    .background(MaterialTheme.colors.background)
+                    .background(MaterialTheme.colors.surface)
                     .fillMaxWidth()
                     .padding(10.dp),
             ) {
