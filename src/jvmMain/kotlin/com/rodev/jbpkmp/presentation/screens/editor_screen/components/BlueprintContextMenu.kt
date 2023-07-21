@@ -19,8 +19,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.rodev.jbpkmp.theme.gray
 
+typealias ContextMenuItemProvider = () -> List<ContextTreeNode>
+
+typealias OnTreeNodeClick = (ContextTreeNode.Leaf) -> Unit
+
 @Composable
-fun BlueprintContextMenu(onDismiss: () -> Unit) {
+fun BlueprintContextMenu(
+    headerText: String,
+    onDismiss: () -> Unit,
+    onTreeNodeClick: OnTreeNodeClick,
+    contextMenuItemProvider: ContextMenuItemProvider
+) {
     ContextMenu(
         onDismissRequest = onDismiss
     ) {
@@ -31,11 +40,12 @@ fun BlueprintContextMenu(onDismiss: () -> Unit) {
                 .padding(8.dp)
         ) {
             Text(
-                text = "All actions for this Blueprint",
+                text = headerText,
                 fontSize = 20.sp
             )
 
             var queryInput by remember { mutableStateOf("") }
+
             TextField(
                 modifier = Modifier
                     .fillMaxWidth(),
@@ -46,6 +56,7 @@ fun BlueprintContextMenu(onDismiss: () -> Unit) {
                     Text("Search...")
                 }
             )
+
             Box(
                 modifier = Modifier.fillMaxSize()
                     .background(Color.Gray)
@@ -55,20 +66,32 @@ fun BlueprintContextMenu(onDismiss: () -> Unit) {
                 val queryPredicate: TreeQuery = remember { { s ->
                     s.lowercase().contains(queryInput.lowercase()) }
                 }
-                val state = rememberLazyListState()
 
-                CompositionLocalProvider(LocalTreeQuery provides queryPredicate) {
-                    LazyColumn(Modifier.fillMaxSize().padding(end = 12.dp), state) {
-                        items(createSampleTree()) {
+                val scrollState = rememberLazyListState()
+
+                CompositionLocalProvider(
+                    LocalTreeQuery provides queryPredicate,
+                    LocalOnTreeNodeClick provides onTreeNodeClick
+                ) {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(end = 12.dp),
+                        state = scrollState
+                    ) {
+                        items(contextMenuItemProvider()) {
                             TreeNode(it)
                             Spacer(modifier = Modifier.height(5.dp))
                         }
                     }
                 }
+
                 VerticalScrollbar(
-                    modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .fillMaxHeight(),
                     adapter = rememberScrollbarAdapter(
-                        scrollState = state
+                        scrollState = scrollState
                     )
                 )
             }
@@ -78,95 +101,59 @@ fun BlueprintContextMenu(onDismiss: () -> Unit) {
 
 typealias TreeQuery = (String) -> Boolean
 
-val LocalTreeQuery = compositionLocalOf<TreeQuery> { { true } }
-
-fun createSampleTree(): List<ContextTreeNode> {
-    return TreeNodeBuilder.create {
-        root(name = "Функции") {
-            root(name = "Разное") {
-                leaf("Test4Function")
-            }
-            leaf("Test1Function")
-            leaf("TestFunction")
-        }
-        root(name = "Ивенты") {
-            root(name = "Игрок") {
-                leaf("Игрок зашёл")
-                leaf("Игрок вышел")
-            }
-            root(name = "Моб") {
-                leaf("Моб умер")
-                leaf("Моб заспавнился")
-            }
-        }
-    }
-}
-
-class TreeNodeBuilder : RootBuilderScope {
-
-    private val treeNodes = mutableListOf<ContextTreeNode>()
-
-    override fun root(name: String, content: RootBuilderScope.() -> Unit) {
-        val treeNodeBuilder = TreeNodeBuilder()
-        content(treeNodeBuilder)
-        treeNodes.add(ContextTreeNode.Root(treeNodeBuilder.build(), name))
-    }
-
-    override fun leaf(name: String) {
-        treeNodes.add(ContextTreeNode.Leaf(name))
-    }
-
-    private fun build(): List<ContextTreeNode> {
-        return treeNodes
-    }
-
-    companion object {
-
-        fun create(content: RootBuilderScope.() -> Unit): List<ContextTreeNode> {
-            val builder = TreeNodeBuilder()
-
-            content(builder)
-
-            return builder.build()
-        }
-
-    }
-
-}
-
-interface RootBuilderScope {
-    fun root(name: String, content: RootBuilderScope.() -> Unit)
-
-    fun leaf(name: String)
-}
+private val LocalTreeQuery = compositionLocalOf<TreeQuery> { { true } }
+private val LocalOnTreeNodeClick = compositionLocalOf<OnTreeNodeClick> { { } }
 
 typealias NodeParent = ContextTreeNode.Root?
 
 @Composable
-fun TreeNode(node: ContextTreeNode, parent: NodeParent = null) {
+fun TreeNode(
+    node: ContextTreeNode,
+    parent: NodeParent = null
+) {
     when (node) {
         is ContextTreeNode.Leaf -> {
-            TreeNodeLeaf(nodeLeaf = node, parent = parent)
+            TreeNodeLeaf(
+                nodeLeaf = node,
+                parent = parent
+            )
         }
+
         is ContextTreeNode.Root -> {
-            TreeNodeRoot(nodeRoot = node, parent = parent)
+            TreeNodeRoot(
+                nodeRoot = node,
+                parent = parent
+            )
         }
+
+        else -> {}
     }
 }
 
 @Composable
-fun TreeNodeLeaf(nodeLeaf: ContextTreeNode.Leaf, parent: NodeParent) {
+fun TreeNodeLeaf(
+    nodeLeaf: ContextTreeNode.Leaf,
+    parent: NodeParent
+) {
     if (LocalTreeQuery.current(nodeLeaf.name)) {
+        val onTreeNodeClick = LocalOnTreeNodeClick.current
+
         Text(
             text = nodeLeaf.name,
             modifier = Modifier
                 .fillMaxWidth()
+                .clickable {
+                    onTreeNodeClick(nodeLeaf)
+                }
         )
     }
 }
 
 @Composable
-fun TreeNodeRoot(nodeRoot: ContextTreeNode.Root, parent: NodeParent) {
+fun TreeNodeRoot(
+    nodeRoot: ContextTreeNode.Root,
+    parent: NodeParent
+) {
     Column {
         var visible by remember { mutableStateOf(true) }
         Row(
@@ -217,17 +204,4 @@ fun TreeNodeRoot(nodeRoot: ContextTreeNode.Root, parent: NodeParent) {
             }
         }
     }
-}
-
-sealed interface ContextTreeNode {
-    val name: String
-
-    class Root(
-        val child: List<ContextTreeNode> = emptyList(),
-        override val name: String
-    ) : ContextTreeNode
-
-    class Leaf(
-        override val name: String
-    ) : ContextTreeNode
 }

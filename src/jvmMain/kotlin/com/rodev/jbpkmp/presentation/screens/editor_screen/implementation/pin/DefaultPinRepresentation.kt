@@ -26,6 +26,9 @@ class DefaultPinRepresentation(
     override val color: Int
         get() = pinEntity.color
 
+    override val type: Any
+        get() = pinEntity.type
+
     @Composable
     override fun onDraw(nodeState: NodeState, pinState: PinState, pinDragListener: PinDragListener) {
         PinComposable(

@@ -15,6 +15,8 @@ interface PinRepresentation {
 
     val color: Int
 
+    val type: Any?
+
     @Composable
     fun onDraw(nodeState: NodeState, pinState: PinState, pinDragListener: PinDragListener)
 

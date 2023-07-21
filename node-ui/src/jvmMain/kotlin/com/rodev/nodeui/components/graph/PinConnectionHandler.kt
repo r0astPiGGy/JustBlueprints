@@ -15,9 +15,9 @@ class PinConnectionHandler(
     private val wireFactory: WireFactory
 ) {
 
-    internal val wires_ = mutableStateListOf<PinWire>()
+    internal val mutableWires = mutableStateListOf<PinWire>()
     val wires: List<Wire>
-        get() = wires_
+        get() = mutableWires
 
     fun shouldAddSnapshot(
         snapshot: PinRowSnapshot,
@@ -42,13 +42,13 @@ class PinConnectionHandler(
         return !pinState.connectedTo(currentDraggingPin)
     }
 
-    fun onConnection(initiator: PinState, connection: PinState?) {
-        if (connection == null) return
+    fun onConnection(initiator: PinState, connection: PinState?): Boolean {
+        if (connection == null) return false
 
         val inputPin = if (initiator.isInput()) initiator else connection
         val outputPin = if (initiator.isOutput()) initiator else connection
 
-        handleConnection(initiator, inputPin, outputPin)
+        return handleConnection(initiator, inputPin, outputPin)
     }
 
     fun onDragStart(draggingPin: PinState) {
@@ -57,12 +57,12 @@ class PinConnectionHandler(
         }
     }
 
-    private fun handleConnection(initiator: PinState, inputPin: PinState, outputPin: PinState) {
+    private fun handleConnection(initiator: PinState, inputPin: PinState, outputPin: PinState): Boolean {
         require(inputPin != outputPin)
         require(inputPin.connectionTypeNotEquals(outputPin))
 
         // check types
-        if (!pinTypeComparator.connectable(inputPin, outputPin)) return
+        if (!pinTypeComparator.connectable(inputPin, outputPin)) return false
 
         val opposite = initiator.getOpposite(inputPin, outputPin)
 
@@ -73,6 +73,8 @@ class PinConnectionHandler(
         }
 
         forceConnect(inputPin, outputPin)
+
+        return true
     }
 
     fun connect(inputPin: PinState, outputPin: PinState) {
@@ -93,7 +95,7 @@ class PinConnectionHandler(
         inputPin.addWire(wire)
         outputPin.addWire(wire)
 
-        wires_.add(wire)
+        mutableWires.add(wire)
     }
 
     private fun PinState.addWire(wire: PinWire) {
@@ -117,7 +119,7 @@ class PinConnectionHandler(
     private fun disconnectAll(pinState: PinState) {
         if (!pinState.isConnected()) return
 
-        wires_.removeAll(pinState.connections)
+        mutableWires.removeAll(pinState.connections)
         pinState.connections.forEach {
             val opposite = it.getOpposite(pinState)
             require(opposite != pinState)

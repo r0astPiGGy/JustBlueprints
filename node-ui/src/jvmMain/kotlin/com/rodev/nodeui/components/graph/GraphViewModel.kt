@@ -10,10 +10,8 @@ import com.rodev.nodeui.components.pin.PinState
 import com.rodev.nodeui.components.pin.row.PinRowSnapshot
 import com.rodev.nodeui.components.pin.row.PinRowState
 import com.rodev.nodeui.components.pin.row.SnapshotRequester
-import com.rodev.nodeui.components.wire.TemporaryWire
 import com.rodev.nodeui.components.wire.Wire
 import com.rodev.nodeui.components.wire.WireFactory
-import com.rodev.nodeui.components.wire.WirePreview
 import com.rodev.nodeui.model.Graph
 
 open class GraphViewModel(
@@ -54,23 +52,25 @@ open class GraphViewModel(
 
     private val pinSnapshots = mutableSetOf<PinRowSnapshot>()
 
-    fun onEvent(event: GraphEvent) {
+    open fun onEvent(event: GraphEvent) {
         when (event) {
             is NodeAddEvent -> {
                 val node = nodeStateFactory.createNodeState(event.node)
                 _nodeStates.add(node)
             }
+
             NodeClearEvent -> {
                 clearNodes()
             }
 
             is NodeDeleteEvent -> TODO()
+
             else -> {}
         }
     }
 
     fun save(): Graph {
-        return graphFactory.save(_nodeStates, pinConnectionHandler.wires_)
+        return graphFactory.save(_nodeStates, pinConnectionHandler.mutableWires)
     }
 
     fun load(graph: Graph) {
@@ -177,14 +177,22 @@ open class GraphViewModel(
         return x in topBound.x..bottomBound.x && y in topBound.y..bottomBound.y
     }
 
-    override fun onPinDragEnd() {
-        pinConnectionHandler.onConnection(currentDraggingPin!!, currentHoveringPin)
+    open fun onPinDragEndWithoutConnection(pinState: PinState) {}
 
-        _snapshotRequested = false
-        currentDraggingPin = null
-        currentDraggingPinOwner = null
+    override fun onPinDragEnd() {
+        val currentDraggingPin = currentDraggingPin!!
+
+        val result = pinConnectionHandler.onConnection(currentDraggingPin, currentHoveringPin)
+
+        if (!result) {
+            onPinDragEndWithoutConnection(currentDraggingPin)
+        }
+
+        this.currentDraggingPin = null
         currentHoveringPin = null
+        currentDraggingPinOwner = null
         cachedHitTest = null
+        _snapshotRequested = false
         clearCurrentHoveringRow()
         _temporaryLine.value = null
 

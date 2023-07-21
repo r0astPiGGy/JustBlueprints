@@ -12,6 +12,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.center
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.Layout
@@ -22,6 +26,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.rodev.jbpkmp.data.NodeEntity
+import com.rodev.jbpkmp.theme.black
 import com.rodev.nodeui.components.node.NodeState
 import com.rodev.nodeui.components.pin.PinDragListener
 import com.rodev.nodeui.components.pin.row.SnapshotRequester
@@ -66,7 +71,7 @@ fun SimpleNode(
     ) {
         NodeBody(
             modifier = Modifier
-                .background(MaterialTheme.colors.background)
+                .background(black)
                 .defaultMinSize(minWidth = 100.dp)
                 .wrapContentHeight()
                 .onGloballyPositioned {
@@ -80,9 +85,14 @@ fun SimpleNode(
                 horizontalAlignment = Alignment.Start,
                 verticalArrangement = Arrangement.Top,
                 modifier = Modifier
-                    .background(
-                        Color(nodeEntity.headerColor)
-                    )
+                    .drawBehind {
+                        drawRect(brush = Brush.radialGradient(
+                            // TODO remove hardcoded values
+                            colors = listOf(Color(nodeEntity.headerColor), black),
+                            center = Offset(-size.height, -size.height * 2),
+                            radius = (size.width)
+                        ))
+                    }
                     .padding(nodeOutlinePadding.dp)
                     .padding(end = 50.dp)
             ) {

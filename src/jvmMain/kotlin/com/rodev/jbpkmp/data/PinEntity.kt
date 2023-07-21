@@ -7,5 +7,9 @@ data class PinEntity(
     val color: Int,
     val name: String,
     val connectionType: ConnectionType,
-    val supportsMultipleConnection: Boolean = connectionType != ConnectionType.INPUT
+    val supportsMultipleConnection: Boolean = connectionType != ConnectionType.INPUT,
+    val type: Any = PinType
 )
+
+// TODO
+object PinType

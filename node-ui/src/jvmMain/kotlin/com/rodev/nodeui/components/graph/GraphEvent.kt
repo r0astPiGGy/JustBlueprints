@@ -3,7 +3,7 @@ package com.rodev.nodeui.components.graph
 import com.rodev.nodeui.model.Node
 import java.util.*
 
-sealed interface GraphEvent
+interface GraphEvent
 
 data class NodeAddEvent(
     val node: Node

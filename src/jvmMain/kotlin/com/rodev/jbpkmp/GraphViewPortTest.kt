@@ -26,6 +26,10 @@ import androidx.compose.ui.window.WindowPosition.PlatformDefault.x
 import androidx.compose.ui.window.application
 import com.rodev.jbpkmp.presentation.screens.editor_screen.components.BlueprintContextMenu
 import com.rodev.jbpkmp.presentation.screens.editor_screen.components.ContextMenu
+import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.ActionSelectedGraphEvent
+import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.CloseContextMenuGraphEvent
+import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.ShowContextMenuGraphEvent
+import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.ViewPortViewModel
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.node.DefaultNodeStateFactory
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.pin.DefaultPinStateFactory
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.pin.row.DefaultPinRowStateFactory
@@ -56,9 +60,9 @@ fun main() = application {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun ViewPortPreview() {
+fun ViewPortPreview() {
     val viewPortModel = remember {
-        GraphViewModel(
+        ViewPortViewModel(
             nodeStateFactory = DefaultNodeStateFactory(
                 pinRowStateFactory = DefaultPinRowStateFactory(
                     pinStateFactory = DefaultPinStateFactory()
@@ -72,16 +76,19 @@ private fun ViewPortPreview() {
     // }
 
     Row {
+
         Button(onClick = {
             viewPortModel.onEvent(NodeAddEvent(randomNode()))
         }) {
-            Text(text = "Add node")
+            Text(text = "Add random node")
         }
+
         Button(onClick = {
             viewPortModel.onEvent(NodeClearEvent)
         }) {
             Text(text = "Clear")
         }
+
         Button(onClick = {
             val graph = viewPortModel.save()
 
@@ -94,12 +101,20 @@ private fun ViewPortPreview() {
         }
     }
 
-    var showPopup by remember { mutableStateOf(false) }
+    if (viewPortModel.showContextMenu) {
+        val contextMenuModel = viewPortModel.contextMenuModel!!
 
-    if (showPopup) {
-        // TODO
         BlueprintContextMenu(
-            onDismiss = { showPopup = false }
+            headerText = contextMenuModel.title,
+            onDismiss = {
+                viewPortModel.onEvent(CloseContextMenuGraphEvent)
+            },
+            contextMenuItemProvider = contextMenuModel.contextMenuItemProvider,
+            onTreeNodeClick = {
+                viewPortModel.onEvent(
+                    ActionSelectedGraphEvent(it)
+                )
+            }
         )
     }
 
@@ -111,10 +126,14 @@ private fun ViewPortPreview() {
                     matcher = PointerMatcher
                         .mouse(PointerButton.Secondary)
                 ) {
-                    showPopup = true
+                    viewPortModel.onEvent(
+                        ShowContextMenuGraphEvent(position = it)
+                    )
                 }
             },
         viewModel = viewPortModel,
+        graphModifier = Modifier
+            .background(Color.DarkGray)
     ) {
         viewPortModel.nodeStates.forEach {
             // костыль или не костыль? зато пофиксило баг
