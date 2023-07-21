@@ -8,11 +8,13 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import com.rodev.nodeui.components.pin.PinState
 import java.util.*
 
-data class PinWire(
-    val uuid: UUID = UUID.randomUUID(),
-    val inputPin: PinState,
-    val outputPin: PinState
-): Wire() {
+private data class DefaultPinWire(
+    override val inputPin: PinState,
+    override val outputPin: PinState
+): PinWire() {
+
+    val uuid: UUID = UUID.randomUUID()
+
     override fun DrawScope.drawFunction() {
         val path = getLinePath(
             inputPin.center.x,
@@ -40,9 +42,24 @@ data class PinWire(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as PinWire
+        other as DefaultPinWire
 
         return uuid == other.uuid
+    }
+}
+
+abstract class PinWire : Wire() {
+
+    abstract val inputPin: PinState
+
+    abstract val outputPin: PinState
+
+    companion object {
+
+        fun default(inputPin: PinState, outputPin: PinState): PinWire {
+            return DefaultPinWire(inputPin, outputPin)
+        }
+
     }
 }
 

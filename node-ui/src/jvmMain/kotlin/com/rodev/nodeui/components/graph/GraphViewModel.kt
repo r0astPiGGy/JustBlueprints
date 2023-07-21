@@ -12,15 +12,21 @@ import com.rodev.nodeui.components.pin.row.PinRowState
 import com.rodev.nodeui.components.pin.row.SnapshotRequester
 import com.rodev.nodeui.components.wire.TemporaryWire
 import com.rodev.nodeui.components.wire.Wire
+import com.rodev.nodeui.components.wire.WireFactory
 import com.rodev.nodeui.components.wire.WirePreview
 import com.rodev.nodeui.model.Graph
 
 open class GraphViewModel(
     pinTypeComparator: PinTypeComparator = PinTypeComparator.Default,
-    private val nodeStateFactory: NodeStateFactory
+    private val nodeStateFactory: NodeStateFactory,
+    private val wireFactory: WireFactory = WireFactory()
 ) : PinDragListener, SnapshotRequester {
 
-    private val pinConnectionHandler = PinConnectionHandler(pinTypeComparator)
+    private val pinConnectionHandler = PinConnectionHandler(
+        wireFactory = wireFactory,
+        pinTypeComparator = pinTypeComparator
+    )
+
     private val graphFactory = GraphFactory(nodeStateFactory, pinConnectionHandler)
     private val _nodeStates = mutableStateListOf<NodeState>()
     val nodeStates: List<NodeState>
@@ -64,7 +70,7 @@ open class GraphViewModel(
     }
 
     fun save(): Graph {
-        return graphFactory.save(_nodeStates, pinConnectionHandler._wires)
+        return graphFactory.save(_nodeStates, pinConnectionHandler.wires_)
     }
 
     fun load(graph: Graph) {
@@ -109,13 +115,17 @@ open class GraphViewModel(
 
             clearCurrentHoveringRow()
 
-            _temporaryLine.value = WirePreview(
+            _temporaryLine.value = wireFactory.createWirePreview(
                 pinState.pinRepresentation.color,
                 hoveredPin.pinRepresentation.color,
-                start.x,
-                start.y,
-                hoveredPin.center.x,
-                hoveredPin.center.y
+                startPos = Offset(
+                    x = start.x,
+                    y = start.y
+                ),
+                endPos = Offset(
+                    x = hoveredPin.center.x,
+                    y = hoveredPin.center.y
+                )
             )
 
             currentHoveringRow = hoveredRow
@@ -124,12 +134,16 @@ open class GraphViewModel(
         } else {
             clearCurrentHoveringRow()
             currentHoveringPin = null
-            _temporaryLine.value = TemporaryWire(
+            _temporaryLine.value = wireFactory.createTemporaryWire(
                 pinState.pinRepresentation.color,
-                start.x,
-                start.y,
-                endX,
-                endY
+                start = Offset(
+                    x = start.x,
+                    y = start.y
+                ),
+                end = Offset(
+                    x = endX,
+                    y = endY
+                )
             )
         }
     }

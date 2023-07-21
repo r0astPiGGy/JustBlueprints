@@ -7,15 +7,17 @@ import com.rodev.nodeui.components.pin.row.PinRowSnapshot
 import com.rodev.nodeui.components.pin.row.PinRowState
 import com.rodev.nodeui.components.wire.PinWire
 import com.rodev.nodeui.components.wire.Wire
+import com.rodev.nodeui.components.wire.WireFactory
 import com.rodev.nodeui.components.wire.getOpposite
 
 class PinConnectionHandler(
-    private val pinTypeComparator: PinTypeComparator
+    private val pinTypeComparator: PinTypeComparator,
+    private val wireFactory: WireFactory
 ) {
 
-    internal val _wires = mutableStateListOf<PinWire>()
+    internal val wires_ = mutableStateListOf<PinWire>()
     val wires: List<Wire>
-        get() = _wires
+        get() = wires_
 
     fun shouldAddSnapshot(
         snapshot: PinRowSnapshot,
@@ -86,15 +88,12 @@ class PinConnectionHandler(
     }
 
     private fun forceConnect(inputPin: PinState, outputPin: PinState) {
-        val wire = PinWire(
-            inputPin = inputPin,
-            outputPin = outputPin
-        )
+        val wire = wireFactory.createPinWire(inputPin, outputPin)
 
         inputPin.addWire(wire)
         outputPin.addWire(wire)
 
-        _wires.add(wire)
+        wires_.add(wire)
     }
 
     private fun PinState.addWire(wire: PinWire) {
@@ -118,7 +117,7 @@ class PinConnectionHandler(
     private fun disconnectAll(pinState: PinState) {
         if (!pinState.isConnected()) return
 
-        _wires.removeAll(pinState.connections)
+        wires_.removeAll(pinState.connections)
         pinState.connections.forEach {
             val opposite = it.getOpposite(pinState)
             require(opposite != pinState)
