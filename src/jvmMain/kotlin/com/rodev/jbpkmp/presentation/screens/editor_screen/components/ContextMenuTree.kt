@@ -1,19 +1,50 @@
 package com.rodev.jbpkmp.presentation.screens.editor_screen.components
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import com.rodev.nodeui.model.Node
 
-sealed interface ContextTreeNode {
-    val name: String
+sealed class ContextTreeNode {
+    abstract val name: String
+
+    internal var mutableVisibility by mutableStateOf(true)
+    val visible: Boolean
+        get() = mutableVisibility
 
     class Root(
         val child: List<ContextTreeNode> = emptyList(),
         override val name: String
-    ) : ContextTreeNode
+    ) : ContextTreeNode()
 
     class Leaf(
         override val name: String,
         val node: Node
-    ) : ContextTreeNode
+    ) : ContextTreeNode()
+}
+
+fun ContextTreeNode.updateVisibility(predicate: (ContextTreeNode.Leaf) -> Boolean): Boolean {
+    when (this) {
+        is ContextTreeNode.Leaf -> {
+            val result = predicate(this)
+            mutableVisibility = result
+            return result
+        }
+        is ContextTreeNode.Root -> {
+            var result = false
+            child.forEach {
+                val iterationResult = it.updateVisibility(predicate)
+
+                if (iterationResult) {
+                    result = true
+                }
+            }
+
+            mutableVisibility = result
+
+            return result
+        }
+    }
 }
 
 class TreeNodeBuilder private constructor() : RootBuilderScope {

@@ -26,10 +26,7 @@ import androidx.compose.ui.window.WindowPosition.PlatformDefault.x
 import androidx.compose.ui.window.application
 import com.rodev.jbpkmp.presentation.screens.editor_screen.components.BlueprintContextMenu
 import com.rodev.jbpkmp.presentation.screens.editor_screen.components.ContextMenu
-import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.ActionSelectedGraphEvent
-import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.CloseContextMenuGraphEvent
-import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.ShowContextMenuGraphEvent
-import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.ViewPortViewModel
+import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.*
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.node.DefaultNodeStateFactory
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.pin.DefaultPinStateFactory
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.pin.row.DefaultPinRowStateFactory
@@ -67,7 +64,8 @@ fun ViewPortPreview() {
                 pinRowStateFactory = DefaultPinRowStateFactory(
                     pinStateFactory = DefaultPinStateFactory()
                 )
-            )
+            ),
+            pinTypeComparator = DefaultPinTypeComparator
         )
     }
 
@@ -109,7 +107,7 @@ fun ViewPortPreview() {
             onDismiss = {
                 viewPortModel.onEvent(CloseContextMenuGraphEvent)
             },
-            contextMenuItemProvider = contextMenuModel.contextMenuItemProvider,
+            treeNodes = contextMenuModel.contextMenuItemProvider(),
             onTreeNodeClick = {
                 viewPortModel.onEvent(
                     ActionSelectedGraphEvent(it)

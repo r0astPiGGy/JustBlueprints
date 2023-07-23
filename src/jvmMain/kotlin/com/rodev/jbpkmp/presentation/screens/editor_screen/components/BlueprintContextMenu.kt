@@ -28,7 +28,7 @@ fun BlueprintContextMenu(
     headerText: String,
     onDismiss: () -> Unit,
     onTreeNodeClick: OnTreeNodeClick,
-    contextMenuItemProvider: ContextMenuItemProvider
+    treeNodes: List<ContextTreeNode>
 ) {
     ContextMenu(
         onDismissRequest = onDismiss
@@ -62,15 +62,22 @@ fun BlueprintContextMenu(
                     .background(Color.Gray)
                     .padding(10.dp)
             ) {
+                // Updates visibility of tree nodes when input changes
+                LaunchedEffect(queryInput) {
+                    val predicate: TreeQuery = { name ->
+                        name.lowercase().contains(queryInput.lowercase())
+                    }
 
-                val queryPredicate: TreeQuery = remember { { s ->
-                    s.lowercase().contains(queryInput.lowercase()) }
+                    treeNodes.forEach { treeNode ->
+                        treeNode.updateVisibility {
+                            predicate(it.name)
+                        }
+                    }
                 }
 
                 val scrollState = rememberLazyListState()
 
                 CompositionLocalProvider(
-                    LocalTreeQuery provides queryPredicate,
                     LocalOnTreeNodeClick provides onTreeNodeClick
                 ) {
                     LazyColumn(
@@ -79,7 +86,7 @@ fun BlueprintContextMenu(
                             .padding(end = 12.dp),
                         state = scrollState
                     ) {
-                        items(contextMenuItemProvider()) {
+                        items(treeNodes) {
                             TreeNode(it)
                             Spacer(modifier = Modifier.height(5.dp))
                         }
@@ -101,28 +108,22 @@ fun BlueprintContextMenu(
 
 typealias TreeQuery = (String) -> Boolean
 
-private val LocalTreeQuery = compositionLocalOf<TreeQuery> { { true } }
 private val LocalOnTreeNodeClick = compositionLocalOf<OnTreeNodeClick> { { } }
-
-typealias NodeParent = ContextTreeNode.Root?
 
 @Composable
 fun TreeNode(
-    node: ContextTreeNode,
-    parent: NodeParent = null
+    node: ContextTreeNode
 ) {
     when (node) {
         is ContextTreeNode.Leaf -> {
             TreeNodeLeaf(
-                nodeLeaf = node,
-                parent = parent
+                nodeLeaf = node
             )
         }
 
         is ContextTreeNode.Root -> {
             TreeNodeRoot(
-                nodeRoot = node,
-                parent = parent
+                nodeRoot = node
             )
         }
 
@@ -132,10 +133,9 @@ fun TreeNode(
 
 @Composable
 fun TreeNodeLeaf(
-    nodeLeaf: ContextTreeNode.Leaf,
-    parent: NodeParent
+    nodeLeaf: ContextTreeNode.Leaf
 ) {
-    if (LocalTreeQuery.current(nodeLeaf.name)) {
+    if (nodeLeaf.visible) {
         val onTreeNodeClick = LocalOnTreeNodeClick.current
 
         Text(
@@ -151,9 +151,10 @@ fun TreeNodeLeaf(
 
 @Composable
 fun TreeNodeRoot(
-    nodeRoot: ContextTreeNode.Root,
-    parent: NodeParent
+    nodeRoot: ContextTreeNode.Root
 ) {
+    if (!nodeRoot.visible) return
+
     Column {
         var visible by remember { mutableStateOf(true) }
         Row(
@@ -164,31 +165,11 @@ fun TreeNodeRoot(
                     visible = !visible
                 }
         ) {
-            Canvas(
+            CategoryArrow(
                 modifier = Modifier
-                    .requiredSize(10.dp)
-            ) {
-                val path = Path()
-                val drawStyle: DrawStyle
-
-                if (visible) {
-                    drawStyle = Fill
-
-                    path.moveTo(size.width, 0f)
-                    path.lineTo(0f, size.height)
-                    path.lineTo(size.width, size.height)
-                    path.lineTo(size.width, 0f)
-                } else {
-                    drawStyle = Stroke(width = 1f)
-
-                    path.moveTo(center.x, 0f)
-                    path.lineTo(center.x, size.height)
-                    path.lineTo(size.width, center.y)
-                    path.lineTo(center.x, 0f)
-                }
-
-                drawPath(path, color = Color.White, style = drawStyle)
-            }
+                    .requiredSize(10.dp),
+                expanded = visible
+            )
             Spacer(modifier = Modifier.width(5.dp))
             Text(nodeRoot.name)
         }
@@ -199,9 +180,40 @@ fun TreeNodeRoot(
                     .padding(start = 15.dp)
             ) {
                 nodeRoot.child.forEach {
-                    TreeNode(it, parent = nodeRoot)
+                    TreeNode(it)
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun CategoryArrow(
+    modifier: Modifier,
+    expanded: Boolean
+) {
+    Canvas(
+        modifier = modifier
+    ) {
+        val path = Path()
+        val drawStyle: DrawStyle
+
+        if (expanded) {
+            drawStyle = Fill
+
+            path.moveTo(size.width, 0f)
+            path.lineTo(0f, size.height)
+            path.lineTo(size.width, size.height)
+            path.lineTo(size.width, 0f)
+        } else {
+            drawStyle = Stroke(width = 1f)
+
+            path.moveTo(center.x, 0f)
+            path.lineTo(center.x, size.height)
+            path.lineTo(size.width, center.y)
+            path.lineTo(center.x, 0f)
+        }
+
+        drawPath(path, color = Color.White, style = drawStyle)
     }
 }
