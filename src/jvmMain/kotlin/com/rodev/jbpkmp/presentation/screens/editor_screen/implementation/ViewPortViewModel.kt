@@ -4,6 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import com.rodev.jbpkmp.presentation.screens.editor_screen.components.ContextMenuItemProvider
 import com.rodev.jbpkmp.presentation.screens.editor_screen.components.ContextTreeNode
 import com.rodev.jbpkmp.presentation.screens.editor_screen.components.TreeNodeBuilder
@@ -15,6 +16,7 @@ import com.rodev.nodeui.components.graph.PinTypeComparator
 import com.rodev.nodeui.components.node.NodeStateFactory
 import com.rodev.nodeui.components.pin.PinState
 import com.rodev.nodeui.components.wire.WireFactory
+import kotlin.random.Random
 
 class ViewPortViewModel(
     pinTypeComparator: PinTypeComparator = PinTypeComparator.Default,
@@ -42,7 +44,7 @@ class ViewPortViewModel(
                 lastContextMenuInvokePosition = event.position
 
                 _contextMenuModel = ContextMenuModel(
-                    title = "All actions for this Blueprint",
+                    borderColor = Color(Random.nextInt(), Random.nextInt(), Random.nextInt()),
                     contextMenuItemProvider = {
                         createSampleTree()
                     }
@@ -108,7 +110,7 @@ private fun createSampleTree(): List<ContextTreeNode> {
 }
 
 data class ContextMenuModel(
-    val title: String,
+    val borderColor: Color,
     val contextMenuItemProvider: ContextMenuItemProvider
 )
 

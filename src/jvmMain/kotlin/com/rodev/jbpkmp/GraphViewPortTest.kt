@@ -103,7 +103,7 @@ fun ViewPortPreview() {
         val contextMenuModel = viewPortModel.contextMenuModel!!
 
         BlueprintContextMenu(
-            headerText = contextMenuModel.title,
+            borderColor = contextMenuModel.borderColor,
             onDismiss = {
                 viewPortModel.onEvent(CloseContextMenuGraphEvent)
             },
