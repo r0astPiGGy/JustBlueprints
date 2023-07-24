@@ -1,9 +1,8 @@
-package com.rodev.jbpkmp.presentation.screens.editor_screen.components
+package com.rodev.jbpkmp.presentation.screens.editor_screen.components.context_menu
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import com.rodev.nodeui.model.Node
 
 sealed class ContextTreeNode {
     abstract val name: String
@@ -19,7 +18,7 @@ sealed class ContextTreeNode {
 
     class Leaf(
         override val name: String,
-        val node: Node
+        val id: String
     ) : ContextTreeNode()
 }
 
@@ -57,8 +56,8 @@ class TreeNodeBuilder private constructor() : RootBuilderScope {
         treeNodes.add(ContextTreeNode.Root(treeNodeBuilder.build(), name))
     }
 
-    override fun leaf(name: String, node: Node) {
-        treeNodes.add(ContextTreeNode.Leaf(name, node))
+    override fun leaf(name: String, id: String) {
+        treeNodes.add(ContextTreeNode.Leaf(name, id))
     }
 
     private fun build(): List<ContextTreeNode> {
@@ -82,5 +81,5 @@ class TreeNodeBuilder private constructor() : RootBuilderScope {
 interface RootBuilderScope {
     fun root(name: String, content: RootBuilderScope.() -> Unit)
 
-    fun leaf(name: String, node: Node)
+    fun leaf(name: String, id: String)
 }

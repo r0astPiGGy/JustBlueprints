@@ -3,37 +3,22 @@ package com.rodev.jbpkmp
 import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.center
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.drawscope.DrawStyle
-import androidx.compose.ui.graphics.drawscope.Fill
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.PointerButton
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Window
-import androidx.compose.ui.window.WindowPosition.PlatformDefault.x
 import androidx.compose.ui.window.application
-import com.rodev.jbpkmp.presentation.screens.editor_screen.components.BlueprintContextMenu
-import com.rodev.jbpkmp.presentation.screens.editor_screen.components.ContextMenu
+import com.rodev.jbpkmp.data.ActionDataSourceImpl
+import com.rodev.jbpkmp.presentation.screens.editor_screen.components.context_menu.BlueprintContextMenu
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.*
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.node.DefaultNodeStateFactory
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.pin.DefaultPinStateFactory
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.pin.row.DefaultPinRowStateFactory
 import com.rodev.jbpkmp.theme.AppTheme
-import com.rodev.jbpkmp.theme.gray
 import com.rodev.jbpkmp.util.randomNode
-import com.rodev.nodeui.components.graph.GraphViewModel
 import com.rodev.nodeui.components.graph.GraphViewPort
 import com.rodev.nodeui.components.graph.NodeAddEvent
 import com.rodev.nodeui.components.graph.NodeClearEvent
@@ -65,13 +50,10 @@ fun ViewPortPreview() {
                     pinStateFactory = DefaultPinStateFactory()
                 )
             ),
-            pinTypeComparator = DefaultPinTypeComparator
+            pinTypeComparator = DefaultPinTypeComparator,
+            actionDataSource = ActionDataSourceImpl()
         )
     }
-
-    // LaunchedEffect {
-    //    viewPortModel.loadFromJson(json)
-    // }
 
     Row {
 
@@ -99,22 +81,18 @@ fun ViewPortPreview() {
         }
     }
 
-    if (viewPortModel.showContextMenu) {
-        val contextMenuModel = viewPortModel.contextMenuModel!!
-
-        BlueprintContextMenu(
-            borderColor = contextMenuModel.borderColor,
-            onDismiss = {
-                viewPortModel.onEvent(CloseContextMenuGraphEvent)
-            },
-            treeNodes = contextMenuModel.contextMenuItemProvider(),
-            onTreeNodeClick = {
-                viewPortModel.onEvent(
-                    ActionSelectedGraphEvent(it)
-                )
-            }
-        )
-    }
+    BlueprintContextMenu(
+        contextMenuModelProvider = { viewPortModel.contextMenuModel!! },
+        onDismiss = {
+            viewPortModel.onEvent(CloseContextMenuGraphEvent)
+        },
+        onTreeNodeClick = {
+            viewPortModel.onEvent(
+                ActionSelectedGraphEvent(it)
+            )
+        },
+        expanded = viewPortModel.showContextMenu
+    )
 
     GraphViewPort(
         modifier = Modifier

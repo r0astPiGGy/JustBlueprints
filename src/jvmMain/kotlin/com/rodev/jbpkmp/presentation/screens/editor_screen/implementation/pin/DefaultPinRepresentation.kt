@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
-import com.rodev.jbpkmp.data.PinEntity
+import com.rodev.jbpkmp.domain.model.PinEntity
 import com.rodev.nodeui.components.node.NodeState
 import com.rodev.nodeui.components.pin.PinDragListener
 import com.rodev.nodeui.components.pin.PinRepresentation

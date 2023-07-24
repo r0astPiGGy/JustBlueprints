@@ -1,4 +1,4 @@
-package com.rodev.jbpkmp.presentation.screens.editor_screen.components
+package com.rodev.jbpkmp.presentation.screens.editor_screen.components.context_menu
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
@@ -46,22 +46,33 @@ import androidx.compose.ui.unit.dp
 
 typealias ContextMenuItemProvider = () -> List<ContextTreeNode>
 
+typealias ContextMenuModelProvider = () -> ContextMenuModel
+
 typealias OnTreeNodeClick = (ContextTreeNode.Leaf) -> Unit
+
+data class ContextMenuModel(
+    val borderColor: Color,
+    val contextMenuItemProvider: ContextMenuItemProvider
+)
 
 @Composable
 fun BlueprintContextMenu(
-    borderColor: Color,
+    contextMenuModelProvider: ContextMenuModelProvider,
     onDismiss: () -> Unit,
     onTreeNodeClick: OnTreeNodeClick,
-    treeNodes: List<ContextTreeNode>
+    expanded: Boolean
 ) {
     ContextMenu(
-        onDismissRequest = onDismiss
+        onDismissRequest = onDismiss,
+        expanded = expanded
     ) {
+        val contextMenuModel = remember { contextMenuModelProvider() }
+        val treeNodes = remember { contextMenuModel.contextMenuItemProvider() }
+
         Column(
             modifier = Modifier
                 .requiredSize(500.dp)
-                .border(1.dp, borderColor, RoundedCornerShape(10.dp))
+                .border(1.dp, contextMenuModel.borderColor, RoundedCornerShape(10.dp))
         ) {
             var queryInput by remember { mutableStateOf("") }
 

@@ -14,7 +14,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.center
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
@@ -26,7 +25,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.WindowPosition.PlatformDefault.x
-import com.rodev.jbpkmp.data.NodeEntity
+import com.rodev.jbpkmp.domain.model.NodeEntity
 import com.rodev.jbpkmp.theme.black
 import com.rodev.nodeui.components.node.NodeState
 import com.rodev.nodeui.components.pin.PinDragListener

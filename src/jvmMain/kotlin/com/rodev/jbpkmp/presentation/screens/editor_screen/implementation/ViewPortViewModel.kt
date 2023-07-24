@@ -5,10 +5,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import com.rodev.jbpkmp.presentation.screens.editor_screen.components.ContextMenuItemProvider
-import com.rodev.jbpkmp.presentation.screens.editor_screen.components.ContextTreeNode
-import com.rodev.jbpkmp.presentation.screens.editor_screen.components.TreeNodeBuilder
-import com.rodev.jbpkmp.util.randomNode
+import com.rodev.jbpkmp.domain.repository.ActionDataSource
+import com.rodev.jbpkmp.presentation.screens.editor_screen.components.context_menu.ContextMenuItemProvider
+import com.rodev.jbpkmp.presentation.screens.editor_screen.components.context_menu.ContextMenuModel
+import com.rodev.jbpkmp.presentation.screens.editor_screen.components.context_menu.ContextTreeNode
+import com.rodev.jbpkmp.presentation.screens.editor_screen.components.context_menu.TreeNodeBuilder
 import com.rodev.nodeui.components.graph.GraphEvent
 import com.rodev.nodeui.components.graph.GraphViewModel
 import com.rodev.nodeui.components.graph.NodeAddEvent
@@ -21,7 +22,8 @@ import kotlin.random.Random
 class ViewPortViewModel(
     pinTypeComparator: PinTypeComparator = PinTypeComparator.Default,
     nodeStateFactory: NodeStateFactory,
-    wireFactory: WireFactory = WireFactory()
+    wireFactory: WireFactory = WireFactory(),
+    private val actionDataSource: ActionDataSource
 ) : GraphViewModel(
     nodeStateFactory = nodeStateFactory,
     pinTypeComparator = pinTypeComparator,
@@ -46,7 +48,14 @@ class ViewPortViewModel(
                 _contextMenuModel = ContextMenuModel(
                     borderColor = Color(Random.nextInt(), Random.nextInt(), Random.nextInt()),
                     contextMenuItemProvider = {
-                        createSampleTree()
+                        actionDataSource.getActions<ContextTreeNode>(
+                            rootTransformFunction = { category, child ->
+                                ContextTreeNode.Root(child, category.name)
+                            },
+                            leafTransformFunction = {
+                                ContextTreeNode.Leaf(name = it.name, id = it.id)
+                            }
+                        )
                     }
                 )
                 shouldShowContextMenu = true
@@ -61,7 +70,7 @@ class ViewPortViewModel(
 
                 onEvent(
                     NodeAddEvent(
-                        node = event.treeNode.node.copy(
+                        node = actionDataSource.getNodeById(event.treeNode.id).copy(
                             x = x,
                             y = y
                         )
@@ -91,28 +100,23 @@ private fun createSampleTree(): List<ContextTreeNode> {
     return TreeNodeBuilder.create {
         root(name = "Функции") {
             root(name = "Разное") {
-                leaf("Test4Function", randomNode())
+                leaf("Test4Function", "test4")
             }
-            leaf("Test1Function", randomNode())
-            leaf("TestFunction", randomNode())
+            leaf("Test1Function", "test1")
+            leaf("TestFunction", "test")
         }
         root(name = "Ивенты") {
             root(name = "Игрок") {
-                leaf("Игрок зашёл", randomNode())
-                leaf("Игрок вышел", randomNode())
+                leaf("Игрок зашёл", "player_join")
+                leaf("Игрок вышел", "player_quit")
             }
             root(name = "Моб") {
-                leaf("Моб умер", randomNode())
-                leaf("Моб заспавнился", randomNode())
+                leaf("Моб умер", "mob_death")
+                leaf("Моб заспавнился", "mob_spawn")
             }
         }
     }
 }
-
-data class ContextMenuModel(
-    val borderColor: Color,
-    val contextMenuItemProvider: ContextMenuItemProvider
-)
 
 object CloseContextMenuGraphEvent : GraphEvent
 

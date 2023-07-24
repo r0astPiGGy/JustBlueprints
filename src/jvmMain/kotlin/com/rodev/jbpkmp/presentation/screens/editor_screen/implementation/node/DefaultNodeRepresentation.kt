@@ -1,7 +1,7 @@
 package com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.node
 
 import androidx.compose.runtime.Composable
-import com.rodev.jbpkmp.data.NodeEntity
+import com.rodev.jbpkmp.domain.model.NodeEntity
 import com.rodev.jbpkmp.presentation.screens.editor_screen.components.SimpleNode
 import com.rodev.nodeui.components.node.NodeRepresentation
 import com.rodev.nodeui.components.node.NodeState

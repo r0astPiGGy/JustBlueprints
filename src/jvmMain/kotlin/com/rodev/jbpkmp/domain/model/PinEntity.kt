@@ -1,4 +1,4 @@
-package com.rodev.jbpkmp.data
+package com.rodev.jbpkmp.domain.model
 
 import com.rodev.nodeui.model.ConnectionType
 
