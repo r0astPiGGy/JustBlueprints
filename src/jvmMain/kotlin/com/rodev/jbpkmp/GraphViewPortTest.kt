@@ -131,7 +131,7 @@ fun ViewPortPreview() {
             },
         viewModel = viewPortModel,
         graphModifier = Modifier
-            .background(Color.DarkGray)
+            .background(MaterialTheme.colors.surface)
     ) {
         viewPortModel.nodeStates.forEach {
             // костыль или не костыль? зато пофиксило баг

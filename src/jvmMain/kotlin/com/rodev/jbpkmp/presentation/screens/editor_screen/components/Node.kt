@@ -25,6 +25,7 @@ import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.WindowPosition.PlatformDefault.x
 import com.rodev.jbpkmp.data.NodeEntity
 import com.rodev.jbpkmp.theme.black
 import com.rodev.nodeui.components.node.NodeState
@@ -71,7 +72,7 @@ fun SimpleNode(
     ) {
         NodeBody(
             modifier = Modifier
-                .background(black)
+                .background(MaterialTheme.colors.background)
                 .defaultMinSize(minWidth = 100.dp)
                 .wrapContentHeight()
                 .onGloballyPositioned {
@@ -99,7 +100,8 @@ fun SimpleNode(
                 Text(
                     text = nodeEntity.header,
                     overflow = TextOverflow.Ellipsis,
-                    maxLines = 1
+                    maxLines = 1,
+                    color = MaterialTheme.colors.onBackground
                 )
             }
 

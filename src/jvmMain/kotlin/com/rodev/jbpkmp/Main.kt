@@ -14,7 +14,7 @@ fun main() = singleWindowApplication(
 ) {
     val navController by rememberNavController(Screen.WelcomeScreen.name)
 
-    AppTheme {
+    AppTheme(useDarkTheme = false) {
         Surface {
             JustBlueprintsNavigationHost(navController)
         }

@@ -3,6 +3,7 @@ package com.rodev.jbpkmp.presentation.screens.editor_screen.components
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -90,7 +91,8 @@ fun PinRow(
             modifier = Modifier.requiredSizeIn(maxWidth = 180.dp)
         ) {
             Text(
-                text = pinRowState.pinState.pinRepresentation.name
+                text = pinRowState.pinState.pinRepresentation.name,
+                color = MaterialTheme.colors.onBackground
             )
             pinRowState.pinState.defaultValueComposable.draw(pinRowState.pinState)
         }
