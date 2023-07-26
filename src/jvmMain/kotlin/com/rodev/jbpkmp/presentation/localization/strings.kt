@@ -41,12 +41,6 @@ val name = Translatable(
         ENGLISH to "Name"
     )
 )
-val cancel = Translatable(
-    "Отмена",
-    hashMapOf(
-        ENGLISH to "Cancel"
-    )
-)
 val create = Translatable(
     "Создать",
     hashMapOf(
@@ -63,5 +57,39 @@ val chooseDirectory = Translatable(
     "Выберите директорию",
     hashMapOf(
         ENGLISH to "Choose a directory"
+    )
+)
+
+// SettingsScreen
+val language = Translatable(
+    "Язык",
+    hashMapOf(
+        ENGLISH to "Language"
+    )
+)
+val languageDescription = Translatable(
+    "Сообщите нам, какой язык вам удобнее использовать. Вы можете изменить его обратно в любое время.",
+    hashMapOf(
+        ENGLISH to "Let us know which language you're comfortable using. You can change it back at any time."
+    )
+)
+val useDarkTheme = Translatable(
+    "Использовать темную тему",
+    hashMapOf(
+        ENGLISH to "Use dark theme"
+    )
+)
+val save = Translatable(
+    "Сохранить",
+    hashMapOf(
+        ENGLISH to "Save"
+    )
+)
+
+// Shared
+val cancel = Translatable(
+    "Отмена",
+    hashMapOf(
+        ENGLISH to "Cancel"
     )
 )
