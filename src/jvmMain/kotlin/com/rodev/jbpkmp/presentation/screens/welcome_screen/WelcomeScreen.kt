@@ -128,9 +128,7 @@ private fun WelcomePanel(
             type = JFileChooser.OPEN_DIALOG
         ) {
             if (it != null) {
-                val event = WelcomeScreenEvent.LoadProject(it)
-                viewModel.onEvent(event)
-
+                WelcomeScreenEvent.LoadProject(it).let(viewModel::onEvent)
                 navController.navigate(Screen.EditorScreen.name)
             }
 
@@ -183,8 +181,8 @@ private fun ProjectsPanel(
                     path = state.recentProjects[index].project.path,
                     selected = selected,
                     onDeleteClick = {
-                        val event = WelcomeScreenEvent.RemoveProject(state.recentProjects[index])
-                        viewModel.onEvent(event)
+                        WelcomeScreenEvent.RemoveProject(state.recentProjects[index])
+                            .let(viewModel::onEvent)
                     }
                 )
             }
