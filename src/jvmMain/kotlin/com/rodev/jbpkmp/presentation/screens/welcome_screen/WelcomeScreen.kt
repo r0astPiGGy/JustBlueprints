@@ -97,7 +97,7 @@ private fun WelcomePanel(
             style = MaterialTheme.typography.h2
         )
 
-        Text(authors(localization))
+        Text(localization.authors())
 
         Spacer(Modifier.height(spacerHeight))
 
@@ -105,14 +105,14 @@ private fun WelcomePanel(
             onClick = { isCreateProjectDialogOpen = true },
             modifier = Modifier.width(buttonWidth)
         ) {
-            Text(createNewProject(localization))
+            Text(localization.createNewProject())
         }
 
         Button(
             onClick = { isFileDialogOpen = true },
             modifier = Modifier.width(buttonWidth)
         ) {
-            Text(openProject(localization))
+            Text(localization.openProject())
         }
     }
 
@@ -125,7 +125,7 @@ private fun WelcomePanel(
 
     if (isFileDialogOpen) {
         FileDialog(
-            title = chooseFile(localization),
+            title = localization.chooseFile(),
             type = JFileChooser.OPEN_DIALOG
         ) {
             if (it != null) {
@@ -199,7 +199,7 @@ private fun ProjectsPanel(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = noRecentProjects(Vocabulary.localization),
+                text = Vocabulary.localization.noRecentProjects(),
                 modifier = Modifier.padding(horizontal = 10.dp),
                 color = MaterialTheme.colors.onBackground
             )

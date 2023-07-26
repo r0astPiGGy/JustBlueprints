@@ -14,6 +14,7 @@ import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedButton
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -62,13 +63,13 @@ fun CreateProjectDialog(
                 OutlinedTextField(
                     value = projectName,
                     onValueChange = { projectName = it },
-                    placeholder = { Text(name(localization)) },
+                    placeholder = { Text(localization.name()) },
                     singleLine = true,
                     isError = isError
                 )
 
                 if (isError) Text(
-                    text = errorMessage(localization),
+                    text = localization.errorMessage(),
                     modifier = errorModifier,
                     color = MaterialTheme.colors.error,
                     style = MaterialTheme.typography.h5
@@ -86,19 +87,18 @@ fun CreateProjectDialog(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Button(
+                    OutlinedButton(
                         onClick = onDismissRequest,
-                        modifier = Modifier.width(buttonWidth),
-                        colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.surface)
+                        modifier = Modifier.width(buttonWidth)
                     ) {
-                        Text(cancel(localization))
+                        Text(localization.cancel())
                     }
 
                     Button(
                         onClick = { isFileDialogOpen = true },
                         modifier = Modifier.width(buttonWidth)
                     ) {
-                        Text(create(localization))
+                        Text(localization.create())
                     }
                 }
             }
@@ -107,7 +107,7 @@ fun CreateProjectDialog(
 
     if (isFileDialogOpen && projectName.isNotEmpty() && projectName.isNotBlank()) {
         FileDialog(
-            title = chooseDirectory(localization),
+            title = localization.chooseDirectory(),
             type = JFileChooser.SAVE_DIALOG,
             selectionMode = JFileChooser.DIRECTORIES_ONLY
         ) {
