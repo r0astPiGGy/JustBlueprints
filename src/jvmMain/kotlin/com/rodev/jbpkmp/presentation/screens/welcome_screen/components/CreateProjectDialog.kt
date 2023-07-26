@@ -23,7 +23,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.rodev.jbpkmp.presentation.ResString
+import com.rodev.jbpkmp.presentation.localization.Vocabulary
+import com.rodev.jbpkmp.presentation.localization.cancel
+import com.rodev.jbpkmp.presentation.localization.chooseDirectory
+import com.rodev.jbpkmp.presentation.localization.create
+import com.rodev.jbpkmp.presentation.localization.errorMessage
+import com.rodev.jbpkmp.presentation.localization.name
 import com.rodev.jbpkmp.presentation.screens.welcome_screen.WelcomeScreenEvent
 import com.rodev.jbpkmp.presentation.screens.welcome_screen.WelcomeScreenViewModel
 import javax.swing.JFileChooser
@@ -34,6 +39,8 @@ fun CreateProjectDialog(
     onDismissRequest: () -> Unit,
     viewModel: WelcomeScreenViewModel
 ) {
+    val localization = Vocabulary.localization
+
     val dialogWidth = 300.dp
     val buttonWidth = 100.dp
     val errorModifier = Modifier.padding(top = 5.dp)
@@ -55,13 +62,13 @@ fun CreateProjectDialog(
                 OutlinedTextField(
                     value = projectName,
                     onValueChange = { projectName = it },
-                    placeholder = { Text(ResString.name) },
+                    placeholder = { Text(name(localization)) },
                     singleLine = true,
                     isError = isError
                 )
 
                 if (isError) Text(
-                    text = ResString.errorMessage,
+                    text = errorMessage(localization),
                     modifier = errorModifier,
                     color = MaterialTheme.colors.error,
                     style = MaterialTheme.typography.h5
@@ -84,14 +91,14 @@ fun CreateProjectDialog(
                         modifier = Modifier.width(buttonWidth),
                         colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.surface)
                     ) {
-                        Text(ResString.cancel)
+                        Text(cancel(localization))
                     }
 
                     Button(
                         onClick = { isFileDialogOpen = true },
                         modifier = Modifier.width(buttonWidth)
                     ) {
-                        Text(ResString.create)
+                        Text(create(localization))
                     }
                 }
             }
@@ -100,7 +107,7 @@ fun CreateProjectDialog(
 
     if (isFileDialogOpen && projectName.isNotEmpty() && projectName.isNotBlank()) {
         FileDialog(
-            title = ResString.chooseDirectory,
+            title = chooseDirectory(localization),
             type = JFileChooser.SAVE_DIALOG,
             selectionMode = JFileChooser.DIRECTORIES_ONLY
         ) {

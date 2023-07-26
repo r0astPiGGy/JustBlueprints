@@ -30,7 +30,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.rodev.jbpkmp.data.ProgramDataRepositoryImpl
-import com.rodev.jbpkmp.presentation.ResString
+import com.rodev.jbpkmp.presentation.localization.Vocabulary
+import com.rodev.jbpkmp.presentation.localization.appName
+import com.rodev.jbpkmp.presentation.localization.authors
+import com.rodev.jbpkmp.presentation.localization.chooseFile
+import com.rodev.jbpkmp.presentation.localization.createNewProject
+import com.rodev.jbpkmp.presentation.localization.noRecentProjects
+import com.rodev.jbpkmp.presentation.localization.openProject
 import com.rodev.jbpkmp.presentation.navigation.NavController
 import com.rodev.jbpkmp.presentation.navigation.Screen
 import com.rodev.jbpkmp.presentation.screens.welcome_screen.components.CreateProjectDialog
@@ -63,6 +69,8 @@ private fun WelcomePanel(
     viewModel: WelcomeScreenViewModel,
     navController: NavController
 ) {
+    val localization = Vocabulary.localization
+
     val buttonWidth = 300.dp
     val spacerHeight = 25.dp
 
@@ -85,11 +93,11 @@ private fun WelcomePanel(
         Spacer(Modifier.height(spacerHeight))
 
         Text(
-            text = ResString.appName,
+            text = appName,
             style = MaterialTheme.typography.h2
         )
 
-        Text(ResString.authors)
+        Text(authors(localization))
 
         Spacer(Modifier.height(spacerHeight))
 
@@ -97,14 +105,14 @@ private fun WelcomePanel(
             onClick = { isCreateProjectDialogOpen = true },
             modifier = Modifier.width(buttonWidth)
         ) {
-            Text(ResString.createNewProject)
+            Text(createNewProject(localization))
         }
 
         Button(
             onClick = { isFileDialogOpen = true },
             modifier = Modifier.width(buttonWidth)
         ) {
-            Text(ResString.openProject)
+            Text(openProject(localization))
         }
     }
 
@@ -117,7 +125,7 @@ private fun WelcomePanel(
 
     if (isFileDialogOpen) {
         FileDialog(
-            title = ResString.chooseFile,
+            title = chooseFile(localization),
             type = JFileChooser.OPEN_DIALOG
         ) {
             if (it != null) {
@@ -191,7 +199,7 @@ private fun ProjectsPanel(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = ResString.noRecentProjects,
+                text = noRecentProjects(Vocabulary.localization),
                 modifier = Modifier.padding(horizontal = 10.dp),
                 color = MaterialTheme.colors.onBackground
             )
