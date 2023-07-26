@@ -1,7 +1,5 @@
-package com.rodev.jbpkmp.presentation.screens.editor_screen.components
+package com.rodev.jbpkmp.presentation.screens.settings_screen
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,10 +32,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.rodev.jbpkmp.LocalMutableLocale
 import com.rodev.jbpkmp.LocalMutableTheme
+import com.rodev.jbpkmp.data.ProgramDataRepositoryImpl
 import com.rodev.jbpkmp.presentation.localization.Vocabulary
 import com.rodev.jbpkmp.presentation.localization.cancel
 import com.rodev.jbpkmp.presentation.localization.language
@@ -51,9 +49,10 @@ fun SettingsScreen(
     modifier: Modifier = Modifier,
     onDismissRequest: () -> Unit
 ) {
+    val viewModel = SettingsScreenViewModel(ProgramDataRepositoryImpl())
     val localization = Vocabulary.localization
 
-    var darkTheme by remember { mutableStateOf(true) }
+    var useDarkTheme by remember { mutableStateOf(true) }
 
     Surface(
         shape = RoundedCornerShape(10.dp),
@@ -144,9 +143,9 @@ fun SettingsScreen(
                 )
 
                 Switch(
-                    checked = darkTheme,
+                    checked = useDarkTheme,
                     onCheckedChange = {
-                        darkTheme = it
+                        useDarkTheme = it
                         themeSetter(it)
                     },
                     colors = SwitchDefaults.colors(
@@ -173,7 +172,12 @@ fun SettingsScreen(
                 Spacer(Modifier.width(25.dp))
 
                 Button(
-                    onClick = { },
+                    onClick = {
+                        SettingsScreenEvent.SaveSettings(
+                            language = localization.locale.language,
+                            useDarkTheme = useDarkTheme
+                        ).let(viewModel::onEvent)
+                    },
                     modifier = Modifier.width(buttonWidth)
                 ) {
                     Text(localization.save())

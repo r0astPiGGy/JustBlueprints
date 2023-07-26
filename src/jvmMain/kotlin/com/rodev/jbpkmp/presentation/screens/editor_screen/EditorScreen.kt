@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
 import com.rodev.jbpkmp.ViewPortPreview
 import com.rodev.jbpkmp.presentation.components.Sheet
 import com.rodev.jbpkmp.presentation.navigation.NavController
-import com.rodev.jbpkmp.presentation.screens.editor_screen.components.SettingsScreen
+import com.rodev.jbpkmp.presentation.screens.settings_screen.SettingsScreen
 import com.rodev.jbpkmp.presentation.screens.editor_screen.components.ToolBar
 
 @Composable

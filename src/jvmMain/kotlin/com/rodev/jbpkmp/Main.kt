@@ -8,8 +8,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.window.singleWindowApplication
+import com.rodev.jbpkmp.data.ProgramDataRepositoryImpl
 import com.rodev.jbpkmp.presentation.localization.Localization
-import com.rodev.jbpkmp.presentation.localization.RUSSIAN
 import com.rodev.jbpkmp.presentation.localization.appName
 import com.rodev.jbpkmp.presentation.navigation.JustBlueprintsNavigationHost
 import com.rodev.jbpkmp.presentation.navigation.Screen
@@ -28,8 +28,10 @@ fun main() = singleWindowApplication(
 ) {
     val navController by rememberNavController(Screen.WelcomeScreen.name)
 
-    var locale by remember { mutableStateOf(RUSSIAN) }
-    var useDarkTheme by remember { mutableStateOf(true) }
+    val settings = ProgramDataRepositoryImpl().load().settings
+
+    var locale by remember { mutableStateOf(Locale(settings.languageCode)) }
+    var useDarkTheme by remember { mutableStateOf(settings.useDarkTheme) }
 
     AppTheme(useDarkTheme = useDarkTheme) {
         CompositionLocalProvider(
