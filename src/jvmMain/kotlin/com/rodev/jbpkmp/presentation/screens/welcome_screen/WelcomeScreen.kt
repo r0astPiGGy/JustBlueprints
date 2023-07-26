@@ -116,12 +116,11 @@ private fun WelcomePanel(
         }
     }
 
-    if (isCreateProjectDialogOpen) {
-        CreateProjectDialog(
-            onDismissRequest = { isCreateProjectDialogOpen = false },
-            viewModel = viewModel
-        )
-    }
+    CreateProjectDialog(
+        presented = isCreateProjectDialogOpen,
+        onDismissRequest = { isCreateProjectDialogOpen = false },
+        viewModel = viewModel
+    )
 
     if (isFileDialogOpen) {
         FileDialog(
