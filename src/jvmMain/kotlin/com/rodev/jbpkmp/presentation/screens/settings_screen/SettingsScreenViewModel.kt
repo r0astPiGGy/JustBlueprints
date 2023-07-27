@@ -3,7 +3,7 @@ package com.rodev.jbpkmp.presentation.screens.settings_screen
 import com.rodev.jbpkmp.domain.repository.ProgramDataRepository
 
 class SettingsScreenViewModel(
-    private val repository: ProgramDataRepository
+    val repository: ProgramDataRepository
 ) {
     fun onEvent(event: SettingsScreenEvent) {
         when (event) {

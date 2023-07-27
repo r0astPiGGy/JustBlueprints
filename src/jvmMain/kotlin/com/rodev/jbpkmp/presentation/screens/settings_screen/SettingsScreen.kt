@@ -52,7 +52,7 @@ fun SettingsScreen(
     val viewModel = SettingsScreenViewModel(ProgramDataRepositoryImpl())
     val localization = Vocabulary.localization
 
-    var useDarkTheme by remember { mutableStateOf(true) }
+    var useDarkTheme by remember { mutableStateOf(viewModel.repository.load().settings.useDarkTheme) }
 
     Surface(
         shape = RoundedCornerShape(10.dp),
