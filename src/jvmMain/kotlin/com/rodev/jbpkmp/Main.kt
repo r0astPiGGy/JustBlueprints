@@ -8,6 +8,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.window.singleWindowApplication
+import com.rodev.jbpkmp.data.GlobalDataSource
 import com.rodev.jbpkmp.data.ProgramDataRepositoryImpl
 import com.rodev.jbpkmp.presentation.localization.Localization
 import com.rodev.jbpkmp.presentation.localization.appName
@@ -23,24 +24,28 @@ typealias DarkThemeSetter = (Boolean) -> Unit
 val LocalMutableLocale = compositionLocalOf<LocaleSetter> { { } }
 val LocalMutableTheme = compositionLocalOf<DarkThemeSetter> { { } }
 
-fun main() = singleWindowApplication(
-    title = appName
-) {
-    val navController by rememberNavController(Screen.WelcomeScreen.name)
+fun main() {
+    GlobalDataSource.load()
 
-    val settings = ProgramDataRepositoryImpl().load().settings
+    singleWindowApplication(
+        title = appName
+    ) {
+        val navController by rememberNavController(Screen.WelcomeScreen.name)
 
-    var locale by remember { mutableStateOf(Locale(settings.languageCode)) }
-    var useDarkTheme by remember { mutableStateOf(settings.useDarkTheme) }
+        val settings = ProgramDataRepositoryImpl().load().settings
 
-    AppTheme(useDarkTheme = useDarkTheme) {
-        CompositionLocalProvider(
-            LocalMutableLocale provides { locale = it },
-            LocalMutableTheme provides { useDarkTheme = it }
-        ) {
-            Localization(locale = locale) {
-                Surface {
-                    JustBlueprintsNavigationHost(navController)
+        var locale by remember { mutableStateOf(Locale(settings.languageCode)) }
+        var useDarkTheme by remember { mutableStateOf(settings.useDarkTheme) }
+
+        AppTheme(useDarkTheme = useDarkTheme) {
+            CompositionLocalProvider(
+                LocalMutableLocale provides { locale = it },
+                LocalMutableTheme provides { useDarkTheme = it }
+            ) {
+                Localization(locale = locale) {
+                    Surface {
+                        JustBlueprintsNavigationHost(navController)
+                    }
                 }
             }
         }

@@ -1,34 +1,17 @@
 package com.rodev.jbpkmp.data
 
-import com.rodev.jbpkmp.domain.model.Action
-import com.rodev.jbpkmp.domain.model.Category
+import com.rodev.generator.action.entity.Action
+import com.rodev.generator.action.entity.Category
 import com.rodev.jbpkmp.domain.repository.ActionDataSource
-import com.rodev.jbpkmp.util.randomNode
-import com.rodev.nodeui.model.Node
 
-class ActionDataSourceImpl : ActionDataSource {
-
-    private val actions: List<Action> = listOf(
-        Action("a", "A", "functions.example"),
-        Action("b", "B", "functions.example"),
-        Action("c", "C", "functions.example"),
-        Action("e1", "Event", "events"),
-        Action("e2", "Sample Event", "events.sample"),
-        Action("e3", "Inner Event", "events.sample.inner"),
-        Action("e4", "Inner Event2", "events.sample.inner"),
-        Action("e5", "Inner Event3", "events.sample.inner"),
-    )
-
-    private val categories: List<Category> = listOf(
-        Category("functions", "Functions"),
-        Category("functions.example", "Examples"),
-        Category("events", "Events"),
-        Category("events.sample", "Sample"),
-        Category("events.sample.inner", "Inner")
-    )
+class ActionDataSourceImpl(
+    actions: List<Action>,
+    categories: List<Category>
+) : ActionDataSource {
 
     private val categoriesByPath: MutableMap<String, Category> = hashMapOf()
     private val actionsByCategory: MutableMap<String, MutableList<Action>> = hashMapOf()
+    private val actionsById: MutableMap<String, Action> = hashMapOf()
 
     init {
         categories.forEach {
@@ -39,11 +22,9 @@ class ActionDataSourceImpl : ActionDataSource {
             actionsByCategory
                 .computeIfAbsent(it.category) { ArrayList() }
                     .add(it)
-        }
-    }
 
-    override fun getNodeById(id: String): Node {
-        return randomNode()
+            actionsById[it.id] = it
+        }
     }
 
     override fun <T> getActions(
@@ -55,6 +36,10 @@ class ActionDataSourceImpl : ActionDataSource {
         rootTransformFunction,
         leafTransformFunction
     ).transform()
+
+    override fun getActionById(id: String): Action {
+        return actionsById[id]!!
+    }
 }
 
 private class ActionTransformHelper<T>(
@@ -73,18 +58,18 @@ private class ActionTransformHelper<T>(
 
     fun addActionsToCategory(path: String, actions: List<Action>) {
         getCategoryWrapper(path)
-            .actions
-            .addAll(actions.map(leafTransformFunction))
+            ?.actions
+            ?.addAll(actions.map(leafTransformFunction))
     }
 
-    fun getCategoryWrapper(path: String): CategoryWrapper {
+    fun getCategoryWrapper(path: String): CategoryWrapper? {
         val split = path.split(".")
 
         var categoryWrapper: CategoryWrapper = rootComponent
         for (s in split) {
             categoryWrapper = categoryWrapper.getChildCategory(s) {
-                categoriesByPath[it]!!
-            }
+                categoriesByPath[it]
+            } ?: return null
         }
 
         return categoryWrapper
@@ -105,13 +90,14 @@ private class ActionTransformHelper<T>(
         val categories = mutableListOf<CategoryWrapper>()
         val actions = mutableListOf<T>()
 
-        fun getChildCategory(path: String, categoryProvider: (String) -> Category): CategoryWrapper {
-            return childCategories.computeIfAbsent(path) {
-                val resolvedPath = computePath(path)
+        fun getChildCategory(path: String, categoryProvider: (String) -> Category?): CategoryWrapper? {
+            val resolvedPath = computePath(path)
+            val category = categoryProvider(resolvedPath) ?: return null
 
+            return childCategories.computeIfAbsent(path) {
                 val child = CategoryWrapper(
                     path = resolvedPath,
-                    category = categoryProvider(resolvedPath)
+                    category = category
                 )
 
                 categories += child

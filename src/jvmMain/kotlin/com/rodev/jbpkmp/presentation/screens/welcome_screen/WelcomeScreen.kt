@@ -29,14 +29,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.rodev.jbpkmp.LocalMutableLocale
 import com.rodev.jbpkmp.data.ProgramDataRepositoryImpl
-import com.rodev.jbpkmp.presentation.localization.Vocabulary
-import com.rodev.jbpkmp.presentation.localization.appName
-import com.rodev.jbpkmp.presentation.localization.authors
-import com.rodev.jbpkmp.presentation.localization.chooseFile
-import com.rodev.jbpkmp.presentation.localization.createNewProject
-import com.rodev.jbpkmp.presentation.localization.noRecentProjects
-import com.rodev.jbpkmp.presentation.localization.openProject
+import com.rodev.jbpkmp.presentation.localization.*
 import com.rodev.jbpkmp.presentation.navigation.NavController
 import com.rodev.jbpkmp.presentation.navigation.Screen
 import com.rodev.jbpkmp.presentation.screens.welcome_screen.components.CreateProjectDialog

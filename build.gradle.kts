@@ -30,6 +30,7 @@ kotlin {
             dependencies {
                 implementation(compose.desktop.currentOs)
                 implementation(project(":node-ui"))
+                implementation(project(":action-generator"))
             }
         }
         val jvmTest by getting

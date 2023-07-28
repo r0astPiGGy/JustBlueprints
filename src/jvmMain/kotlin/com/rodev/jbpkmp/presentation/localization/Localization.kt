@@ -8,11 +8,16 @@ import java.util.Locale
 
 // Source: https://github.com/TechnokratosDev/jetpack-compose-localization
 
+val RUSSIAN = Locale("ru")
+val ENGLISH = Locale("en")
+
 internal val defaultLocalization: Localization = Localization(RUSSIAN)
 
 private val supportedLocales: MutableSet<Locale> = mutableSetOf()
 
 internal val localizationMap = hashMapOf<Locale, Localization>()
+
+val supportedLocalesNow = registerSupportedLocales(RUSSIAN, ENGLISH)
 
 data class Localization(
     val locale: Locale,

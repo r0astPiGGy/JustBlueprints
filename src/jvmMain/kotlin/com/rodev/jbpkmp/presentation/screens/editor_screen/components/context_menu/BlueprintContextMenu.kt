@@ -2,30 +2,15 @@ package com.rodev.jbpkmp.presentation.screens.editor_screen.components.context_m
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.VerticalScrollbar
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.foundation.*
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
-import androidx.compose.material.TextField
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Search
@@ -42,7 +27,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.rodev.jbpkmp.data.GlobalDataSource
 
 typealias ContextMenuItemProvider = () -> List<ContextTreeNode>
 
@@ -69,71 +56,74 @@ fun BlueprintContextMenu(
         val contextMenuModel = remember { contextMenuModelProvider() }
         val treeNodes = remember { contextMenuModel.contextMenuItemProvider() }
 
-        Column(
-            modifier = Modifier
-                .requiredSize(500.dp)
-                .border(1.dp, contextMenuModel.borderColor, RoundedCornerShape(10.dp))
+        Surface(
+            shape = RoundedCornerShape(10.dp),
+            border = BorderStroke(1.dp, contextMenuModel.borderColor)
         ) {
-            var queryInput by remember { mutableStateOf("") }
-
-            TextField(
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colors.surface)
-                    .clip(
-                        RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp)
-                    ),
-                value = queryInput,
-                onValueChange = { queryInput = it },
-                singleLine = true,
-                placeholder = { Text("Search...") },
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) }
-            )
-
-            Box(
-                modifier = Modifier.fillMaxSize()
-                    .background(MaterialTheme.colors.surface)
-                    .padding(10.dp)
+                    .requiredSize(500.dp)
             ) {
-                // Updates visibility of tree nodes when input changes
-                LaunchedEffect(queryInput) {
-                    val predicate: TreeQuery = { name ->
-                        name.lowercase().contains(queryInput.lowercase())
-                    }
+                var queryInput by remember { mutableStateOf("") }
 
-                    treeNodes.forEach { treeNode ->
-                        treeNode.updateVisibility {
-                            predicate(it.name)
-                        }
-                    }
-                }
-
-                val scrollState = rememberLazyListState()
-
-                CompositionLocalProvider(
-                    LocalOnTreeNodeClick provides onTreeNodeClick
-                ) {
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(end = 12.dp),
-                        state = scrollState
-                    ) {
-                        items(treeNodes) {
-                            TreeNode(it)
-                            Spacer(modifier = Modifier.height(5.dp))
-                        }
-                    }
-                }
-
-                VerticalScrollbar(
+                TextField(
                     modifier = Modifier
-                        .align(Alignment.CenterEnd)
-                        .fillMaxHeight(),
-                    adapter = rememberScrollbarAdapter(
-                        scrollState = scrollState
-                    )
+                        .fillMaxWidth()
+                        .background(MaterialTheme.colors.surface)
+                        .clip(
+                            RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp)
+                        ),
+                    value = queryInput,
+                    onValueChange = { queryInput = it },
+                    singleLine = true,
+                    placeholder = { Text("Search...") },
+                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) }
                 )
+
+                Box(
+                    modifier = Modifier.fillMaxSize()
+                        .background(MaterialTheme.colors.surface)
+                        .padding(10.dp)
+                ) {
+                    // Updates visibility of tree nodes when input changes
+                    LaunchedEffect(queryInput) {
+                        val predicate: TreeQuery = { name ->
+                            name.lowercase().contains(queryInput.lowercase())
+                        }
+
+                        treeNodes.forEach { treeNode ->
+                            treeNode.updateVisibility {
+                                predicate(it.name)
+                            }
+                        }
+                    }
+
+                    val scrollState = rememberScrollState()
+
+                    CompositionLocalProvider(
+                        LocalOnTreeNodeClick provides onTreeNodeClick
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(end = 12.dp)
+                                .verticalScroll(state = scrollState),
+                        ) {
+                            treeNodes.forEach {
+                                TreeNode(it)
+                            }
+                        }
+                    }
+
+                    VerticalScrollbar(
+                        modifier = Modifier
+                            .align(Alignment.CenterEnd)
+                            .fillMaxHeight(),
+                        adapter = rememberScrollbarAdapter(
+                            scrollState = scrollState
+                        )
+                    )
+                }
             }
         }
     }
@@ -169,18 +159,28 @@ fun TreeNodeLeaf(
     if (nodeLeaf.visible) {
         val onTreeNodeClick = LocalOnTreeNodeClick.current
 
-        Box(
+        Row (
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(5.dp))
                 .clickable { onTreeNodeClick(nodeLeaf) }
         ) {
+            Spacer(
+                modifier = Modifier.width(5.dp)
+            )
+            Image(
+                painter = GlobalDataSource.getIconById(nodeLeaf.id),
+                modifier = Modifier
+                    .size(25.dp),
+                contentDescription = null
+            )
             Text(
                 text = nodeLeaf.name,
                 modifier = Modifier.padding(2.dp),
                 color = MaterialTheme.colors.onSurface
             )
         }
+        Spacer(modifier = Modifier.height(5.dp))
     }
 }
 
@@ -190,7 +190,7 @@ fun TreeNodeRoot(
 ) {
     if (!nodeRoot.visible) return
 
-    var visible by remember { mutableStateOf(true) }
+    var visible by remember { mutableStateOf(false) }
     val rotation by animateFloatAsState(
         targetValue = if (visible) 0F else -90F
     )
@@ -225,4 +225,5 @@ fun TreeNodeRoot(
             }
         }
     }
+    Spacer(modifier = Modifier.height(5.dp))
 }

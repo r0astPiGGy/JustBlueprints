@@ -14,14 +14,17 @@ fun Sheet(
     presented: Boolean,
     content: @Composable () -> Unit
 ) {
-    Popup(
-        focusable = true
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Black.copy(alpha = 0.32f)),
-            contentAlignment = Alignment.Center
-        ) { content() }
+    if (presented) {
+        Popup(
+            focusable = true
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.32f)),
+                contentAlignment = Alignment.Center
+            ) { content() }
+        }
     }
+
 }

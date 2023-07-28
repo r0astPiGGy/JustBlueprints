@@ -16,11 +16,11 @@ abstract class NodeStateFactory(
         )
 
         node.inputPins
-            .map(pinRowStateFactory::createInputPinRowState)
+            .map { pinRowStateFactory.createInputPinRowState(node, it) }
             .forEach(nodeState.inputPins::add)
 
         node.outputPins
-            .map(pinRowStateFactory::createOutputPinRowState)
+            .map { pinRowStateFactory.createOutputPinRowState(node, it) }
             .forEach(nodeState.outputPins::add)
 
 

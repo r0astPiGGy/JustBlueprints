@@ -6,6 +6,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import com.rodev.jbpkmp.domain.repository.ActionDataSource
+import com.rodev.jbpkmp.domain.repository.NodeDataSource
+import com.rodev.jbpkmp.domain.repository.getNodeById
 import com.rodev.jbpkmp.presentation.screens.editor_screen.components.context_menu.ContextMenuItemProvider
 import com.rodev.jbpkmp.presentation.screens.editor_screen.components.context_menu.ContextMenuModel
 import com.rodev.jbpkmp.presentation.screens.editor_screen.components.context_menu.ContextTreeNode
@@ -23,7 +25,8 @@ class ViewPortViewModel(
     pinTypeComparator: PinTypeComparator = PinTypeComparator.Default,
     nodeStateFactory: NodeStateFactory,
     wireFactory: WireFactory = WireFactory(),
-    private val actionDataSource: ActionDataSource
+    private val actionDataSource: ActionDataSource,
+    private val nodeDataSource: NodeDataSource
 ) : GraphViewModel(
     nodeStateFactory = nodeStateFactory,
     pinTypeComparator = pinTypeComparator,
@@ -70,7 +73,7 @@ class ViewPortViewModel(
 
                 onEvent(
                     NodeAddEvent(
-                        node = actionDataSource.getNodeById(event.treeNode.id).copy(
+                        node = nodeDataSource.getNodeById(event.treeNode.id).copy(
                             x = x,
                             y = y
                         )
