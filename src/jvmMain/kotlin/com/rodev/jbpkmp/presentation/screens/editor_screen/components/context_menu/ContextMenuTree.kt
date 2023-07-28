@@ -1,8 +1,15 @@
 package com.rodev.jbpkmp.presentation.screens.editor_screen.components.context_menu
 
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.painter.BitmapPainter
+import androidx.compose.ui.graphics.painter.ColorPainter
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.res.painterResource
 
 sealed class ContextTreeNode {
     abstract val name: String
@@ -18,9 +25,22 @@ sealed class ContextTreeNode {
 
     class Leaf(
         override val name: String,
-        val id: String
-    ) : ContextTreeNode()
+        val id: String,
+        private val iconProvider: IconProvider
+    ) : ContextTreeNode() {
+
+        @get:Composable
+        val icon: Painter
+            get() {
+                val icon = iconProvider() ?: return ColorPainter(Color.White)
+
+                return BitmapPainter(icon)
+            }
+
+    }
 }
+
+typealias IconProvider = () -> ImageBitmap?
 
 fun ContextTreeNode.updateVisibility(predicate: (ContextTreeNode.Leaf) -> Boolean): Boolean {
     when (this) {
@@ -44,42 +64,4 @@ fun ContextTreeNode.updateVisibility(predicate: (ContextTreeNode.Leaf) -> Boolea
             return result
         }
     }
-}
-
-class TreeNodeBuilder private constructor() : RootBuilderScope {
-
-    private val treeNodes = mutableListOf<ContextTreeNode>()
-
-    override fun root(name: String, content: RootBuilderScope.() -> Unit) {
-        val treeNodeBuilder = TreeNodeBuilder()
-        content(treeNodeBuilder)
-        treeNodes.add(ContextTreeNode.Root(treeNodeBuilder.build(), name))
-    }
-
-    override fun leaf(name: String, id: String) {
-        treeNodes.add(ContextTreeNode.Leaf(name, id))
-    }
-
-    private fun build(): List<ContextTreeNode> {
-        return treeNodes
-    }
-
-    companion object {
-
-        fun create(content: RootBuilderScope.() -> Unit): List<ContextTreeNode> {
-            val builder = TreeNodeBuilder()
-
-            content(builder)
-
-            return builder.build()
-        }
-
-    }
-
-}
-
-interface RootBuilderScope {
-    fun root(name: String, content: RootBuilderScope.() -> Unit)
-
-    fun leaf(name: String, id: String)
 }

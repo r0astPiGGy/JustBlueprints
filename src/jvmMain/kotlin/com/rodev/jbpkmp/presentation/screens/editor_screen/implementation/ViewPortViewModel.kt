@@ -5,13 +5,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import com.rodev.jbpkmp.data.GlobalDataSource
+import com.rodev.jbpkmp.data.iconPath
 import com.rodev.jbpkmp.domain.repository.ActionDataSource
 import com.rodev.jbpkmp.domain.repository.NodeDataSource
 import com.rodev.jbpkmp.domain.repository.getNodeById
-import com.rodev.jbpkmp.presentation.screens.editor_screen.components.context_menu.ContextMenuItemProvider
 import com.rodev.jbpkmp.presentation.screens.editor_screen.components.context_menu.ContextMenuModel
 import com.rodev.jbpkmp.presentation.screens.editor_screen.components.context_menu.ContextTreeNode
-import com.rodev.jbpkmp.presentation.screens.editor_screen.components.context_menu.TreeNodeBuilder
 import com.rodev.nodeui.components.graph.GraphEvent
 import com.rodev.nodeui.components.graph.GraphViewModel
 import com.rodev.nodeui.components.graph.NodeAddEvent
@@ -56,7 +56,9 @@ class ViewPortViewModel(
                                 ContextTreeNode.Root(child, category.name)
                             },
                             leafTransformFunction = {
-                                ContextTreeNode.Leaf(name = it.name, id = it.id)
+                                ContextTreeNode.Leaf(name = it.name, id = it.id) {
+                                    GlobalDataSource.getIconById(it.iconPath)
+                                }
                             }
                         )
                     }
@@ -97,28 +99,6 @@ class ViewPortViewModel(
         // Show context menu
     }
 
-}
-
-private fun createSampleTree(): List<ContextTreeNode> {
-    return TreeNodeBuilder.create {
-        root(name = "Функции") {
-            root(name = "Разное") {
-                leaf("Test4Function", "test4")
-            }
-            leaf("Test1Function", "test1")
-            leaf("TestFunction", "test")
-        }
-        root(name = "Ивенты") {
-            root(name = "Игрок") {
-                leaf("Игрок зашёл", "player_join")
-                leaf("Игрок вышел", "player_quit")
-            }
-            root(name = "Моб") {
-                leaf("Моб умер", "mob_death")
-                leaf("Моб заспавнился", "mob_spawn")
-            }
-        }
-    }
 }
 
 object CloseContextMenuGraphEvent : GraphEvent

@@ -1,8 +1,7 @@
 package com.rodev.jbpkmp.data
 
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.ColorPainter
-import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.res.loadImageBitmap
 import androidx.compose.ui.res.useResource
 import com.rodev.generator.action.entity.Action
 import com.rodev.generator.action.entity.Category
@@ -24,7 +23,7 @@ object GlobalDataSource : NodeDataSource {
     val categories: List<Category>
         get() = mutableCategories
 
-    private val mutableIcons = mutableMapOf<String, Painter>()
+    private val mutableIcons = mutableMapOf<String, ImageBitmap>()
 
     private val mutableNodeModels = mutableMapOf<String, NodeModel>()
 
@@ -33,25 +32,32 @@ object GlobalDataSource : NodeDataSource {
         mutableActions.clear()
         mutableNodeModels.clear()
         mutableCategories.clear()
+        mutableIcons.clear()
 
         useResource<List<Action>>("data/actions.json", json::decodeFromStream).let(mutableActions::addAll)
         useResource<List<Category>>("data/categories.json", json::decodeFromStream).let(mutableCategories::addAll)
         useResource<List<NodeModel>>("data/node-models.json", json::decodeFromStream).forEach { mutableNodeModels[it.id] = it }
 
+        mutableActions.forEach {
+            loadIconByPath(it.iconPath)
+        }
     }
 
-    fun getIconById(id: String): Painter {
-        val painter = mutableIcons[id]
-
-        if (painter != null) return painter
-
-        println("Icon by id $id not found. Using default one")
-
-        return ColorPainter(Color.White)
+    private fun loadIconByPath(path: String) {
+        try {
+            mutableIcons[path] = useResource(path, ::loadImageBitmap)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
-    override fun getNodeModelById(id: String): NodeModel {
-        return mutableNodeModels[id]!!
-    }
+    fun getIconById(id: String) = mutableIcons[id]
+
+    override fun getNodeModelById(id: String) = mutableNodeModels[id]!!
 
 }
+
+val Action.iconPath: String
+    get() {
+        return "images/icons/$iconNamespace/$id.png"
+    }

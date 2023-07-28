@@ -1,5 +1,6 @@
 package com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.node
 
+import com.rodev.jbpkmp.data.iconPath
 import com.rodev.jbpkmp.domain.model.NodeEntity
 import com.rodev.jbpkmp.domain.repository.ActionDataSource
 import com.rodev.jbpkmp.domain.repository.NodeDataSource
@@ -22,7 +23,8 @@ class DefaultNodeStateFactory(
             NodeEntity(
                 id = typeId,
                 header = action.name,
-                headerColor = randomColor()
+                headerColor = randomColor(),
+                iconPath = action.iconPath
             )
         )
     }

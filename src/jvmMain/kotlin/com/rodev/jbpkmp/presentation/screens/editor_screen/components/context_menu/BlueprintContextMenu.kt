@@ -169,7 +169,7 @@ fun TreeNodeLeaf(
                 modifier = Modifier.width(5.dp)
             )
             Image(
-                painter = GlobalDataSource.getIconById(nodeLeaf.id),
+                painter = nodeLeaf.icon,
                 modifier = Modifier
                     .size(25.dp),
                 contentDescription = null
