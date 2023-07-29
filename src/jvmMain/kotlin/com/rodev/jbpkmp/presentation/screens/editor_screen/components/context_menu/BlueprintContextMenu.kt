@@ -26,6 +26,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -55,6 +57,11 @@ fun BlueprintContextMenu(
     ) {
         val contextMenuModel = remember { contextMenuModelProvider() }
         val treeNodes = remember { contextMenuModel.contextMenuItemProvider() }
+        val focusRequester = remember { FocusRequester() }
+
+        LaunchedEffect(Unit) {
+            focusRequester.requestFocus()
+        }
 
         Surface(
             shape = RoundedCornerShape(10.dp),
@@ -68,6 +75,7 @@ fun BlueprintContextMenu(
 
                 TextField(
                     modifier = Modifier
+                        .focusRequester(focusRequester)
                         .fillMaxWidth()
                         .background(MaterialTheme.colors.surface)
                         .clip(
