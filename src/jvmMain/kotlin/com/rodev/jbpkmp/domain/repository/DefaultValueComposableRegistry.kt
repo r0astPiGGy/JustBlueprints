@@ -1,4 +1,4 @@
-package com.rodev.jbpkmp.domain.model
+package com.rodev.jbpkmp.domain.repository
 
 import com.rodev.generator.action.entity.PinModel
 import com.rodev.nodeui.components.pin.DefaultValueComposable
@@ -22,6 +22,7 @@ interface DefaultValueComposableRegistry {
 
     }
 }
+
 
 
 typealias DefaultValueComposableProvider = (PinModel) -> DefaultValueComposable

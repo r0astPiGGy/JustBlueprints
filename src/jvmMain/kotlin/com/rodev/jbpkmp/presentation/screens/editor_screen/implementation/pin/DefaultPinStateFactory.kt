@@ -9,9 +9,8 @@ import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
 import com.rodev.generator.action.entity.NodeModel
 import com.rodev.generator.action.entity.PinModel
-import com.rodev.generator.action.entity.PinType
 import com.rodev.generator.action.entity.extra_data.EnumExtraData
-import com.rodev.jbpkmp.domain.model.DefaultValueComposableRegistry
+import com.rodev.jbpkmp.domain.repository.DefaultValueComposableRegistry
 import com.rodev.jbpkmp.domain.model.PinEntity
 import com.rodev.jbpkmp.domain.repository.NodeDataSource
 import com.rodev.jbpkmp.domain.repository.PinTypeDataSource
@@ -19,7 +18,6 @@ import com.rodev.jbpkmp.domain.repository.get
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.BooleanInputComposable
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.EnumInputComposable
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.StringInputComposable
-import com.rodev.jbpkmp.util.randomColor
 import com.rodev.nodeui.components.pin.*
 import com.rodev.nodeui.model.ConnectionType
 import com.rodev.nodeui.model.Node
