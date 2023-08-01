@@ -5,12 +5,12 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 open class StatefulPinDrawFunction(
     private val connectedDrawFunction: PinDrawFunction,
     private val notConnectedDrawFunction: PinDrawFunction
-) : PinDrawFunction() {
+) : PinDrawFunction {
     final override fun DrawScope.onDraw(pinState: PinState) {
         if (pinState.connected) {
-            connectedDrawFunction.draw(this, pinState)
+            connectedDrawFunction.drawPin(this, pinState)
         } else {
-            notConnectedDrawFunction.draw(this, pinState)
+            notConnectedDrawFunction.drawPin(this, pinState)
         }
     }
 }

@@ -10,7 +10,6 @@ import androidx.compose.ui.input.pointer.PointerButton
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
-import com.rodev.jbpkmp.data.ActionDataSourceImpl
 import com.rodev.jbpkmp.data.GlobalDataSource
 import com.rodev.jbpkmp.presentation.screens.editor_screen.components.context_menu.BlueprintContextMenu
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.*
@@ -45,26 +44,21 @@ fun main() {
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ViewPortPreview() {
-    val actionDataSource = remember {
-        ActionDataSourceImpl(
-            GlobalDataSource.actions,
-            GlobalDataSource.categories
-        )
-    }
-
     val viewPortModel = remember {
         ViewPortViewModel(
             nodeStateFactory = DefaultNodeStateFactory(
-                actionDataSource = actionDataSource,
+                actionDataSource = GlobalDataSource,
                 nodeDataSource = GlobalDataSource,
+                nodeTypeDataSource = GlobalDataSource,
                 pinRowStateFactory = DefaultPinRowStateFactory(
                     pinStateFactory = DefaultPinStateFactory(
-                        nodeDataSource = GlobalDataSource
+                        nodeDataSource = GlobalDataSource,
+                        pinTypeDataSource = GlobalDataSource
                     )
                 )
             ),
             pinTypeComparator = DefaultPinTypeComparator,
-            actionDataSource = actionDataSource,
+            actionDataSource = GlobalDataSource,
             nodeDataSource = GlobalDataSource
         )
     }

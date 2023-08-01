@@ -1,0 +1,22 @@
+[
+  {
+    "id": "function",
+    "color": "100, 210, 255"
+  },
+  {
+    "id": "pure_function",
+    "color": "4, 222, 113"
+  },
+  {
+    "id": "event",
+    "color": "255, 69, 58"
+  },
+  {
+    "id": "game_value_getter",
+    "color": "191, 90, 242"
+  },
+  {
+    "id": "branch",
+    "color": "142, 142, 147"
+  }
+]

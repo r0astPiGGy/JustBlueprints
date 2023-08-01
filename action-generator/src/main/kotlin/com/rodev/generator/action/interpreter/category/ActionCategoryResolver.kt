@@ -1,4 +1,4 @@
-package com.rodev.generator.action.interpreter
+package com.rodev.generator.action.interpreter.category
 
 import com.rodev.generator.action.ActionLogger
 import com.rodev.jmcc_extractor.entity.ActionData

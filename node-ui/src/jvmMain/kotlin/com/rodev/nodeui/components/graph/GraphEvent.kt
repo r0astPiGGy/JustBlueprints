@@ -10,5 +10,3 @@ data class NodeAddEvent(
 ) : GraphEvent
 
 object NodeClearEvent : GraphEvent
-
-data class NodeDeleteEvent(val node: UUID): GraphEvent

@@ -1,0 +1,30 @@
+[
+  {
+    "id" : "native_branch",
+    "type" : "branch",
+    "name" : "Ветвление",
+    "category" : "control",
+    "input" : [
+      {
+        "id": "exec",
+        "label": "",
+        "type": "exec"
+      },
+      {
+        "id" : "branch_condition",
+        "label" : "Условие",
+        "type" : "condition"
+      }
+    ],
+    "output" : [ {
+      "id" : "branch_true",
+      "label" : "True",
+      "type" : "exec"
+    }, {
+      "id" : "branch_false",
+      "label" : "False",
+      "type" : "exec"
+    } ],
+    "iconPath": "images/icons/native/native_branch.png"
+  }
+]

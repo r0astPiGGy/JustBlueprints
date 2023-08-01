@@ -39,6 +39,8 @@ class PinConnectionHandler(
         // Shouldn't connect pins with same connection type
         if (pinState.connectionTypeEquals(currentDraggingPin)) return false
 
+        if (!pinTypeComparator.connectable(currentDraggingPin, pinState)) return false
+
         return !pinState.connectedTo(currentDraggingPin)
     }
 

@@ -1,23 +1,13 @@
 package com.rodev.generator.action.interpreter
 
-import com.rodev.generator.action.LocaleProvider
-import com.rodev.generator.action.entity.Action
-import com.rodev.jmcc_extractor.entity.ActionData
+import com.rodev.generator.action.entity.NodeCompound
 
-class ActionInterpreter(
-    private val actionCategoryResolver: ActionCategoryResolver,
-    private val localeProvider: LocaleProvider
-) : ListInterpreter<ActionData, Action>() {
+interface ActionInterpreter<T> {
 
-    override fun interpretElement(input: ActionData): Action {
-        return Action(
-            id = input.id,
-            name = localeProvider.translateActionName(input),
-            input = emptySet(),
-            output = emptySet(),
-            iconNamespace = "actions",
-            category = actionCategoryResolver.resolveCategoryFor(input).toString()
-        )
+    fun interpret(list: List<T>): List<NodeCompound>
+
+    fun List<T>.interpret(mapFunction: (T) -> NodeCompound): List<NodeCompound> {
+        return map(mapFunction)
     }
 
 }

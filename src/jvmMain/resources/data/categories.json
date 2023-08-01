@@ -12,14 +12,6 @@
         "name": "Контроллер"
     },
     {
-        "path": "else",
-        "name": "Иначе"
-    },
-    {
-        "path": "empty",
-        "name": "creative_plus.category.empty_action.name"
-    },
-    {
         "path": "entity.movement",
         "name": "Передвижение"
     },
@@ -210,5 +202,25 @@
     {
         "path": "start_process",
         "name": "Вызов процесса"
+    },
+    {
+        "path": "events.player",
+        "name": "События игрока"
+    },
+    {
+        "path": "events",
+        "name": "События"
+    },
+    {
+        "path": "events.entity",
+        "name": "События сущности"
+    },
+    {
+        "path": "events.world",
+        "name": "События мира"
+    },
+    {
+        "path": "game_values",
+        "name": "Игровые значения"
     }
 ]

@@ -1,0 +1,64 @@
+[ {
+  "id" : "item",
+  "color" : "99, 230, 226"
+}, {
+  "id" : "potion",
+  "color" : "255, 55, 95"
+}, {
+  "id" : "sound",
+  "color" : "94, 92, 230"
+}, {
+  "id" : "list",
+  "color" : "255, 214, 10"
+}, {
+  "id" : "any",
+  "color" : "99, 230, 226"
+}, {
+  "id" : "enum",
+  "color" : "50, 80, 252"
+}, {
+  "id" : "number",
+  "color" : "255, 69, 58"
+}, {
+  "id" : "condition",
+  "color" : "255, 59, 48"
+}, {
+  "id" : "boolean",
+  "color" : "255, 59, 48"
+}, {
+  "id" : "dictionary",
+  "color" : "255, 159, 10"
+}, {
+  "id" : "variable",
+  "color" : "48, 209, 88"
+}, {
+  "id" : "vector",
+  "color" : "99, 230, 226"
+}, {
+  "id" : "location",
+  "color" : "172, 142, 104"
+}, {
+  "id" : "particle",
+  "color" : "191, 90, 242"
+}, {
+  "id" : "dynamic",
+  "color" : "120, 120, 122"
+}, {
+  "id" : "text",
+  "color" : "99, 230, 226"
+}, {
+  "id" : "map",
+  "color" : "255, 159, 10"
+}, {
+  "id" : "exec",
+  "color" : "255, 255, 255"
+}, {
+  "id" : "entity",
+  "color" : "99, 230, 226"
+}, {
+  "id" : "block",
+  "color" : "99, 230, 226"
+}, {
+  "id" : "player",
+  "color" : "1, 167, 246"
+} ]

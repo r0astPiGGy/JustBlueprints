@@ -28,7 +28,7 @@ import com.rodev.nodeui.components.pin.row.PinRowState
 import com.rodev.nodeui.components.pin.row.SnapshotRequester
 import com.rodev.nodeui.util.MutableCoordinate
 
-private const val pinSize = 15
+private const val pinSize = 20
 
 @Composable
 fun PinRow(

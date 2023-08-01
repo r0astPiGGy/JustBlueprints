@@ -1,0 +1,26 @@
+[
+  {
+    "path": "events.player",
+    "name": "События игрока"
+  },
+  {
+    "path": "events",
+    "name": "События"
+  },
+  {
+    "path": "events.entity",
+    "name": "События сущности"
+  },
+  {
+    "path": "events.world",
+    "name": "События мира"
+  },
+  {
+    "path": "game_values",
+    "name": "Игровые значения"
+  },
+  {
+    "path": "no-category",
+    "name": "Без категории"
+  }
+]

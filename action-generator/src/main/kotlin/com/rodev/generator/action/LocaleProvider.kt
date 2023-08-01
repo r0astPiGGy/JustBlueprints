@@ -1,8 +1,11 @@
 package com.rodev.generator.action
 
+import com.rodev.generator.action.entity.Action
 import com.rodev.jmcc_extractor.entity.ActionData
 import com.rodev.jmcc_extractor.entity.Argument
-import com.rodev.jmcc_extractor.entity.RawActionData
+import com.rodev.jmcc_extractor.entity.EventData
+import com.rodev.jmcc_extractor.entity.GameValueData
+import java.util.*
 
 class LocaleProvider(
     private val localeDataSource: LocaleDataSource
@@ -17,15 +20,42 @@ class LocaleProvider(
         return localeDataSource.getOrDefault(localeId)
     }
 
-    fun translateCategory(rawActionData: RawActionData): String {
-        val key = resolveTranslationKeyForCategory(rawActionData.category) + ".name"
+    fun translateCategory(action: Action): String {
+        val split = action.category.split(".")
+
+        return if (split.size < 2) {
+            val key = resolveTranslationKeyForCategory(split[0]) + ".name"
+            localeDataSource.getOrDefault(key)
+        } else {
+            translateSubCategory(split[0], split[1])
+        }
+    }
+
+    fun translateEventName(eventData: EventData): String {
+        val key = "creative_plus.trigger.${eventData.id}.name"
+
         return localeDataSource.getOrDefault(key)
     }
 
-    fun translateSubCategory(rawActionData: RawActionData): String {
-        val parentKey = resolveTranslationKeyForCategory(rawActionData.category)
-        val localeKey = String.format("%s.subcategory.%s.name", parentKey, rawActionData.subcategory)
+    fun translateGameValue(gameValueData: GameValueData): String {
+        val key = String.format("creative_plus.game_value.%s.name", gameValueData.id)
+
+        return localeDataSource.getOrDefault(key)
+    }
+
+    private fun translateSubCategory(parentCategory: String, category: String): String {
+        val parentKey = resolveTranslationKeyForCategory(parentCategory)
+        val localeKey = String.format("%s.subcategory.%s.name", parentKey, category)
         return localeDataSource.getOrDefault(localeKey)
+    }
+
+    fun translateEnumName(actionData: ActionData, arg: Argument, rawEnumValue: String): String {
+        val key = String.format(
+            "creative_plus.action.%s.argument.%s.enum.%s.name",
+            actionData.id, arg.name, rawEnumValue.lowercase(Locale.getDefault())
+        )
+
+        return localeDataSource.getOrDefault(key)
     }
 
     private fun resolveTranslationKeyForCategory(category: String): String {

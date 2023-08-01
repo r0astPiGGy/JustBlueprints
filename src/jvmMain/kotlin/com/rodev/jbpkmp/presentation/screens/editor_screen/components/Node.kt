@@ -139,6 +139,7 @@ fun SimpleNode(
                         snapshotRequester = snapshotRequester,
                         parentCoordinate = inputPinContainerCoordinates
                     )
+                    Spacer(modifier = Modifier.height(5.dp))
                 }
             }
 
@@ -161,6 +162,7 @@ fun SimpleNode(
                         snapshotRequester = snapshotRequester,
                         parentCoordinate = outputPinContainerCoordinates
                     )
+                    Spacer(modifier = Modifier.height(5.dp))
                 }
             }
         }

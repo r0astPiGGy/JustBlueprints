@@ -63,8 +63,6 @@ open class GraphViewModel(
                 clearNodes()
             }
 
-            is NodeDeleteEvent -> TODO()
-
             else -> {}
         }
     }
@@ -76,6 +74,11 @@ open class GraphViewModel(
     fun load(graph: Graph) {
         clearNodes()
         graphFactory.load(graph).let { _nodeStates.addAll(it) }
+    }
+
+    fun deleteNode(nodeState: NodeState) {
+        pinConnectionHandler.disconnectAll(nodeState)
+        _nodeStates.remove(nodeState)
     }
 
     private fun clearNodes() {

@@ -8,6 +8,10 @@ data class Action(
     val name: String,
     val input: Set<String>,
     val output: Set<String>,
-    val iconNamespace: String,
+    val iconPath: String,
     val category: String
 )
+
+fun iconPathFrom(namespace: String, id: String) = iconDirectoryFrom(namespace) + id + ".png"
+
+fun iconDirectoryFrom(namespace: String) = "images/icons/$namespace/"

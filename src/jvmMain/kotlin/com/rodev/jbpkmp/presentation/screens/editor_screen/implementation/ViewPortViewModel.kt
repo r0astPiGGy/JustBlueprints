@@ -6,7 +6,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import com.rodev.jbpkmp.data.GlobalDataSource
-import com.rodev.jbpkmp.data.iconPath
 import com.rodev.jbpkmp.domain.repository.ActionDataSource
 import com.rodev.jbpkmp.domain.repository.NodeDataSource
 import com.rodev.jbpkmp.domain.repository.getNodeById

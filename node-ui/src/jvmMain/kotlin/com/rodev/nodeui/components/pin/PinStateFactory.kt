@@ -16,11 +16,18 @@ abstract class PinStateFactory {
     open fun createPinState(node: Node, pin: Pin, connectionType: ConnectionType): PinState {
         return PinState(
             id = pin.uniqueId,
-            pinRepresentation = createPinRepresentation(node, pin, connectionType)
+            pinRepresentation = createPinRepresentation(node, pin, connectionType),
+            defaultValueComposable = createDefaultValueComposable(node, pin, connectionType)
         ).apply {
             defaultValueComposable.setValue(pin.value)
         }
     }
+
+    protected open fun createDefaultValueComposable(
+        node: Node,
+        pin: Pin,
+        connectionType: ConnectionType
+    ): DefaultValueComposable = EmptyDefaultValueComposable
 
     protected abstract fun createPinRepresentation(node: Node, pin: Pin, connectionType: ConnectionType): PinRepresentation
 
