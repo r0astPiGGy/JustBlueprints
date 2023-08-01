@@ -109,7 +109,7 @@ fun CreateProjectDialog(
             selectionMode = JFileChooser.DIRECTORIES_ONLY
         ) {
             if (it != null) {
-                val event = WelcomeScreenEvent.CreateProject(projectName, it)
+                val event = WelcomeScreenEvent.CreateAndOpenProject(projectName, it)
                 viewModel.onEvent(event)
 
                 onDismissRequest()

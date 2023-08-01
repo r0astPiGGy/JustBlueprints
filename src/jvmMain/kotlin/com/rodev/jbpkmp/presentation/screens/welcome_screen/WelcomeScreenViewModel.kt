@@ -1,10 +1,13 @@
 package com.rodev.jbpkmp.presentation.screens.welcome_screen
 
-import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import com.rodev.jbpkmp.domain.model.Project
 import com.rodev.jbpkmp.domain.model.RecentProject
+import com.rodev.jbpkmp.domain.model.save
 import com.rodev.jbpkmp.domain.repository.ProgramDataRepository
+import com.rodev.jbpkmp.domain.repository.update
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.todayIn
@@ -15,8 +18,8 @@ import java.io.File
 class WelcomeScreenViewModel(
     private val repository: ProgramDataRepository
 ) {
-    private val _state = mutableStateOf(WelcomeScreenState())
-    val state: State<WelcomeScreenState>
+    private var _state by mutableStateOf(WelcomeScreenState())
+    val state: WelcomeScreenState
         get() = _state
 
     init {
@@ -25,65 +28,92 @@ class WelcomeScreenViewModel(
 
     fun onEvent(event: WelcomeScreenEvent) {
         when (event) {
-            is WelcomeScreenEvent.LoadProject -> {
+            is WelcomeScreenEvent.LoadAndOpenProject -> {
                 val projectJson = File(event.path).readText()
                 val project = Json.decodeFromString<Project>(projectJson)
+
                 val recentProject = RecentProject(
-                    project = project,
+                    name = project.name,
+                    path = project.path,
                     lastOpeningDate = Clock.System.todayIn(TimeZone.currentSystemDefault())
                 )
 
-                val programData = repository.load()
-                programData.projects.add(project)
-                programData.recentProjects.add(recentProject)
-
-                repository.save(programData)
-
-                getRecentProjects()
-            }
-
-            is WelcomeScreenEvent.CreateProject -> {
-                val directory = "${event.directory}/${event.name}"
-                val filePath = "$directory/${event.name}.json"
-
-                val project = Project(
-                    name = event.name, path = directory
-                )
-                val recentProject = RecentProject(
-                    project = project,
-                    lastOpeningDate = Clock.System.todayIn(TimeZone.currentSystemDefault())
-                )
-
-                val json = Json { prettyPrint = true }
-                val projectJson = json.encodeToString(project)
-                File(directory).mkdirs()
-                File(filePath).apply {
-                    createNewFile()
-                    writeText(projectJson)
+                repository.update {
+                    recentProjects.add(recentProject)
                 }
 
-                val programData = repository.load()
-                programData.projects.add(project)
-                programData.recentProjects.add(recentProject)
+                getRecentProjects()
 
-                repository.save(programData)
+                openProject(recentProject)
+            }
+
+            is WelcomeScreenEvent.CreateAndOpenProject -> {
+                val directory = "${event.directory}/${event.name}"
+
+                val project = Project(
+                    name = event.name,
+                    path = directory
+                )
+
+                val recentProject = RecentProject(
+                    name = event.name,
+                    path = directory,
+                    lastOpeningDate = Clock.System.todayIn(TimeZone.currentSystemDefault())
+                )
+
+                project.save()
+
+                repository.update {
+                    recentProjects.add(recentProject)
+                }
 
                 getRecentProjects()
+
+                openProject(recentProject)
             }
 
             is WelcomeScreenEvent.RemoveProject -> {
-                val programData = repository.load()
-                programData.recentProjects.remove(event.project)
-
-                repository.save(programData)
+                repository.update {
+                    recentProjects.remove(event.project)
+                }
 
                 getRecentProjects()
+            }
+
+            is WelcomeScreenEvent.OpenProject -> {
+                openProject(event.project)
             }
         }
     }
 
+    private fun openProject(project: RecentProject) {
+        updateState { it.copy(
+            loadProjectResult = LoadProjectResult.Success(
+                projectPath = project.path
+            )
+        ) }
+    }
+
+    fun resetState() {
+        updateState {
+            it.copy(
+                loadProjectResult = null
+            )
+        }
+    }
+
+    private fun updateState(block: (WelcomeScreenState) -> WelcomeScreenState) {
+        _state = block(_state)
+    }
+
     private fun getRecentProjects() {
         val data = repository.load()
-        _state.value = state.value.copy(recentProjects = data.recentProjects.reversed())
+
+        updateState {
+            it.copy(
+                // Sort
+                recentProjects = data.recentProjects.reversed()
+            )
+        }
     }
 }

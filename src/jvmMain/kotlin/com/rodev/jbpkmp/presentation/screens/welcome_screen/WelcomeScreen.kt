@@ -14,26 +14,24 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.rodev.jbpkmp.LocalMutableLocale
 import com.rodev.jbpkmp.data.ProgramDataRepositoryImpl
+import com.rodev.jbpkmp.domain.model.RecentProject
 import com.rodev.jbpkmp.presentation.localization.*
 import com.rodev.jbpkmp.presentation.navigation.NavController
 import com.rodev.jbpkmp.presentation.navigation.Screen
+import com.rodev.jbpkmp.presentation.navigation.argumentBundleOf
 import com.rodev.jbpkmp.presentation.screens.welcome_screen.components.CreateProjectDialog
 import com.rodev.jbpkmp.presentation.screens.welcome_screen.components.FileDialog
 import com.rodev.jbpkmp.presentation.screens.welcome_screen.components.RecentProjectItem
@@ -41,28 +39,44 @@ import javax.swing.JFileChooser
 
 @Composable
 fun WelcomeScreen(navController: NavController) {
-    val viewModel = WelcomeScreenViewModel(ProgramDataRepositoryImpl())
+    val viewModel = remember { WelcomeScreenViewModel(ProgramDataRepositoryImpl()) }
 
     Row {
         WelcomePanel(
             modifier = Modifier.weight(2f),
             viewModel = viewModel,
-            navController = navController
         )
 
         ProjectsPanel(
             modifier = Modifier.weight(1f),
-            viewModel = viewModel,
-            navController = navController
+            viewModel = viewModel
         )
+    }
+
+    LaunchedEffect(viewModel.state.loadProjectResult) {
+        viewModel.state.loadProjectResult?.let {
+            when(it) {
+                LoadProjectResult.Loading -> {
+
+                }
+                is LoadProjectResult.Failure -> {
+
+                }
+                is LoadProjectResult.Success -> {
+                    navController.navigate(Screen.EditorScreen.name, argumentBundleOf {
+                        putString("projectPath", it.projectPath)
+                    })
+                    viewModel.resetState()
+                }
+            }
+        }
     }
 }
 
 @Composable
 private fun WelcomePanel(
     modifier: Modifier = Modifier,
-    viewModel: WelcomeScreenViewModel,
-    navController: NavController
+    viewModel: WelcomeScreenViewModel
 ) {
     val localization = Vocabulary.localization
 
@@ -123,8 +137,7 @@ private fun WelcomePanel(
             type = JFileChooser.OPEN_DIALOG
         ) {
             if (it != null) {
-                WelcomeScreenEvent.LoadProject(it).let(viewModel::onEvent)
-                navController.navigate(Screen.EditorScreen.name)
+                WelcomeScreenEvent.LoadAndOpenProject(it).let(viewModel::onEvent)
             }
 
             isFileDialogOpen = false
@@ -135,18 +148,18 @@ private fun WelcomePanel(
 @Composable
 private fun ProjectsPanel(
     modifier: Modifier = Modifier,
-    viewModel: WelcomeScreenViewModel,
-    navController: NavController
+    viewModel: WelcomeScreenViewModel
 ) {
-    val state = viewModel.state.value
+    val state = viewModel.state
 
-    var selectedProjectPath by remember { mutableStateOf("") }
-    val onSelectionChange = { text: String ->
-        if (selectedProjectPath == text) {
-            navController.navigate(Screen.EditorScreen.name)
+    var selectedProject by remember { mutableStateOf<RecentProject?>(null) }
+
+    val onSelectionChange = { project: RecentProject ->
+        if (selectedProject == project) {
+            viewModel.onEvent(WelcomeScreenEvent.OpenProject(project))
         }
 
-        selectedProjectPath = text
+        selectedProject = project
     }
 
     if (state.recentProjects.isNotEmpty()) {
@@ -155,9 +168,8 @@ private fun ProjectsPanel(
                 .fillMaxHeight()
                 .background(MaterialTheme.colors.background)
         ) {
-            items(state.recentProjects.size) { index ->
-                val path = state.recentProjects[index].project.path
-                val selected = path == selectedProjectPath
+            items(state.recentProjects) { project ->
+                val selected = selectedProject == project
 
                 RecentProjectItem(
                     modifier = Modifier
@@ -165,18 +177,18 @@ private fun ProjectsPanel(
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(5.dp))
                         .background(
-                            if (path == selectedProjectPath) {
+                            if (selected) {
                                 MaterialTheme.colors.primary
                             } else {
                                 Color.Transparent
                             }
                         )
-                        .clickable { onSelectionChange(path) },
-                    name = state.recentProjects[index].project.name,
-                    path = state.recentProjects[index].project.path,
+                        .clickable { onSelectionChange(project) },
+                    name = project.name,
+                    path = project.path,
                     selected = selected,
                     onDeleteClick = {
-                        WelcomeScreenEvent.RemoveProject(state.recentProjects[index])
+                        WelcomeScreenEvent.RemoveProject(project)
                             .let(viewModel::onEvent)
                     }
                 )

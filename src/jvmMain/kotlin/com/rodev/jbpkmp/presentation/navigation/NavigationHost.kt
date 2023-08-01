@@ -24,9 +24,9 @@ class NavigationHost(
 @Composable
 fun NavigationHost.NavigationGraphBuilder.composable(
     route: String,
-    content: @Composable () -> Unit
+    content: @Composable ArgumentBundle.() -> Unit
 ) {
-    if (navController.currentScreen.value == route) {
-        content()
+    if (navController.currentScreen.route == route) {
+        content(navController.args)
     }
 }

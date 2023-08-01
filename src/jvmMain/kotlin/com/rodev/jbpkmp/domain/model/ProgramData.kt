@@ -2,23 +2,19 @@ package com.rodev.jbpkmp.domain.model
 
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
+import java.io.File
 
 @Serializable
 data class ProgramData(
-    val projects: MutableSet<Project> = mutableSetOf(),
     val recentProjects: MutableSet<RecentProject> = mutableSetOf(),
     var settings: Settings = Settings()
 )
 
 @Serializable
-data class Project(
-    val name: String,
-    val path: String
-)
-
-@Serializable
 data class RecentProject(
-    val project: Project,
+    val name: String,
+    val path: String,
     val lastOpeningDate: LocalDate
 )
 

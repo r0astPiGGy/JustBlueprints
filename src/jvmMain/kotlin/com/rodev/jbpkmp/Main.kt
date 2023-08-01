@@ -7,6 +7,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.window.WindowPlacement
+import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.singleWindowApplication
 import com.rodev.jbpkmp.data.GlobalDataSource
 import com.rodev.jbpkmp.data.ProgramDataRepositoryImpl
@@ -28,7 +30,8 @@ fun main() {
     GlobalDataSource.load()
 
     singleWindowApplication(
-        title = appName
+        title = appName,
+        state = WindowState(placement = WindowPlacement.Maximized)
     ) {
         val navController by rememberNavController(Screen.WelcomeScreen.name)
 

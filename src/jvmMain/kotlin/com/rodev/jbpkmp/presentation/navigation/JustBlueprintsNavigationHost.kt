@@ -14,7 +14,7 @@ fun JustBlueprintsNavigationHost(
         }
 
         composable(Screen.EditorScreen.name) {
-            EditorScreen(navController)
+            EditorScreen(navController, getString("projectPath")!!)
         }
     }.build()
 }
