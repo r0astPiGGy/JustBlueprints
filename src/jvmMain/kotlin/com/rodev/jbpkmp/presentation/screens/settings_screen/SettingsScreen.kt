@@ -177,6 +177,8 @@ fun SettingsScreen(
                             language = localization.locale.language,
                             useDarkTheme = useDarkTheme
                         ).let(viewModel::onEvent)
+
+                        onDismissRequest()
                     },
                     modifier = Modifier.width(buttonWidth)
                 ) {

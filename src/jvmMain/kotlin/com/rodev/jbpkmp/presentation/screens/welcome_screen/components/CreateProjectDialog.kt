@@ -102,15 +102,15 @@ fun CreateProjectDialog(
         }
     }
 
-    if (isFileDialogOpen && projectName.isNotEmpty() && projectName.isNotBlank()) {
+    if (isFileDialogOpen && !isError) {
         FileDialog(
             title = localization.chooseDirectory(),
             type = JFileChooser.SAVE_DIALOG,
             selectionMode = JFileChooser.DIRECTORIES_ONLY
         ) {
             if (it != null) {
-                val event = WelcomeScreenEvent.CreateAndOpenProject(projectName, it)
-                viewModel.onEvent(event)
+                WelcomeScreenEvent.CreateAndOpenProject(projectName, it)
+                    .let(viewModel::onEvent)
 
                 onDismissRequest()
             }
