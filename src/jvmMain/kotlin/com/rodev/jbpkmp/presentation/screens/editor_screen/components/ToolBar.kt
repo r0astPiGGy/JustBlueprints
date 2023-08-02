@@ -20,10 +20,8 @@ import androidx.compose.ui.Modifier
 @Composable
 fun ToolBar(
     modifier: Modifier = Modifier,
-    backAction: () -> Unit = {},
-    settingsAction: () -> Unit = {},
-    buildAction: () -> Unit = {},
-    saveAction: () -> Unit = {}
+    startContent: @Composable () -> Unit,
+    endContent: @Composable () -> Unit
 ) {
     Column(
         modifier = modifier
@@ -34,39 +32,11 @@ fun ToolBar(
             modifier = Modifier.fillMaxWidth()
         ) {
             Row {
-                IconButton(onClick = backAction) {
-                    Icon(
-                        imageVector = Icons.Outlined.ArrowBack,
-                        contentDescription = null,
-                        tint = MaterialTheme.colors.primary
-                    )
-                }
-
-                IconButton(onClick = settingsAction) {
-                    Icon(
-                        imageVector = Icons.Outlined.Settings,
-                        contentDescription = null,
-                        tint = MaterialTheme.colors.primary
-                    )
-                }
+                startContent()
             }
 
             Row {
-                IconButton(onClick = buildAction) {
-                    Icon(
-                        imageVector = Icons.Outlined.Build,
-                        contentDescription = null,
-                        tint = MaterialTheme.colors.primary
-                    )
-                }
-
-                IconButton(onClick = saveAction) {
-                    Icon(
-                        imageVector = Icons.Outlined.Done,
-                        contentDescription = null,
-                        tint = MaterialTheme.colors.primary
-                    )
-                }
+                endContent()
             }
         }
 

@@ -1,6 +1,7 @@
 package com.rodev.jbpkmp.domain.model
 
-import com.rodev.jbpkmp.domain.model.Project.Companion.projectInfoFile
+import com.rodev.generator.action.json
+import com.rodev.jbpkmp.domain.model.Project.Companion.infoFile
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -14,7 +15,8 @@ data class Project(
 
     companion object {
 
-        const val projectInfoFile = "project.json"
+        const val infoFile = "project.json"
+        const val dataFile = "data.json"
 
         fun loadFromFolder(folderPath: String): Project {
             val folder = File(folderPath)
@@ -23,7 +25,7 @@ data class Project(
                 "Required path is not exists"
             }
 
-            val info = File(folder, projectInfoFile)
+            val info = File(folder, infoFile)
 
             require(info.isFile && info.exists()) {
                 "Project info file is not exists"
@@ -34,15 +36,32 @@ data class Project(
     }
 }
 
-fun Project.save() {
-    val json = Json { prettyPrint = true }
-    val projectJson = json.encodeToString(this)
-
+fun Project.file(name: String): File {
     val directory = File(path)
     directory.mkdirs()
 
-    File(directory, projectInfoFile).apply {
-        createNewFile()
-        writeText(projectJson)
+    return File(directory, name)
+}
+
+fun Project.save(json: Json = Json) {
+    val projectJson = json.encodeToString(this)
+
+    file(infoFile).writeText(projectJson)
+}
+
+fun Project.loadBlueprint(): Blueprint {
+    val dataFile = file(Project.dataFile)
+
+    return try {
+        val dataJson = dataFile.readText()
+        json.decodeFromString(dataJson)
+    } catch (e: Exception) {
+        emptyBlueprint()
     }
+}
+
+fun Project.saveBlueprint(json: Json = Json, blueprint: Blueprint) {
+    val dataJson = json.encodeToString(blueprint)
+
+    file(Project.dataFile).writeText(dataJson)
 }

@@ -20,7 +20,7 @@ import com.rodev.nodeui.components.pin.PinState
 import com.rodev.nodeui.components.wire.WireFactory
 import kotlin.random.Random
 
-class ViewPortViewModel(
+open class ViewPortViewModel(
     pinTypeComparator: PinTypeComparator = PinTypeComparator.Default,
     nodeStateFactory: NodeStateFactory,
     wireFactory: WireFactory = WireFactory(),
@@ -49,18 +49,7 @@ class ViewPortViewModel(
 
                 _contextMenuModel = ContextMenuModel(
                     borderColor = Color(Random.nextInt(), Random.nextInt(), Random.nextInt()),
-                    contextMenuItemProvider = {
-                        actionDataSource.getActions<ContextTreeNode>(
-                            rootTransformFunction = { category, child ->
-                                ContextTreeNode.Root(child, category.name)
-                            },
-                            leafTransformFunction = {
-                                ContextTreeNode.Leaf(name = it.name, id = it.id) {
-                                    GlobalDataSource.getIconById(it.iconPath)
-                                }
-                            }
-                        )
-                    }
+                    contextMenuItemProvider = ::provideContextMenuData
                 )
                 shouldShowContextMenu = true
             }
@@ -96,6 +85,19 @@ class ViewPortViewModel(
 
     override fun onPinDragEndWithoutConnection(pinState: PinState) {
         // Show context menu
+    }
+
+    open fun provideContextMenuData(): List<ContextTreeNode> {
+        return actionDataSource.getActions<ContextTreeNode>(
+            rootTransformFunction = { category, child ->
+                ContextTreeNode.Root(child, category.name)
+            },
+            leafTransformFunction = {
+                ContextTreeNode.Leaf(name = it.name, id = it.id) {
+                    GlobalDataSource.getIconById(it.iconPath)
+                }
+            }
+        )
     }
 
 }

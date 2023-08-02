@@ -41,81 +41,65 @@ fun main() {
     }
 }
 
+@Composable
+fun rememberViewPortViewModel() = remember { defaultViewPortViewModel() }
+
+fun defaultViewPortViewModel() = ViewPortViewModel(
+    nodeStateFactory = DefaultNodeStateFactory(
+        actionDataSource = GlobalDataSource,
+        nodeDataSource = GlobalDataSource,
+        nodeTypeDataSource = GlobalDataSource,
+        pinRowStateFactory = DefaultPinRowStateFactory(
+            pinStateFactory = DefaultPinStateFactory(
+                nodeDataSource = GlobalDataSource,
+                pinTypeDataSource = GlobalDataSource
+            )
+        )
+    ),
+    pinTypeComparator = DefaultPinTypeComparator,
+    actionDataSource = GlobalDataSource,
+    nodeDataSource = GlobalDataSource
+)
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ViewPortPreview() {
-    val viewPortModel = remember {
-        ViewPortViewModel(
-            nodeStateFactory = DefaultNodeStateFactory(
-                actionDataSource = GlobalDataSource,
-                nodeDataSource = GlobalDataSource,
-                nodeTypeDataSource = GlobalDataSource,
-                pinRowStateFactory = DefaultPinRowStateFactory(
-                    pinStateFactory = DefaultPinStateFactory(
-                        nodeDataSource = GlobalDataSource,
-                        pinTypeDataSource = GlobalDataSource
-                    )
-                )
-            ),
-            pinTypeComparator = DefaultPinTypeComparator,
-            actionDataSource = GlobalDataSource,
-            nodeDataSource = GlobalDataSource
-        )
-    }
-
-    Row {
-        Button(onClick = {
-            viewPortModel.onEvent(NodeClearEvent)
-        }) {
-            Text(text = "Clear")
-        }
-
-        Button(onClick = {
-            val graph = viewPortModel.save()
-
-            val json = Json { prettyPrint = true }
-
-            println(json.encodeToString(graph))
-            viewPortModel.load(graph)
-        }) {
-            Text(text = "Save and Load")
-        }
-    }
-
+fun ViewPortPreview(
+    modifier: Modifier = Modifier,
+    viewModel: ViewPortViewModel = rememberViewPortViewModel()
+) {
     BlueprintContextMenu(
-        contextMenuModelProvider = { viewPortModel.contextMenuModel!! },
+        contextMenuModelProvider = { viewModel.contextMenuModel!! },
         onDismiss = {
-            viewPortModel.onEvent(CloseContextMenuGraphEvent)
+            viewModel.onEvent(CloseContextMenuGraphEvent)
         },
         onTreeNodeClick = {
-            viewPortModel.onEvent(
+            viewModel.onEvent(
                 ActionSelectedGraphEvent(it)
             )
         },
-        expanded = viewPortModel.showContextMenu
+        expanded = viewModel.showContextMenu
     )
 
     GraphViewPort(
-        modifier = Modifier
-            .fillMaxSize()
+        modifier = modifier
             .pointerInput(Unit) {
                 detectTapGestures(
                     matcher = PointerMatcher
                         .mouse(PointerButton.Secondary)
                 ) {
-                    viewPortModel.onEvent(
+                    viewModel.onEvent(
                         ShowContextMenuGraphEvent(position = it)
                     )
                 }
             },
-        viewModel = viewPortModel,
+        viewModel = viewModel,
         graphModifier = Modifier
             .background(MaterialTheme.colors.surface)
     ) {
-        viewPortModel.nodeStates.forEach {
+        viewModel.nodeStates.forEach {
             // костыль или не костыль? зато пофиксило баг
             key(it.runtimeUUID) {
-                it.nodeRepresentation.onDraw(it, viewPortModel, viewPortModel)
+                it.nodeRepresentation.onDraw(it, viewModel, viewModel)
             }
         }
     }
