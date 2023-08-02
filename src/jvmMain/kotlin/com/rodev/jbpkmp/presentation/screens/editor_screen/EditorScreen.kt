@@ -88,7 +88,7 @@ fun EditorScreen(navController: NavController, projectPath: String) {
                     val currentGraph = viewModel.currentGraph
 
                     if (currentGraph != null) {
-                        DropTarget<LocalVariableState>(
+                        DropTarget<VariableState>(
                              modifier = Modifier
                         ) { isInBound, data, position ->
                             data?.let {
