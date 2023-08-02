@@ -11,6 +11,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import com.rodev.jbpkmp.data.GlobalDataSource
+import com.rodev.jbpkmp.presentation.screens.editor_screen.SelectionHandler
 import com.rodev.jbpkmp.presentation.screens.editor_screen.components.context_menu.BlueprintContextMenu
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.*
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.node.DefaultNodeStateFactory
@@ -42,9 +43,9 @@ fun main() {
 }
 
 @Composable
-fun rememberViewPortViewModel() = remember { defaultViewPortViewModel() }
+fun rememberViewPortViewModel(selectionHandler: SelectionHandler = SelectionHandler) = remember { defaultViewPortViewModel(selectionHandler) }
 
-fun defaultViewPortViewModel() = ViewPortViewModel(
+fun defaultViewPortViewModel(selectionHandler: SelectionHandler) = ViewPortViewModel(
     nodeStateFactory = DefaultNodeStateFactory(
         actionDataSource = GlobalDataSource,
         nodeDataSource = GlobalDataSource,
@@ -54,7 +55,8 @@ fun defaultViewPortViewModel() = ViewPortViewModel(
                 nodeDataSource = GlobalDataSource,
                 pinTypeDataSource = GlobalDataSource
             )
-        )
+        ),
+        selectionHandler = selectionHandler
     ),
     pinTypeComparator = DefaultPinTypeComparator,
     actionDataSource = GlobalDataSource,

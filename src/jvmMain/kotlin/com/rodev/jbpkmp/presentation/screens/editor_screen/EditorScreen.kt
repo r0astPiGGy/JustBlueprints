@@ -12,15 +12,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.rodev.jbpkmp.ViewPortPreview
-import com.rodev.jbpkmp.domain.model.Project
 import com.rodev.jbpkmp.presentation.components.Sheet
 import com.rodev.jbpkmp.presentation.navigation.NavController
 import com.rodev.jbpkmp.presentation.screens.settings_screen.SettingsScreen
 import com.rodev.jbpkmp.presentation.screens.editor_screen.components.ToolBar
-import com.rodev.jbpkmp.rememberViewPortViewModel
 
 @Composable
 fun EditorScreen(navController: NavController, projectPath: String) {
@@ -35,7 +34,10 @@ fun EditorScreen(navController: NavController, projectPath: String) {
 
     val screenState = viewModel.state
 
-    Surface {
+    Surface(
+        modifier = Modifier
+            .onKeyEvent(viewModel::handleKeyEvent)
+    ) {
         var showSettingsScreen by remember { mutableStateOf(false) }
 
         Column(

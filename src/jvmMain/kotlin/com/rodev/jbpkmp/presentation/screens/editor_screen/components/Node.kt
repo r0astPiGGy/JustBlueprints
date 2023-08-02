@@ -1,9 +1,12 @@
 package com.rodev.jbpkmp.presentation.screens.editor_screen.components
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
@@ -45,13 +48,16 @@ fun SimpleNode(
     nodeState: NodeState,
     nodeEntity: NodeEntity,
     pinDragListener: PinDragListener,
-    snapshotRequester: SnapshotRequester
+    snapshotRequester: SnapshotRequester,
+    selected: Boolean,
+    onTap: () -> Unit = {}
 ) {
     val nodeBodyRelativeCoordinates = remember {
         MutableCoordinate()
     }
     Card(
         shape = RoundedCornerShape(8.dp),
+        border = if (selected) BorderStroke(3.dp, Color.Yellow) else null,
         modifier = Modifier
             .offset { IntOffset(
                 nodeState.x.roundToInt().coerceAtLeast(0),
@@ -77,6 +83,9 @@ fun SimpleNode(
                 .background(MaterialTheme.colors.background)
                 .defaultMinSize(minWidth = 100.dp)
                 .wrapContentHeight()
+                .clickable {
+                    onTap()
+                }
                 .onGloballyPositioned {
                     it.positionInParent().apply {
                         nodeBodyRelativeCoordinates.x += x

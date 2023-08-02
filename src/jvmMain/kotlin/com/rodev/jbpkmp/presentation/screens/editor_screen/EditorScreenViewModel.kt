@@ -1,8 +1,13 @@
 package com.rodev.jbpkmp.presentation.screens.editor_screen
 
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEvent
+import androidx.compose.ui.input.key.key
 import com.rodev.jbpkmp.defaultViewPortViewModel
 import com.rodev.jbpkmp.domain.model.Blueprint
 import com.rodev.jbpkmp.domain.model.Project
@@ -14,7 +19,7 @@ import kotlinx.serialization.json.Json
 
 class EditorScreenViewModel(
     projectPath: String
-) {
+) : SelectionHandler {
 
     private val json = Json { prettyPrint = true }
     private val project: Project
@@ -29,6 +34,8 @@ class EditorScreenViewModel(
 
     private var loadingJob: Job? = null
 
+    private var selectable: Selectable? = null
+
     init {
         project = Project.loadFromFolder(projectPath)
         // load current graph
@@ -39,7 +46,9 @@ class EditorScreenViewModel(
 
             mutableCurrentGraph = GraphModel(
                 name = "Event Graph",
-                viewModel = defaultViewPortViewModel().apply {
+                viewModel = defaultViewPortViewModel(
+                    selectionHandler = this@EditorScreenViewModel
+                ).apply {
                     load(blueprint.eventGraph.graph)
                 }
             )
@@ -48,6 +57,33 @@ class EditorScreenViewModel(
             ) }
             loadingJob = null
         }
+    }
+
+    override fun onSelect(selectable: Selectable) {
+        this.selectable?.let {
+            it.selected = false
+        }
+        this.selectable = selectable
+        selectable.selected = true
+    }
+
+    override fun resetSelection() {
+        selectable?.let {
+            it.selected = false
+        }
+        selectable = null
+    }
+
+    @OptIn(ExperimentalComposeUiApi::class)
+    fun handleKeyEvent(keyEvent: KeyEvent): Boolean {
+        if (keyEvent.key == Key.Delete) {
+            val selectable = this.selectable
+            resetSelection()
+            selectable?.onDelete(this)
+            return true
+        }
+
+        return false
     }
 
     private fun updateState(scope: (EditorScreenState) -> EditorScreenState) {
@@ -67,6 +103,7 @@ class EditorScreenViewModel(
     }
 
     fun onDispose() {
+        resetSelection()
         onEvent(EditorScreenEvent.SaveProject)
         loadingJob?.cancel()
         loadingJob = null
