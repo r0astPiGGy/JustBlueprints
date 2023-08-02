@@ -11,16 +11,14 @@ import com.rodev.jbpkmp.domain.repository.update
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.todayIn
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.File
 
 class WelcomeScreenViewModel(
     private val repository: ProgramDataRepository
 ) {
-    private var _state by mutableStateOf(WelcomeScreenState())
-    val state: WelcomeScreenState
-        get() = _state
+    var state by mutableStateOf(WelcomeScreenState())
+        private set
 
     init {
         getRecentProjects()
@@ -103,7 +101,7 @@ class WelcomeScreenViewModel(
     }
 
     private fun updateState(block: (WelcomeScreenState) -> WelcomeScreenState) {
-        _state = block(_state)
+        state = block(state)
     }
 
     private fun getRecentProjects() {

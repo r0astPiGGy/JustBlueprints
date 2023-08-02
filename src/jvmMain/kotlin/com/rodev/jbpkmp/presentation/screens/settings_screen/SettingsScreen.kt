@@ -49,7 +49,7 @@ fun SettingsScreen(
     modifier: Modifier = Modifier,
     onDismissRequest: () -> Unit
 ) {
-    val viewModel = SettingsScreenViewModel(ProgramDataRepositoryImpl())
+    val viewModel = remember { SettingsScreenViewModel(ProgramDataRepositoryImpl()) }
     val localization = Vocabulary.localization
 
     var useDarkTheme by remember { mutableStateOf(viewModel.repository.load().settings.useDarkTheme) }

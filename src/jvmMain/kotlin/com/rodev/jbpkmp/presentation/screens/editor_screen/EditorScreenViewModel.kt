@@ -1,7 +1,6 @@
 package com.rodev.jbpkmp.presentation.screens.editor_screen
 
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -14,6 +13,7 @@ import com.rodev.jbpkmp.domain.model.Project
 import com.rodev.jbpkmp.domain.model.graph.EventGraph
 import com.rodev.jbpkmp.domain.model.loadBlueprint
 import com.rodev.jbpkmp.domain.model.saveBlueprint
+import com.rodev.nodeui.components.node.NodeState
 import kotlinx.coroutines.*
 import kotlinx.serialization.json.Json
 
@@ -24,13 +24,11 @@ class EditorScreenViewModel(
     private val json = Json { prettyPrint = true }
     private val project: Project
 
-    private var mutableCurrentGraph by mutableStateOf<GraphModel?>(null)
-    val currentGraph: GraphModel?
-        get() = mutableCurrentGraph
+    var currentGraph by mutableStateOf<GraphModel?>(null)
+        private set
 
-    private var mutableState by mutableStateOf(EditorScreenState(isLoading = true))
-    val state: EditorScreenState
-        get() = mutableState
+    var state by mutableStateOf(EditorScreenState(isLoading = true))
+        private set
 
     private var loadingJob: Job? = null
 
@@ -44,7 +42,7 @@ class EditorScreenViewModel(
 
             delay(2000)
 
-            mutableCurrentGraph = GraphModel(
+            currentGraph = GraphModel(
                 name = "Event Graph",
                 viewModel = defaultViewPortViewModel(
                     selectionHandler = this@EditorScreenViewModel
@@ -67,6 +65,10 @@ class EditorScreenViewModel(
         selectable.selected = true
     }
 
+    fun deleteNode(nodeState: NodeState) {
+        currentGraph?.viewModel?.deleteNode(nodeState)
+    }
+
     override fun resetSelection() {
         selectable?.let {
             it.selected = false
@@ -87,7 +89,7 @@ class EditorScreenViewModel(
     }
 
     private fun updateState(scope: (EditorScreenState) -> EditorScreenState) {
-        mutableState = scope(mutableState)
+        state = scope(state)
     }
 
     fun onEvent(event: EditorScreenEvent) {
@@ -105,7 +107,7 @@ class EditorScreenViewModel(
             }
 
             is EditorScreenEvent.AddGlobalVariable -> {
-                mutableState.globalVariables.add(event.variable)
+                state.globalVariables.add(event.variable)
             }
         }
     }

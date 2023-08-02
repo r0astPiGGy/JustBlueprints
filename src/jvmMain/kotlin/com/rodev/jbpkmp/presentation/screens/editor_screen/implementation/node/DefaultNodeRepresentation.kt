@@ -74,7 +74,7 @@ private class NodeStateSelectableWrapper(
         }
 
     override fun onDelete(editorScreenViewModel: EditorScreenViewModel) {
-        editorScreenViewModel.currentGraph?.viewModel?.deleteNode(nodeState)
+        editorScreenViewModel.deleteNode(nodeState)
     }
 
 }

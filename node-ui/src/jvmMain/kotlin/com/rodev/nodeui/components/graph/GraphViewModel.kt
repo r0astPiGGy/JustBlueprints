@@ -30,17 +30,13 @@ open class GraphViewModel(
     val nodeStates: List<NodeState>
         get() = _nodeStates
 
-    private val _temporaryLine = mutableStateOf<Wire?>(null)
-    val temporaryLine: State<Wire?>
-        get() = _temporaryLine
+    var temporaryLine by mutableStateOf<Wire?>(null)
 
     val lines: List<Wire>
         get() = pinConnectionHandler.wires
 
-    private var _snapshotRequested by mutableStateOf(false)
-
-    override val snapshotRequested: Boolean
-        get() = _snapshotRequested
+    final override var snapshotRequested by mutableStateOf(false)
+        private set
 
     private var cachedHitTest: PinRowSnapshot? = null
 
@@ -91,7 +87,7 @@ open class GraphViewModel(
 
         currentDraggingPinOwner = pinOwner
         currentDraggingPin = pinState
-        _snapshotRequested = true
+        snapshotRequested = true
     }
 
     override fun addSnapshot(snapshot: PinRowSnapshot) {
@@ -118,7 +114,7 @@ open class GraphViewModel(
 
             clearCurrentHoveringRow()
 
-            _temporaryLine.value = wireFactory.createWirePreview(
+            temporaryLine = wireFactory.createWirePreview(
                 pinState.pinRepresentation.color,
                 hoveredPin.pinRepresentation.color,
                 startPos = Offset(
@@ -137,7 +133,7 @@ open class GraphViewModel(
         } else {
             clearCurrentHoveringRow()
             currentHoveringPin = null
-            _temporaryLine.value = wireFactory.createTemporaryWire(
+            temporaryLine = wireFactory.createTemporaryWire(
                 pinState.pinRepresentation.color,
                 start = Offset(
                     x = start.x,
@@ -195,9 +191,9 @@ open class GraphViewModel(
         currentHoveringPin = null
         currentDraggingPinOwner = null
         cachedHitTest = null
-        _snapshotRequested = false
+        snapshotRequested = false
         clearCurrentHoveringRow()
-        _temporaryLine.value = null
+        temporaryLine = null
 
         pinSnapshots.clear()
     }

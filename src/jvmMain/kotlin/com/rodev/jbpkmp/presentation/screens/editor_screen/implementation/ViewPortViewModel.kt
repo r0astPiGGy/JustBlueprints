@@ -32,13 +32,11 @@ open class ViewPortViewModel(
     wireFactory = wireFactory
 ) {
 
-    private var shouldShowContextMenu by mutableStateOf(false)
-    val showContextMenu: Boolean
-        get() = shouldShowContextMenu
+    var showContextMenu by mutableStateOf(false)
+        private set
 
-    private var _contextMenuModel by mutableStateOf<ContextMenuModel?>(null)
-    val contextMenuModel: ContextMenuModel?
-        get() = _contextMenuModel
+    var contextMenuModel by mutableStateOf<ContextMenuModel?>(null)
+        private set
 
     private var lastContextMenuInvokePosition: Offset? = null
 
@@ -47,11 +45,11 @@ open class ViewPortViewModel(
             is ShowContextMenuGraphEvent -> {
                 lastContextMenuInvokePosition = event.position
 
-                _contextMenuModel = ContextMenuModel(
+                contextMenuModel = ContextMenuModel(
                     borderColor = Color(Random.nextInt(), Random.nextInt(), Random.nextInt()),
                     contextMenuItemProvider = ::provideContextMenuData
                 )
-                shouldShowContextMenu = true
+                showContextMenu = true
             }
 
             CloseContextMenuGraphEvent -> {
@@ -79,8 +77,8 @@ open class ViewPortViewModel(
 
     private fun onContextMenuClose() {
         lastContextMenuInvokePosition = null
-        shouldShowContextMenu = false
-        _contextMenuModel = null
+        showContextMenu = false
+        contextMenuModel = null
     }
 
     override fun onPinDragEndWithoutConnection(pinState: PinState) {
