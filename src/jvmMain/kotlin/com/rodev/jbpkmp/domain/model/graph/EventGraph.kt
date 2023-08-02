@@ -1,7 +1,7 @@
 package com.rodev.jbpkmp.domain.model.graph
 
-import com.rodev.jbpkmp.domain.model.saveable_variable.GlobalVariable
-import com.rodev.jbpkmp.domain.model.saveable_variable.LocalVariable
+import com.rodev.jbpkmp.domain.model.variable.GlobalVariable
+import com.rodev.jbpkmp.domain.model.variable.LocalVariable
 import com.rodev.nodeui.model.Graph
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

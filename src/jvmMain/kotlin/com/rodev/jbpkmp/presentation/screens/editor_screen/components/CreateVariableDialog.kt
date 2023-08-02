@@ -24,7 +24,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.rodev.jbpkmp.domain.model.changeable_variable.Variable
 import com.rodev.jbpkmp.presentation.localization.Vocabulary
 import com.rodev.jbpkmp.presentation.localization.cancel
 import com.rodev.jbpkmp.presentation.localization.create
@@ -34,7 +33,7 @@ import com.rodev.jbpkmp.presentation.localization.value
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun CreateVariableDialog(onDismissRequest: (Variable?) -> Unit) {
+fun CreateVariableDialog(onDismissRequest: (String?, Any?) -> Unit) {
     val localization = Vocabulary.localization
 
     var variableName by remember { mutableStateOf("") }
@@ -42,7 +41,7 @@ fun CreateVariableDialog(onDismissRequest: (Variable?) -> Unit) {
     val isError = variableName.isEmpty() && variableName.isBlank()
 
     AlertDialog(
-        onDismissRequest = { onDismissRequest(null) },
+        onDismissRequest = { onDismissRequest(null, null) },
         buttons = {
             Column(
                 modifier = Modifier
@@ -90,7 +89,7 @@ fun CreateVariableDialog(onDismissRequest: (Variable?) -> Unit) {
                     val buttonWidth = 100.dp
 
                     OutlinedButton(
-                        onClick = { onDismissRequest(null) },
+                        onClick = { onDismissRequest(null, null) },
                         modifier = Modifier.width(buttonWidth),
                         colors = ButtonDefaults.outlinedButtonColors(
                             backgroundColor = MaterialTheme.colors.surface
@@ -101,8 +100,9 @@ fun CreateVariableDialog(onDismissRequest: (Variable?) -> Unit) {
 
                     Button(
                         onClick = {
-                            if (!isError)
-                                Variable(variableName, variableValue).let(onDismissRequest)
+                            if (!isError) {
+                                onDismissRequest(variableName, variableValue)
+                            }
                         },
                         modifier = Modifier.width(buttonWidth)
                     ) {

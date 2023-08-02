@@ -4,6 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.input.key.key
@@ -13,6 +14,9 @@ import com.rodev.jbpkmp.domain.model.Project
 import com.rodev.jbpkmp.domain.model.graph.EventGraph
 import com.rodev.jbpkmp.domain.model.loadBlueprint
 import com.rodev.jbpkmp.domain.model.saveBlueprint
+import com.rodev.jbpkmp.domain.model.variable.GlobalVariable
+import com.rodev.jbpkmp.domain.model.variable.LocalVariable
+import com.rodev.jbpkmp.domain.model.variable.Variable
 import com.rodev.nodeui.components.node.NodeState
 import kotlinx.coroutines.*
 import kotlinx.serialization.json.Json
@@ -24,37 +28,44 @@ class EditorScreenViewModel(
     private val json = Json { prettyPrint = true }
     private val project: Project
 
-    var currentGraph by mutableStateOf<GraphModel?>(null)
+    var currentGraph by mutableStateOf<GraphState?>(null)
         private set
 
-    var state by mutableStateOf(EditorScreenState(isLoading = true))
-        private set
+    val state = EditorScreenState(isLoading = true)
 
     private var loadingJob: Job? = null
-
     private var selectable: Selectable? = null
 
     init {
         project = Project.loadFromFolder(projectPath)
         // load current graph
         loadingJob = CoroutineScope(Dispatchers.Default).launch {
-            val blueprint = project.loadBlueprint()
-
-            delay(2000)
-
-            currentGraph = GraphModel(
-                name = "Event Graph",
-                viewModel = defaultViewPortViewModel(
-                    selectionHandler = this@EditorScreenViewModel
-                ).apply {
-                    load(blueprint.eventGraph.graph)
-                }
-            )
-            updateState { it.copy(
-                isLoading = false
-            ) }
+            load()
+            state.isLoading = false
             loadingJob = null
         }
+    }
+
+    private suspend fun load() {
+        val blueprint = project.loadBlueprint()
+        val eventGraph = blueprint.eventGraph
+
+        delay(500)
+
+        val viewModel = defaultViewPortViewModel(
+            selectionHandler = this
+        )
+
+        viewModel.load(eventGraph.graph)
+
+        currentGraph = GraphState(
+            viewModel = viewModel,
+            variables = eventGraph.localVariables.map { it.toState() }
+        )
+
+        state.variables.addAll(
+            eventGraph.globalVariables.map { it.toState() }
+        )
     }
 
     override fun onSelect(selectable: Selectable) {
@@ -88,10 +99,6 @@ class EditorScreenViewModel(
         return false
     }
 
-    private fun updateState(scope: (EditorScreenState) -> EditorScreenState) {
-        state = scope(state)
-    }
-
     fun onEvent(event: EditorScreenEvent) {
         when (event) {
             is EditorScreenEvent.BuildProject -> {
@@ -107,8 +114,27 @@ class EditorScreenViewModel(
             }
 
             is EditorScreenEvent.AddGlobalVariable -> {
-                state.globalVariables.add(event.variable)
+                state.variables.add(event.variable)
             }
+
+            is EditorScreenEvent.OnDragAndDrop -> {
+                handleDragAndDropEvent(event.variable, event.position)
+            }
+        }
+    }
+
+    private fun handleDragAndDropEvent(variableState: VariableState, position: Offset) {
+        val currentGraph = currentGraph ?: return
+
+        val scrollPosition = currentGraph.viewModel.scrollState.let {
+            Offset(it.xValue.toFloat(), it.yValue.toFloat())
+        }
+
+        val targetPosition = scrollPosition + position
+
+        when (variableState) {
+            is GlobalVariableState -> {}
+            is LocalVariableState -> {}
         }
     }
 
@@ -119,15 +145,15 @@ class EditorScreenViewModel(
         loadingJob = null
     }
 
-    private fun saveGraphModel(graphModel: GraphModel) {
-        val graph = graphModel.viewModel.save()
+    private fun saveGraphModel(graphState: GraphState) {
+        val graph = graphState.viewModel.save()
 
         project.saveBlueprint(
             json = json,
             blueprint = Blueprint(
                 eventGraph = EventGraph(
-                    localVariables = emptyList(),
-                    globalVariables = emptyList(),
+                    localVariables = graphState.variables.map { it.toLocalVariable() },
+                    globalVariables = state.variables.map { it.toGlobalVariable() },
                     graph = graph
                 ),
                 processes = emptyList(),

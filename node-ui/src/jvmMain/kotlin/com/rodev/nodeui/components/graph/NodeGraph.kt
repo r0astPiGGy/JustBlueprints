@@ -13,30 +13,15 @@ import com.chihsuanwu.freescroll.rememberFreeScrollState
 @Composable
 fun GraphViewPort(
     modifier: Modifier = Modifier,
-    graphModifier: Modifier = Modifier,
-    initialX: Int = 0,
-    initialY: Int = 0,
     viewModel: GraphViewModel,
     content: @Composable GraphViewModel.() -> Unit
 ) {
-    val scrollState = rememberFreeScrollState(
-        initialX = initialX,
-        initialY = initialY
-    )
     Box(
         modifier = modifier
             .clipToBounds()
-            .freeScroll(scrollState)
+            .freeScroll(viewModel.scrollState)
     ) {
-        GraphLayout(
-            modifier = graphModifier
-                .drawBehind {
-                    viewModel.temporaryLine.value?.draw(this)
-                    viewModel.lines.forEach { it.draw(this) }
-                },
-        ) {
-            content(viewModel)
-        }
+        content(viewModel)
     }
 }
 

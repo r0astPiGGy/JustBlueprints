@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.input.pointer.PointerButton
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.window.Window
@@ -18,10 +19,12 @@ import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.node.D
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.pin.DefaultPinStateFactory
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.pin.row.DefaultPinRowStateFactory
 import com.rodev.jbpkmp.theme.AppTheme
+import com.rodev.nodeui.components.graph.GraphLayout
 import com.rodev.nodeui.components.graph.GraphViewPort
 import com.rodev.nodeui.components.graph.NodeClearEvent
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonNull.content
 
 fun main() {
     GlobalDataSource.load()
@@ -94,14 +97,21 @@ fun ViewPortPreview(
                     )
                 }
             },
-        viewModel = viewModel,
-        graphModifier = Modifier
-            .background(MaterialTheme.colors.surface)
+        viewModel = viewModel
     ) {
-        viewModel.nodeStates.forEach {
-            // костыль или не костыль? зато пофиксило баг
-            key(it.runtimeUUID) {
-                it.nodeRepresentation.onDraw(it, viewModel, viewModel)
+        GraphLayout(
+            modifier = Modifier
+                .background(MaterialTheme.colors.surface)
+                .drawBehind {
+                    viewModel.temporaryLine?.draw(this)
+                    viewModel.lines.forEach { it.draw(this) }
+                },
+        ) {
+            nodeStates.forEach {
+                // костыль или не костыль? зато пофиксило баг
+                key(it.runtimeUUID) {
+                    it.nodeRepresentation.onDraw(it, viewModel, viewModel)
+                }
             }
         }
     }

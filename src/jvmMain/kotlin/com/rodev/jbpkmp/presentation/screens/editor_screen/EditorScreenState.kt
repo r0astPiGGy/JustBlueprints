@@ -1,8 +1,20 @@
 package com.rodev.jbpkmp.presentation.screens.editor_screen
 
-import com.rodev.jbpkmp.domain.model.changeable_variable.Variable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 
-data class EditorScreenState(
-    val isLoading: Boolean,
-    val globalVariables: MutableList<Variable> = mutableListOf()
-)
+class EditorScreenState(
+    isLoading: Boolean,
+    variables: List<GlobalVariableState> = emptyList()
+) {
+
+    val variables = mutableStateListOf<GlobalVariableState>()
+    var isLoading by mutableStateOf(isLoading)
+
+    init {
+        this.variables.addAll(variables)
+    }
+
+}

@@ -1,8 +1,10 @@
 package com.rodev.nodeui.components.graph
 
+import androidx.compose.foundation.ScrollState
 import androidx.compose.runtime.*
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.PointerInputChange
+import com.chihsuanwu.freescroll.FreeScrollState
 import com.rodev.nodeui.components.node.NodeState
 import com.rodev.nodeui.components.node.NodeStateFactory
 import com.rodev.nodeui.components.pin.PinDragListener
@@ -15,6 +17,8 @@ import com.rodev.nodeui.components.wire.WireFactory
 import com.rodev.nodeui.model.Graph
 
 open class GraphViewModel(
+    initialScrollX: Int = 0,
+    initialScrollY: Int = 0,
     pinTypeComparator: PinTypeComparator = PinTypeComparator.Default,
     private val nodeStateFactory: NodeStateFactory,
     private val wireFactory: WireFactory = WireFactory()
@@ -25,12 +29,18 @@ open class GraphViewModel(
         pinTypeComparator = pinTypeComparator
     )
 
+    val scrollState = FreeScrollState(
+        ScrollState(initialScrollX),
+        ScrollState(initialScrollY)
+    )
+
     private val graphFactory = GraphFactory(nodeStateFactory, pinConnectionHandler)
     private val _nodeStates = mutableStateListOf<NodeState>()
     val nodeStates: List<NodeState>
         get() = _nodeStates
 
     var temporaryLine by mutableStateOf<Wire?>(null)
+        private set
 
     val lines: List<Wire>
         get() = pinConnectionHandler.wires

@@ -1,5 +1,6 @@
 package com.rodev.jbpkmp.presentation.screens.editor_screen
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -11,6 +12,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.unit.dp
@@ -18,9 +20,8 @@ import androidx.compose.ui.unit.sp
 import com.rodev.jbpkmp.ViewPortPreview
 import com.rodev.jbpkmp.presentation.components.Sheet
 import com.rodev.jbpkmp.presentation.navigation.NavController
-import com.rodev.jbpkmp.presentation.screens.editor_screen.components.Overview
+import com.rodev.jbpkmp.presentation.screens.editor_screen.components.*
 import com.rodev.jbpkmp.presentation.screens.settings_screen.SettingsScreen
-import com.rodev.jbpkmp.presentation.screens.editor_screen.components.ToolBar
 
 @Composable
 fun EditorScreen(navController: NavController, projectPath: String) {
@@ -32,8 +33,6 @@ fun EditorScreen(navController: NavController, projectPath: String) {
             viewModel.onDispose()
         }
     }
-
-    val screenState = viewModel.state
 
     Surface(
         modifier = Modifier
@@ -64,45 +63,64 @@ fun EditorScreen(navController: NavController, projectPath: String) {
                     // Build button
                     MaterialIconButton(
                         imageVector = Icons.Outlined.Build,
-                        enabled = !screenState.isLoading,
+                        enabled = !viewModel.state.isLoading,
                         onClick = { viewModel.onEvent(EditorScreenEvent.BuildProject) }
                     )
 
                     // Save button
                     MaterialIconButton(
                         imageVector = Icons.Outlined.Done,
-                        enabled = !screenState.isLoading,
+                        enabled = !viewModel.state.isLoading,
                         onClick = { viewModel.onEvent(EditorScreenEvent.SaveProject) }
                     )
                 }
             )
 
-            Row(
-                modifier = Modifier.fillMaxSize()
-            ) {
-                Overview(
-                    modifier = Modifier.width(300.dp),
-                    viewModel = viewModel
-                )
-
-                val currentGraph = viewModel.currentGraph
-
-                if (currentGraph != null) {
-                    ViewPortPreview(
-                        modifier = Modifier
-                            .fillMaxSize(),
-                        viewModel = currentGraph.viewModel
+            DraggableContext {
+                Row(
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    Overview(
+                        modifier = Modifier.width(300.dp),
+                        viewModel = viewModel
                     )
-                } else {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "Project is loading",
-                            fontSize = 30.sp,
-                        )
+
+                    val currentGraph = viewModel.currentGraph
+
+                    if (currentGraph != null) {
+                        DropTarget<LocalVariableState>(
+                             modifier = Modifier
+                        ) { isInBound, data, position ->
+                            data?.let {
+                                if (isInBound) {
+                                    viewModel.onEvent(EditorScreenEvent.OnDragAndDrop(data, position))
+                                }
+                            }
+
+                            ViewPortPreview(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .then(
+                                        if (isInBound) {
+                                            Modifier.border(4.dp, color = Color.Blue)
+                                        } else {
+                                            Modifier
+                                        }
+                                    ),
+                                viewModel = currentGraph.viewModel
+                            )
+                        }
+                    } else {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "Project is loading",
+                                fontSize = 30.sp,
+                            )
+                        }
                     }
                 }
             }

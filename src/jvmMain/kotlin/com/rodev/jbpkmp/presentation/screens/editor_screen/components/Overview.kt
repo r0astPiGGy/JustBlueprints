@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -28,11 +30,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.unit.dp
+import com.rodev.jbpkmp.domain.model.variable.GlobalVariable
 import com.rodev.jbpkmp.presentation.localization.Vocabulary
 import com.rodev.jbpkmp.presentation.localization.localVariables
 import com.rodev.jbpkmp.presentation.localization.globalVariables
-import com.rodev.jbpkmp.presentation.screens.editor_screen.EditorScreenEvent
-import com.rodev.jbpkmp.presentation.screens.editor_screen.EditorScreenViewModel
+import com.rodev.jbpkmp.presentation.localization.name
+import com.rodev.jbpkmp.presentation.screens.editor_screen.*
 
 @Composable
 fun Overview(
@@ -54,63 +57,43 @@ private fun LocalVariables(
 ) {
     val localization = Vocabulary.localization
     val currentGraph = viewModel.currentGraph
-
-    var visible by remember { mutableStateOf(false) }
-    val rotation by animateFloatAsState(
-        targetValue = if (visible) 0F else -90F
-    )
-
     var createVariableDialogPresented by remember { mutableStateOf(false) }
 
-    Column {
-        Row(
-            horizontalArrangement = Arrangement.Start,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(5.dp))
-                .clickable { visible = !visible }
-        ) {
-            Icon(
-                imageVector = Icons.Default.ArrowDropDown,
-                contentDescription = null,
-                modifier = Modifier.rotate(rotation)
-            )
-
-            Text(localization.localVariables())
-
-            Row(
-                horizontalArrangement = Arrangement.End,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                IconButton(onClick = {
-                    createVariableDialogPresented = true
-                }) {
-                    Icon(Icons.Default.AddCircle, contentDescription = null)
-                }
+    CollapsibleList(
+        header = localization.localVariables(),
+        onAddAction = {
+            createVariableDialogPresented = true
+        }
+    ) {
+        if (currentGraph != null) {
+            items(currentGraph.variables) {
+                VariableView(it)
             }
         }
+    }
 
-        AnimatedVisibility(visible) {
-            LazyColumn(
-                modifier = Modifier.padding(start = 15.dp)
-            ) {
-                if (currentGraph != null) {
-                    items(currentGraph.variables.size) {
-                        Text(currentGraph.variables[it].name)
-                    }
-                }
+    if (createVariableDialogPresented) {
+        CreateVariableDialog { name, value ->
+            if (name != null) {
+                EditorScreenEvent.AddLocalVariable(
+                    LocalVariableState(
+                        name = name,
+                        value = value
+                    )
+                ).let(viewModel::onEvent)
             }
-        }
 
-        if (createVariableDialogPresented) {
-            CreateVariableDialog {
-                if (it != null)
-                    EditorScreenEvent.AddLocalVariable(it).let(viewModel::onEvent)
-
-                createVariableDialogPresented = false
-            }
+            createVariableDialogPresented = false
         }
+    }
+}
+
+@Composable
+fun VariableView(variable: VariableState) {
+    DragTarget(
+        dataToDrop = variable
+    ) {
+        Text(variable.name)
     }
 }
 
@@ -119,13 +102,46 @@ private fun GlobalVariables(
     viewModel: EditorScreenViewModel
 ) {
     val localization = Vocabulary.localization
+    var createVariableDialogPresented by remember { mutableStateOf(false) }
 
-    var visible by remember { mutableStateOf(false) }
+    CollapsibleList(
+        header = localization.globalVariables(),
+        onAddAction = {
+            createVariableDialogPresented = true
+        }
+    ) {
+        items(viewModel.state.variables) {
+            VariableView(it)
+        }
+    }
+
+    if (createVariableDialogPresented) {
+        CreateVariableDialog { name, value ->
+            if (name != null) {
+                EditorScreenEvent.AddGlobalVariable(
+                    GlobalVariableState(
+                        name = name,
+                        value = value,
+                        // TODO
+                        type = GlobalVariable.Type.GAME
+                    )
+                ).let(viewModel::onEvent)
+            }
+            createVariableDialogPresented = false
+        }
+    }
+}
+
+@Composable
+fun CollapsibleList(
+    header: String,
+    onAddAction: () -> Unit = {},
+    content: LazyListScope.() -> Unit
+) {
+    var visible by remember { mutableStateOf(true) }
     val rotation by animateFloatAsState(
         targetValue = if (visible) 0F else -90F
     )
-
-    var createVariableDialogPresented by remember { mutableStateOf(false) }
 
     Column {
         Row(
@@ -142,15 +158,13 @@ private fun GlobalVariables(
                 modifier = Modifier.rotate(rotation)
             )
 
-            Text(localization.globalVariables())
+            Text(text = header)
 
             Row(
                 horizontalArrangement = Arrangement.End,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                IconButton(onClick = {
-                    createVariableDialogPresented = true
-                }) {
+                IconButton(onClick = onAddAction) {
                     Icon(Icons.Default.AddCircle, contentDescription = null)
                 }
             }
@@ -158,21 +172,9 @@ private fun GlobalVariables(
 
         AnimatedVisibility(visible) {
             LazyColumn(
-                modifier = Modifier.padding(start = 15.dp)
-            ) {
-                items(viewModel.state.globalVariables.size) {
-                    Text(viewModel.state.globalVariables[it].name)
-                }
-            }
-        }
-
-        if (createVariableDialogPresented) {
-            CreateVariableDialog {
-                if (it != null)
-                    EditorScreenEvent.AddGlobalVariable(it).let(viewModel::onEvent)
-
-                createVariableDialogPresented = false
-            }
+                modifier = Modifier.padding(start = 15.dp),
+                content = content
+            )
         }
     }
 }
