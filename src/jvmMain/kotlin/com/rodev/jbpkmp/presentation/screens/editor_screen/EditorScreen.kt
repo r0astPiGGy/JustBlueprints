@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.sp
 import com.rodev.jbpkmp.ViewPortPreview
 import com.rodev.jbpkmp.presentation.components.Sheet
 import com.rodev.jbpkmp.presentation.navigation.NavController
+import com.rodev.jbpkmp.presentation.screens.editor_screen.components.Overview
 import com.rodev.jbpkmp.presentation.screens.settings_screen.SettingsScreen
 import com.rodev.jbpkmp.presentation.screens.editor_screen.components.ToolBar
 
@@ -76,24 +77,33 @@ fun EditorScreen(navController: NavController, projectPath: String) {
                 }
             )
 
-            val currentGraph = viewModel.currentGraph
-
-            if (currentGraph != null) {
-                ViewPortPreview(
-                    modifier = Modifier
-                        .fillMaxSize(),
-                    viewModel = currentGraph.viewModel
+            Row(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                Overview(
+                    modifier = Modifier.width(300.dp),
+                    viewModel = viewModel
                 )
-            } else {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "Project is loading",
-                        fontSize = 30.sp,
+
+                val currentGraph = viewModel.currentGraph
+
+                if (currentGraph != null) {
+                    ViewPortPreview(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        viewModel = currentGraph.viewModel
                     )
+                } else {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "Project is loading",
+                            fontSize = 30.sp,
+                        )
+                    }
                 }
             }
         }

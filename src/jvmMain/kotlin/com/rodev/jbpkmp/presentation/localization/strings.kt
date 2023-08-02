@@ -35,24 +35,6 @@ val noRecentProjects = Translatable(
 )
 
 // CreateProjectDialog
-val name = Translatable(
-    "Название",
-    hashMapOf(
-        ENGLISH to "Name"
-    )
-)
-val create = Translatable(
-    "Создать",
-    hashMapOf(
-        ENGLISH to "Create"
-    )
-)
-val errorMessage = Translatable(
-    "Название не может быть пустым",
-    hashMapOf(
-        ENGLISH to "Name cannot be empty"
-    )
-)
 val chooseDirectory = Translatable(
     "Выберите директорию",
     hashMapOf(
@@ -86,10 +68,50 @@ val save = Translatable(
     )
 )
 
+// CreateVariableDialog
+val value = Translatable(
+    "Значение",
+    hashMapOf(
+        ENGLISH to "Value"
+    )
+)
+
+// EditorScreen
+val localVariables = Translatable(
+    "Локальные переменные",
+    hashMapOf(
+        ENGLISH to "Local variables"
+    )
+)
+val globalVariables = Translatable(
+    "Глобальные переменные",
+    hashMapOf(
+        ENGLISH to "Global variables"
+    )
+)
+
 // Shared
 val cancel = Translatable(
     "Отмена",
     hashMapOf(
         ENGLISH to "Cancel"
+    )
+)
+val create = Translatable(
+    "Создать",
+    hashMapOf(
+        ENGLISH to "Create"
+    )
+)
+val errorMessage = Translatable(
+    "Название не может быть пустым",
+    hashMapOf(
+        ENGLISH to "Name cannot be empty"
+    )
+)
+val name = Translatable(
+    "Название",
+    hashMapOf(
+        ENGLISH to "Name"
     )
 )

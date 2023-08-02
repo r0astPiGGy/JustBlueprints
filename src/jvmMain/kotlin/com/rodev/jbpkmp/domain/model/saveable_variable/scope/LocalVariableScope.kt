@@ -1,6 +1,6 @@
-package com.rodev.jbpkmp.domain.model.variable.scope
+package com.rodev.jbpkmp.domain.model.saveable_variable.scope
 
-import com.rodev.jbpkmp.domain.model.variable.LocalVariable
+import com.rodev.jbpkmp.domain.model.saveable_variable.LocalVariable
 import kotlinx.serialization.Serializable
 
 @Serializable

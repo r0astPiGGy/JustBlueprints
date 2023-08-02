@@ -99,6 +99,14 @@ class EditorScreenViewModel(
             is EditorScreenEvent.SaveProject -> {
                 currentGraph?.let(::saveGraphModel)
             }
+
+            is EditorScreenEvent.AddLocalVariable -> {
+                currentGraph?.variables?.add(event.variable)
+            }
+
+            is EditorScreenEvent.AddGlobalVariable -> {
+                mutableState.globalVariables.add(event.variable)
+            }
         }
     }
 

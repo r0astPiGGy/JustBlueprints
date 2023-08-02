@@ -1,4 +1,4 @@
-package com.rodev.jbpkmp.domain.model.variable
+package com.rodev.jbpkmp.domain.model.saveable_variable
 
 import kotlinx.serialization.Serializable
 
