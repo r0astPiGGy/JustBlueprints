@@ -4,6 +4,6 @@ interface Selectable {
 
     var selected: Boolean
 
-    fun onDelete(editorScreenViewModel: EditorScreenViewModel)
+    fun onDelete(selectionActionVisitor: SelectionActionVisitor)
 
 }

@@ -13,6 +13,7 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import com.rodev.jbpkmp.data.GlobalDataSource
 import com.rodev.jbpkmp.presentation.screens.editor_screen.SelectionHandler
+import com.rodev.jbpkmp.presentation.screens.editor_screen.VariableStateProvider
 import com.rodev.jbpkmp.presentation.screens.editor_screen.components.context_menu.BlueprintContextMenu
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.*
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.node.DefaultNodeStateFactory
@@ -26,29 +27,10 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonNull.content
 
-fun main() {
-    GlobalDataSource.load()
-
-    application {
-        Window(onCloseRequest = ::exitApplication) {
-            AppTheme(useDarkTheme = true) {
-                Surface {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                    ) {
-                        ViewPortPreview()
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun rememberViewPortViewModel(selectionHandler: SelectionHandler = SelectionHandler) = remember { defaultViewPortViewModel(selectionHandler) }
-
-fun defaultViewPortViewModel(selectionHandler: SelectionHandler) = ViewPortViewModel(
+fun defaultViewPortViewModel(
+    variableStateProvider: VariableStateProvider,
+    selectionHandler: SelectionHandler
+) = ViewPortViewModel(
     nodeStateFactory = DefaultNodeStateFactory(
         actionDataSource = GlobalDataSource,
         nodeDataSource = GlobalDataSource,
@@ -59,6 +41,7 @@ fun defaultViewPortViewModel(selectionHandler: SelectionHandler) = ViewPortViewM
                 pinTypeDataSource = GlobalDataSource
             )
         ),
+        variableStateProvider = variableStateProvider,
         selectionHandler = selectionHandler
     ),
     pinTypeComparator = DefaultPinTypeComparator,
@@ -70,7 +53,7 @@ fun defaultViewPortViewModel(selectionHandler: SelectionHandler) = ViewPortViewM
 @Composable
 fun ViewPortPreview(
     modifier: Modifier = Modifier,
-    viewModel: ViewPortViewModel = rememberViewPortViewModel()
+    viewModel: ViewPortViewModel
 ) {
     BlueprintContextMenu(
         contextMenuModelProvider = { viewModel.contextMenuModel!! },

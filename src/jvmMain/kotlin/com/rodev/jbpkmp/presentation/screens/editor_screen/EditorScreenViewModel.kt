@@ -14,16 +14,15 @@ import com.rodev.jbpkmp.domain.model.Project
 import com.rodev.jbpkmp.domain.model.graph.EventGraph
 import com.rodev.jbpkmp.domain.model.loadBlueprint
 import com.rodev.jbpkmp.domain.model.saveBlueprint
-import com.rodev.jbpkmp.domain.model.variable.GlobalVariable
-import com.rodev.jbpkmp.domain.model.variable.LocalVariable
-import com.rodev.jbpkmp.domain.model.variable.Variable
+import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.CreateVariableGraphEvent
+import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.node.VariableNodeRepresentation
 import com.rodev.nodeui.components.node.NodeState
 import kotlinx.coroutines.*
 import kotlinx.serialization.json.Json
 
 class EditorScreenViewModel(
     projectPath: String
-) : SelectionHandler {
+) : SelectionHandler, VariableStateProvider {
 
     private val json = Json { prettyPrint = true }
     private val project: Project
@@ -35,6 +34,10 @@ class EditorScreenViewModel(
 
     private var loadingJob: Job? = null
     private var selectable: Selectable? = null
+
+    private val variablesById = hashMapOf<String, VariableState>()
+
+    private val selectionActionVisitor: SelectionActionVisitor = SelectionActionVisitorImpl()
 
     init {
         project = Project.loadFromFolder(projectPath)
@@ -53,18 +56,30 @@ class EditorScreenViewModel(
         delay(500)
 
         val viewModel = defaultViewPortViewModel(
-            selectionHandler = this
+            selectionHandler = this,
+            variableStateProvider = this
         )
+
+        val localVariables = eventGraph.localVariables.map { it.toState() }
+        val globalVariables = eventGraph.globalVariables.map { it.toState() }
+
+        localVariables.forEach {
+            variablesById[it.id] = it
+        }
+
+        globalVariables.forEach {
+            variablesById[it.id] = it
+        }
 
         viewModel.load(eventGraph.graph)
 
         currentGraph = GraphState(
             viewModel = viewModel,
-            variables = eventGraph.localVariables.map { it.toState() }
+            variables = localVariables
         )
 
         state.variables.addAll(
-            eventGraph.globalVariables.map { it.toState() }
+            globalVariables
         )
     }
 
@@ -74,10 +89,41 @@ class EditorScreenViewModel(
         }
         this.selectable = selectable
         selectable.selected = true
+
+        println(selectable)
     }
 
-    fun deleteNode(nodeState: NodeState) {
+    private fun deleteNode(nodeState: NodeState) {
         currentGraph?.viewModel?.deleteNode(nodeState)
+    }
+
+    private fun deleteLocalVariable(variable: LocalVariableState) {
+        currentGraph?.let { graph ->
+            graph.removeVariable(variable)
+            graph.variables.removeIf { it.id == variable.id }
+            variablesById.remove(variable.id)
+        }
+    }
+
+    private fun deleteGlobalVariable(variable: GlobalVariableState) {
+        currentGraph?.let { graph ->
+            graph.removeVariable(variable)
+            state.variables.removeIf { it.id == variable.id }
+            variablesById.remove(variable.id)
+        }
+    }
+
+    private fun GraphState.removeVariable(variable: VariableState) {
+        viewModel.nodeStates.filter { node ->
+            val representation = node.nodeRepresentation
+            if (representation is VariableNodeRepresentation) {
+                return@filter representation.variableId == variable.id
+            }
+
+            false
+        }.let { nodes ->
+            viewModel.deleteNodes(nodes)
+        }
     }
 
     override fun resetSelection() {
@@ -90,13 +136,19 @@ class EditorScreenViewModel(
     @OptIn(ExperimentalComposeUiApi::class)
     fun handleKeyEvent(keyEvent: KeyEvent): Boolean {
         if (keyEvent.key == Key.Delete) {
-            val selectable = this.selectable
-            resetSelection()
-            selectable?.onDelete(this)
+            handleDeleteEvent()
             return true
         }
 
         return false
+    }
+
+    private fun handleDeleteEvent() {
+        val selectable = this.selectable
+        resetSelection()
+
+        println("On Delete = $selectable")
+        selectable?.onDelete(selectionActionVisitor)
     }
 
     fun onEvent(event: EditorScreenEvent) {
@@ -110,11 +162,19 @@ class EditorScreenViewModel(
             }
 
             is EditorScreenEvent.AddLocalVariable -> {
-                currentGraph?.variables?.add(event.variable)
+                currentGraph?.let {
+                    val variable = event.variable
+
+                    variablesById[variable.id] = variable
+                    it.variables.add(variable)
+                }
             }
 
             is EditorScreenEvent.AddGlobalVariable -> {
-                state.variables.add(event.variable)
+                event.variable.let {
+                    variablesById[it.id] = it
+                    state.variables.add(it)
+                }
             }
 
             is EditorScreenEvent.OnDragAndDrop -> {
@@ -132,10 +192,13 @@ class EditorScreenViewModel(
 
         val targetPosition = scrollPosition + position
 
-        when (variableState) {
-            is GlobalVariableState -> {}
-            is LocalVariableState -> {}
-        }
+        currentGraph.viewModel.onEvent(
+            CreateVariableGraphEvent(variableState, targetPosition)
+        )
+    }
+
+    override fun getVariableStateById(id: String): VariableState? {
+        return variablesById[id]
     }
 
     fun onDispose() {
@@ -160,5 +223,20 @@ class EditorScreenViewModel(
                 functions = emptyList()
             )
         )
+    }
+
+    private inner class SelectionActionVisitorImpl : SelectionActionVisitor {
+        override fun deleteNode(nodeState: NodeState) {
+            this@EditorScreenViewModel.deleteNode(nodeState)
+        }
+
+        override fun deleteLocalVariable(variable: LocalVariableState) {
+            this@EditorScreenViewModel.deleteLocalVariable(variable)
+        }
+
+        override fun deleteGlobalVariable(variable: GlobalVariableState) {
+            this@EditorScreenViewModel.deleteGlobalVariable(variable)
+        }
+
     }
 }

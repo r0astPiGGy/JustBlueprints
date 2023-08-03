@@ -87,6 +87,11 @@ open class GraphViewModel(
         _nodeStates.remove(nodeState)
     }
 
+    fun deleteNodes(nodes: List<NodeState>) {
+        nodes.forEach { pinConnectionHandler.disconnectAll(it) }
+        _nodeStates.removeAll(nodes)
+    }
+
     private fun clearNodes() {
         _nodeStates.forEach(pinConnectionHandler::disconnectAll)
         _nodeStates.clear()

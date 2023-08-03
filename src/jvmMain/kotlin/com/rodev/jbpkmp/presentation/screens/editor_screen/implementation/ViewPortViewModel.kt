@@ -9,6 +9,8 @@ import com.rodev.jbpkmp.data.GlobalDataSource
 import com.rodev.jbpkmp.domain.repository.ActionDataSource
 import com.rodev.jbpkmp.domain.repository.NodeDataSource
 import com.rodev.jbpkmp.domain.repository.getNodeById
+import com.rodev.jbpkmp.domain.repository.getVariableNode
+import com.rodev.jbpkmp.presentation.screens.editor_screen.VariableState
 import com.rodev.jbpkmp.presentation.screens.editor_screen.components.context_menu.ContextMenuModel
 import com.rodev.jbpkmp.presentation.screens.editor_screen.components.context_menu.ContextTreeNode
 import com.rodev.nodeui.components.graph.GraphEvent
@@ -71,6 +73,17 @@ open class ViewPortViewModel(
                 onContextMenuClose()
             }
 
+            is CreateVariableGraphEvent -> {
+                val (x, y) = event.position
+                val variable = event.variable
+
+                onEvent(
+                    NodeAddEvent(
+                        node = getVariableNode(variable = variable).copy(x = x, y = y)
+                    )
+                )
+            }
+
             else -> super.onEvent(event)
         }
     }
@@ -108,4 +121,9 @@ data class ShowContextMenuGraphEvent(
 
 data class ActionSelectedGraphEvent(
     val treeNode: ContextTreeNode.Leaf
+) : GraphEvent
+
+data class CreateVariableGraphEvent(
+    val variable: VariableState,
+    val position: Offset
 ) : GraphEvent

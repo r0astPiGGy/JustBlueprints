@@ -2,6 +2,7 @@ package com.rodev.jbpkmp.presentation.screens.editor_screen.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -13,10 +14,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -29,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.rodev.jbpkmp.domain.model.variable.GlobalVariable
 import com.rodev.jbpkmp.presentation.localization.Vocabulary
@@ -66,8 +65,8 @@ private fun LocalVariables(
         }
     ) {
         if (currentGraph != null) {
-            items(currentGraph.variables) {
-                VariableView(it)
+            items(currentGraph.variables, key = { it.id }) {
+                VariableView(viewModel, it)
             }
         }
     }
@@ -89,11 +88,33 @@ private fun LocalVariables(
 }
 
 @Composable
-fun VariableView(variable: VariableState) {
-    DragTarget(
-        dataToDrop = variable
+fun VariableView(
+    selectionHandler: SelectionHandler,
+    variable: VariableState
+) {
+    Surface(
+        border = if (variable.selected) BorderStroke(3.dp, Color.Yellow) else null,
+        shape = RoundedCornerShape(size = 10.dp)
     ) {
-        Text(variable.name)
+        Column(
+            modifier = Modifier
+                .clickable {
+                    if (variable.selected) {
+                        selectionHandler.resetSelection()
+                    } else {
+                        selectionHandler.onSelect(
+                            variable
+                        )
+                    }
+                }
+                .padding(10.dp),
+        ) {
+            DragTarget(
+                dataToDrop = variable
+            ) {
+                Text(variable.name)
+            }
+        }
     }
 }
 
@@ -110,8 +131,8 @@ private fun GlobalVariables(
             createVariableDialogPresented = true
         }
     ) {
-        items(viewModel.state.variables) {
-            VariableView(it)
+        items(viewModel.state.variables, key = { it.id }) {
+            VariableView(viewModel, it)
         }
     }
 

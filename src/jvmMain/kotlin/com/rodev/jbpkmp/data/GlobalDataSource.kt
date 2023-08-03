@@ -4,6 +4,7 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.res.loadImageBitmap
 import androidx.compose.ui.res.useResource
 import com.rodev.generator.action.entity.*
+import com.rodev.generator.action.utils.ColorUtil
 import com.rodev.jbpkmp.domain.repository.ActionDataSource
 import com.rodev.jbpkmp.domain.repository.NodeDataSource
 import com.rodev.jbpkmp.domain.repository.NodeTypeDataSource
@@ -45,6 +46,24 @@ object GlobalDataSource : NodeDataSource, PinTypeDataSource, NodeTypeDataSource,
         }
 
         actionDataSource = ActionDataSourceImpl(mutableActions, mutableCategories)
+    }
+
+    private fun registerNativeNodes() {
+        mutableNodeModels["native_variable"] = NodeModel(
+            id = "native_variable",
+            type = "variable",
+            input = emptyList(),
+            output = listOf(
+                PinModel(
+                    id = "output",
+                    type = "variable"
+                )
+            )
+        )
+        mutableNodeTypes["variable"] = NodeType(
+            id = "variable",
+            color = 0.inv()
+        )
     }
 
     private fun loadIconByPath(path: String) {

@@ -10,11 +10,9 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import com.rodev.generator.action.entity.NodeModel
 import com.rodev.generator.action.entity.PinModel
 import com.rodev.generator.action.entity.extra_data.EnumExtraData
-import com.rodev.jbpkmp.domain.repository.DefaultValueComposableRegistry
 import com.rodev.jbpkmp.domain.model.PinEntity
-import com.rodev.jbpkmp.domain.repository.NodeDataSource
-import com.rodev.jbpkmp.domain.repository.PinTypeDataSource
-import com.rodev.jbpkmp.domain.repository.get
+import com.rodev.jbpkmp.domain.repository.*
+import com.rodev.jbpkmp.presentation.localization.name
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.BooleanInputComposable
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.EnumInputComposable
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.StringInputComposable
@@ -45,6 +43,36 @@ class DefaultPinStateFactory(
         return super.createDefaultValueComposable(node, pin, connectionType)
     }
 
+    override fun createOutputPinState(node: Node, pin: Pin): PinState {
+        if (node.typeId == variableTypeId) {
+            return createVariablePinState(pin)
+        }
+
+        return super.createOutputPinState(node, pin)
+    }
+
+    private fun createVariablePinState(pin: Pin): PinState {
+        return PinState(
+            id = pin.uniqueId,
+            pinRepresentation = createVariablePinRepresentation(pin),
+            defaultValueComposable = EmptyDefaultValueComposable
+        )
+    }
+
+    private fun createVariablePinRepresentation(pin: Pin): PinRepresentation {
+        val pinType = pinTypeDataSource["variable"]!!
+
+        val pinEntity = PinEntity(
+            id = pin.typeId,
+            color = pinType.color,
+            name = "",
+            connectionType = ConnectionType.OUTPUT,
+            type = pinType
+        )
+
+        return DefaultPinRepresentation(pinEntity, ConnectionType.OUTPUT, DefaultDrawFunction)
+    }
+
     override fun createPinRepresentation(node: Node, pin: Pin, connectionType: ConnectionType): PinRepresentation {
         val nodeModel = nodeDataSource.getNodeModelById(node.typeId)
         val pinModel = nodeModel.findPinModelById(pin.typeId, connectionType)
@@ -57,7 +85,7 @@ class DefaultPinStateFactory(
             color = pinType.color,
             name = pinModel.label,
             connectionType = connectionType,
-            supportsMultipleConnection = !execPin,
+            supportsMultipleConnection = !execPin && connectionType != ConnectionType.INPUT,
             type = pinType
         )
 

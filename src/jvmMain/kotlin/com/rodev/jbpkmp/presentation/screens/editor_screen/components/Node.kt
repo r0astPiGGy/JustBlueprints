@@ -40,7 +40,7 @@ import com.rodev.nodeui.util.MutableCoordinate
 import kotlin.math.max
 import kotlin.math.roundToInt
 
-private const val nodeOutlinePadding = 6
+const val nodeOutlinePadding = 6
 
 @Composable
 @Preview

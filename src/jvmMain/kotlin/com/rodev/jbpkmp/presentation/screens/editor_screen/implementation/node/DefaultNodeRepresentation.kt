@@ -60,21 +60,3 @@ class DefaultNodeRepresentation(
     }
 
 }
-
-private class NodeStateSelectableWrapper(
-    private val selectSetter: (Boolean) -> Unit,
-    private val selectGetter: () -> Boolean,
-    private val nodeState: NodeState
-) : Selectable {
-
-    override var selected: Boolean
-        get() = selectGetter()
-        set(value) {
-            selectSetter(value)
-        }
-
-    override fun onDelete(editorScreenViewModel: EditorScreenViewModel) {
-        editorScreenViewModel.deleteNode(nodeState)
-    }
-
-}

@@ -41,6 +41,8 @@ class PinConnectionHandler(
 
         if (!pinTypeComparator.connectable(currentDraggingPin, pinState)) return false
 
+//        if (!pinState.supportsMultipleConnection() && pinState.connected) return false
+
         return !pinState.connectedTo(currentDraggingPin)
     }
 

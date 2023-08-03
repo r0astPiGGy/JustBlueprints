@@ -8,35 +8,47 @@ import com.rodev.jbpkmp.domain.model.variable.LocalVariable
 import com.rodev.jbpkmp.presentation.localization.name
 import java.util.UUID
 
-sealed interface VariableState {
+sealed interface VariableState : Selectable {
 
+    val id: String
     var name: String
     var value: Any?
 
 }
 
 class LocalVariableState(
-    val id: String = UUID.randomUUID().toString(),
+    override val id: String = UUID.randomUUID().toString(),
     name: String,
     value: Any? = null
 ) : VariableState {
 
+    override var selected: Boolean by mutableStateOf(false)
     override var name by mutableStateOf(name)
+
     override var value by mutableStateOf(value)
+
+    override fun onDelete(selectionActionVisitor: SelectionActionVisitor) {
+        selectionActionVisitor.deleteLocalVariable(this)
+    }
 
 }
 
 class GlobalVariableState(
-    val id: String = UUID.randomUUID().toString(),
+    override val id: String = UUID.randomUUID().toString(),
     name: String,
     value: Any? = null,
     type: GlobalVariable.Type
 ) : VariableState {
 
+    override var selected: Boolean by mutableStateOf(false)
     override var name by mutableStateOf(name)
-    override var value by mutableStateOf(value)
 
+    override var value by mutableStateOf(value)
     var type by mutableStateOf(type)
+
+    override fun onDelete(selectionActionVisitor: SelectionActionVisitor) {
+        selectionActionVisitor.deleteGlobalVariable(this)
+    }
 }
 
 fun LocalVariableState.toLocalVariable(): LocalVariable {
