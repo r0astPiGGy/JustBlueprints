@@ -89,8 +89,6 @@ class EditorScreenViewModel(
         }
         this.selectable = selectable
         selectable.selected = true
-
-        println(selectable)
     }
 
     private fun deleteNode(nodeState: NodeState) {
@@ -147,7 +145,6 @@ class EditorScreenViewModel(
         val selectable = this.selectable
         resetSelection()
 
-        println("On Delete = $selectable")
         selectable?.onDelete(selectionActionVisitor)
     }
 

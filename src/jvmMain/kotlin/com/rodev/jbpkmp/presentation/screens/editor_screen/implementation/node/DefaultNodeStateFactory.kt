@@ -1,5 +1,6 @@
 package com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.node
 
+import com.rodev.generator.action.entity.extra_data.EventExtraData
 import com.rodev.jbpkmp.domain.model.NodeEntity
 import com.rodev.jbpkmp.domain.repository.*
 import com.rodev.jbpkmp.presentation.screens.editor_screen.SelectionHandler
@@ -51,11 +52,19 @@ class DefaultNodeStateFactory(
         val node = nodeDataSource.getNodeModelById(typeId)
         val nodeType = nodeTypeDataSource[node.type]!!
         val action = actionDataSource.getActionById(typeId)
+        val extra = node.extra
+
+        var subHeader: String? = null
+
+        if (extra is EventExtraData && extra.cancellable) {
+            subHeader = "Отменяемое"
+        }
 
         return DefaultNodeRepresentation(
             NodeEntity(
                 id = typeId,
                 header = action.name,
+                subHeader = subHeader,
                 headerColor = nodeType.color,
                 iconPath = action.iconPath
             ),

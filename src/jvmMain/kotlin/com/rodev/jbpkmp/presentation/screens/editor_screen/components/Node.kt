@@ -26,6 +26,7 @@ import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.MeasurePolicy
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInParent
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -118,12 +119,23 @@ fun SimpleNode(
                     )
                     Spacer(modifier = Modifier.width(5.dp))
                 }
-                Text(
-                    text = nodeEntity.header,
-                    overflow = TextOverflow.Ellipsis,
-                    maxLines = 1,
-                    color = MaterialTheme.colors.onBackground
-                )
+                Column {
+                    Text(
+                        text = nodeEntity.header,
+                        overflow = TextOverflow.Ellipsis,
+                        maxLines = 1,
+                        color = MaterialTheme.colors.onBackground
+                    )
+                    if (nodeEntity.subHeader != null) {
+                        Text(
+                            text = nodeEntity.subHeader,
+                            overflow = TextOverflow.Ellipsis,
+                            maxLines = 1,
+                            color = Color.Gray,
+                            fontStyle = FontStyle.Italic
+                        )
+                    }
+                }
             }
 
             val inputPinContainerCoordinates = remember { MutableCoordinate() }
