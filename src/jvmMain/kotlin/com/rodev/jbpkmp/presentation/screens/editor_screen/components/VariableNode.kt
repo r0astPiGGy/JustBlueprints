@@ -8,8 +8,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -19,18 +18,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInParent
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import com.rodev.jbpkmp.presentation.screens.editor_screen.VariableState
 import com.rodev.jbpkmp.theme.black
 import com.rodev.nodeui.components.node.NodeState
-import com.rodev.nodeui.components.pin.PinDragListener
-import com.rodev.nodeui.components.pin.row.SnapshotRequester
-import com.rodev.nodeui.util.MutableCoordinate
 import kotlin.math.roundToInt
 
 @Composable
@@ -38,14 +31,9 @@ fun VariableNode(
     nodeState: NodeState,
     header: String,
     subHeader: String,
-    pinDragListener: PinDragListener,
-    snapshotRequester: SnapshotRequester,
     selected: Boolean,
     onTap: () -> Unit = {}
 ) {
-    val nodeBodyRelativeCoordinates = remember {
-        MutableCoordinate()
-    }
     Card(
         shape = RoundedCornerShape(8.dp),
         border = if (selected) BorderStroke(3.dp, Color.Yellow) else null,
@@ -63,10 +51,7 @@ fun VariableNode(
                 }
             }
             .onGloballyPositioned {
-                it.positionInParent().apply {
-                    nodeBodyRelativeCoordinates.x = x
-                    nodeBodyRelativeCoordinates.y = y
-                }
+                nodeState.outputPinContainerPosition = it.positionInParent()
             }
     ) {
         Row(
@@ -86,10 +71,7 @@ fun VariableNode(
                     onTap()
                 }
                 .onGloballyPositioned {
-                    it.positionInParent().apply {
-                        nodeBodyRelativeCoordinates.x += x
-                        nodeBodyRelativeCoordinates.y += y
-                    }
+                    nodeState.outputPinContainerPosition += it.positionInParent()
                 }
         ) {
             Row(
@@ -119,12 +101,9 @@ fun VariableNode(
 
             val outputPin = nodeState.outputPins.first()
 
-            outputPin.pinRowRepresentation.onDraw(
+            outputPin.pinRowDisplay.PinRowView(
                 nodeState = nodeState,
-                pinRowState = outputPin,
-                pinDragListener = pinDragListener,
-                snapshotRequester = snapshotRequester,
-                parentCoordinate = nodeBodyRelativeCoordinates
+                pinRowState = outputPin
             )
 
             Spacer(modifier = Modifier.size(5.dp))

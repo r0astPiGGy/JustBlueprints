@@ -6,13 +6,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import com.rodev.jbpkmp.data.GlobalDataSource
-import com.rodev.jbpkmp.domain.repository.ActionDataSource
-import com.rodev.jbpkmp.domain.repository.NodeDataSource
-import com.rodev.jbpkmp.domain.repository.getNodeById
-import com.rodev.jbpkmp.domain.repository.getVariableNode
+import com.rodev.jbpkmp.domain.repository.*
 import com.rodev.jbpkmp.presentation.screens.editor_screen.VariableState
 import com.rodev.jbpkmp.presentation.screens.editor_screen.components.context_menu.ContextMenuModel
 import com.rodev.jbpkmp.presentation.screens.editor_screen.components.context_menu.ContextTreeNode
+import com.rodev.jbpkmp.presentation.screens.editor_screen.toNode
 import com.rodev.nodeui.components.graph.GraphEvent
 import com.rodev.nodeui.components.graph.GraphViewModel
 import com.rodev.nodeui.components.graph.NodeAddEvent
@@ -79,7 +77,7 @@ open class ViewPortViewModel(
 
                 onEvent(
                     NodeAddEvent(
-                        node = getVariableNode(variable = variable).copy(x = x, y = y)
+                        node = variable.toNode().copy(x = x, y = y)
                     )
                 )
             }

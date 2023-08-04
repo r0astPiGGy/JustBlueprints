@@ -3,52 +3,67 @@ package com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.node
 import com.rodev.generator.action.entity.extra_data.EventExtraData
 import com.rodev.jbpkmp.domain.model.NodeEntity
 import com.rodev.jbpkmp.domain.repository.*
-import com.rodev.jbpkmp.presentation.screens.editor_screen.SelectionHandler
-import com.rodev.jbpkmp.presentation.screens.editor_screen.VariableStateProvider
-import com.rodev.nodeui.components.node.NodeRepresentation
+import com.rodev.jbpkmp.presentation.screens.editor_screen.*
+import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.pin.row.DefaultInputPinRowDisplay
+import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.pin.row.DefaultOutputPinRowDisplay
+import com.rodev.nodeui.components.node.NodeDisplay
 import com.rodev.nodeui.components.node.NodeState
 import com.rodev.nodeui.components.node.NodeStateFactory
-import com.rodev.nodeui.components.pin.row.PinRowStateFactory
+import com.rodev.nodeui.components.pin.PinState
+import com.rodev.nodeui.components.pin.row.PinRowDisplay
+import com.rodev.nodeui.components.pin.row.PinRowState
 import com.rodev.nodeui.model.Node
 
 class DefaultNodeStateFactory(
-    private val pinRowStateFactory: PinRowStateFactory,
     private val nodeDataSource: NodeDataSource,
-    private val actionDataSource: ActionDataSource,
     private val nodeTypeDataSource: NodeTypeDataSource,
+    private val actionDataSource: ActionDataSource,
     private val selectionHandler: SelectionHandler,
-    private val variableStateProvider: VariableStateProvider
-) : NodeStateFactory(pinRowStateFactory) {
+    pinTypeDataSource: PinTypeDataSource
+) : NodeStateFactory {
+
+    private val pinStateFactory = PinStateFactory(pinTypeDataSource)
 
     override fun createNodeState(node: Node): NodeState {
-        if (node.typeId == variableTypeId) {
-            return createVariableNodeState(node)
-        }
+        val typeId = node.getType()
+        val nodeModel = nodeDataSource.getNodeModelById(typeId)
 
-        return super.createNodeState(node)
-    }
-
-    private fun createVariableNodeState(node: Node): NodeState {
-        val outputPin = node.outputPins[0]
-        val variableId = outputPin.typeId
-
-        return NodeState(
+        val nodeState = NodeState(
             id = node.uniqueId,
             initialX = node.x,
             initialY = node.y,
-            nodeRepresentation = VariableNodeRepresentation(
-                selectionHandler,
-                variableState = variableStateProvider.getVariableStateById(variableId)!!,
-                variableId = variableId
+            nodeDisplay = getNodeRepresentation(typeId)
+        )
+
+        node.inputPins.map {
+            createPinRowState(
+                pinRowDisplay = DefaultInputPinRowDisplay,
+                pinState = pinStateFactory.createInputPinState(nodeModel, it)
             )
-        ).apply {
-            outputPins.add(
-                pinRowStateFactory.createOutputPinRowState(node, outputPin)
-            )
+        }.let {
+            nodeState.inputPins.addAll(it)
         }
+
+        node.outputPins.map {
+            createPinRowState(
+                pinRowDisplay = DefaultOutputPinRowDisplay,
+                pinState = pinStateFactory.createOutputPinState(nodeModel, it)
+            )
+        }.let {
+            nodeState.outputPins.addAll(it)
+        }
+
+        return nodeState
     }
 
-    override fun getNodeRepresentation(typeId: String): NodeRepresentation {
+    private fun createPinRowState(pinRowDisplay: PinRowDisplay, pinState: PinState): PinRowState {
+        return PinRowState(
+            pinRowDisplay = pinRowDisplay,
+            pinState = pinState
+        )
+    }
+
+    private fun getNodeRepresentation(typeId: String): NodeDisplay {
         val node = nodeDataSource.getNodeModelById(typeId)
         val nodeType = nodeTypeDataSource[node.type]!!
         val action = actionDataSource.getActionById(typeId)
@@ -60,7 +75,7 @@ class DefaultNodeStateFactory(
             subHeader = "Отменяемое"
         }
 
-        return DefaultNodeRepresentation(
+        return DefaultNodeDisplay(
             NodeEntity(
                 id = typeId,
                 header = action.name,
@@ -73,4 +88,3 @@ class DefaultNodeStateFactory(
     }
 
 }
-

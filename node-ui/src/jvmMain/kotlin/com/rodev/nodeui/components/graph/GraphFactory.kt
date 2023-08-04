@@ -8,13 +8,14 @@ import com.rodev.nodeui.components.wire.PinWire
 import com.rodev.nodeui.model.Graph
 import com.rodev.nodeui.model.PinConnection
 
+typealias PinConnector = (inputPin: PinState, outputPin: PinState) -> Unit
+
 class GraphFactory(
-    private val nodeStateFactory: NodeStateFactory,
-    private val pinConnectionHandler: PinConnectionHandler
+    private val nodeStateFactory: NodeStateFactory
 ) {
 
     fun save(nodeStates: List<NodeState>, wires: List<PinWire>): Graph {
-        val nodes = nodeStates.map { it.nodeRepresentation.toNode(it) }
+        val nodes = nodeStates.map { it.nodeDisplay.toNode(it) }
 
         val connections = wires.map {
             PinConnection(
@@ -29,7 +30,7 @@ class GraphFactory(
         )
     }
 
-    fun load(graph: Graph): List<NodeState> {
+    fun load(graph: Graph, pinConnector: PinConnector): List<NodeState> {
         val pinStatesById = hashMapOf<String, PinState>()
         val nodeStates = mutableListOf<NodeState>()
 
@@ -50,7 +51,7 @@ class GraphFactory(
             val inputPinState = pinStatesById[it.inputPinId]!!
             val outputPinState = pinStatesById[it.outputPinId]!!
 
-            pinConnectionHandler.connect(inputPinState, outputPinState)
+            pinConnector(inputPinState, outputPinState)
         }
 
         return nodeStates

@@ -5,30 +5,25 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.rodev.jbpkmp.domain.model.NodeEntity
-import com.rodev.jbpkmp.presentation.screens.editor_screen.EditorScreenViewModel
-import com.rodev.jbpkmp.presentation.screens.editor_screen.Selectable
 import com.rodev.jbpkmp.presentation.screens.editor_screen.SelectionHandler
 import com.rodev.jbpkmp.presentation.screens.editor_screen.components.SimpleNode
-import com.rodev.nodeui.components.node.NodeRepresentation
+import com.rodev.jbpkmp.presentation.screens.editor_screen.createNodeTypeTag
+import com.rodev.nodeui.components.node.NodeDisplay
 import com.rodev.nodeui.components.node.NodeState
-import com.rodev.nodeui.components.pin.PinDragListener
-import com.rodev.nodeui.components.pin.row.SnapshotRequester
 import com.rodev.nodeui.model.Node
 
-class DefaultNodeRepresentation(
+class DefaultNodeDisplay(
     private val nodeEntity: NodeEntity,
-    private val selectionHandler: SelectionHandler
-) : NodeRepresentation {
+    private val selectionHandler: SelectionHandler,
+) : NodeDisplay {
 
     private var selected: Boolean by mutableStateOf(false)
 
     @Composable
-    override fun onDraw(nodeState: NodeState, pinDragListener: PinDragListener, snapshotRequester: SnapshotRequester) {
+    override fun NodeView(nodeState: NodeState) {
         SimpleNode(
             nodeState = nodeState,
             nodeEntity = nodeEntity,
-            pinDragListener = pinDragListener,
-            snapshotRequester = snapshotRequester,
             selected = selected,
             onTap = { onSelect(nodeState) }
         )
@@ -53,9 +48,9 @@ class DefaultNodeRepresentation(
             x = nodeState.x,
             y = nodeState.y,
             uniqueId = nodeState.id,
-            typeId = nodeEntity.id,
-            inputPins = nodeState.inputPins.map { it.pinState }.map { it.pinRepresentation.toPin(it) },
-            outputPins = nodeState.outputPins.map { it.pinState }.map { it.pinRepresentation.toPin(it) }
+            inputPins = nodeState.inputPins.map { it.pinState }.map { it.pinDisplay.toPin(it) },
+            outputPins = nodeState.outputPins.map { it.pinState }.map { it.pinDisplay.toPin(it) },
+            tag = createNodeTypeTag(typeId = nodeEntity.id)
         )
     }
 

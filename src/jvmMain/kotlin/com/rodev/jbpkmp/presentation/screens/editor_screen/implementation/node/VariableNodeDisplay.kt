@@ -2,22 +2,17 @@ package com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.node
 
 import androidx.compose.runtime.*
 import com.rodev.jbpkmp.domain.model.variable.GlobalVariable
-import com.rodev.jbpkmp.domain.repository.variableTypeId
-import com.rodev.jbpkmp.presentation.screens.editor_screen.GlobalVariableState
-import com.rodev.jbpkmp.presentation.screens.editor_screen.SelectionHandler
-import com.rodev.jbpkmp.presentation.screens.editor_screen.VariableState
+import com.rodev.jbpkmp.presentation.screens.editor_screen.*
 import com.rodev.jbpkmp.presentation.screens.editor_screen.components.VariableNode
-import com.rodev.nodeui.components.node.NodeRepresentation
+import com.rodev.nodeui.components.node.NodeDisplay
 import com.rodev.nodeui.components.node.NodeState
-import com.rodev.nodeui.components.pin.PinDragListener
-import com.rodev.nodeui.components.pin.row.SnapshotRequester
 import com.rodev.nodeui.model.Node
 
-class VariableNodeRepresentation(
+class VariableNodeDisplay(
     private val selectionHandler: SelectionHandler,
     private val variableState: VariableState,
     val variableId: String
-) : NodeRepresentation {
+) : NodeDisplay {
 
     private var selected: Boolean by mutableStateOf(false)
 
@@ -33,17 +28,13 @@ class VariableNodeRepresentation(
     }
 
     @Composable
-    override fun onDraw(
-        nodeState: NodeState,
-        pinDragListener: PinDragListener,
-        snapshotRequester: SnapshotRequester
+    override fun NodeView(
+        nodeState: NodeState
     ) {
         VariableNode(
             nodeState = nodeState,
             header = variableState.name,
             subHeader = subHeader,
-            pinDragListener,
-            snapshotRequester,
             selected,
             onTap = { onSelect(nodeState) }
         )
@@ -68,9 +59,9 @@ class VariableNodeRepresentation(
             x = nodeState.x,
             y = nodeState.y,
             uniqueId = nodeState.id,
-            typeId = variableTypeId,
             inputPins = emptyList(),
-            outputPins = nodeState.outputPins.map { it.pinState }.map { it.pinRepresentation.toPin(it) }
+            outputPins = nodeState.outputPins.map { it.pinState }.map { it.pinDisplay.toPin(it) },
+            tag = createVariableNodeTag(variableId)
         )
     }
 

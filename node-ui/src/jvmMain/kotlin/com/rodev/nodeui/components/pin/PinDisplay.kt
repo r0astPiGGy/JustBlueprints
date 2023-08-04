@@ -5,11 +5,7 @@ import com.rodev.nodeui.components.node.NodeState
 import com.rodev.nodeui.model.ConnectionType
 import com.rodev.nodeui.model.Pin
 
-interface PinRepresentation {
-
-    val connectionType: ConnectionType
-
-    val supportsMultipleConnection: Boolean
+interface PinDisplay {
 
     val name: String
 
@@ -18,7 +14,7 @@ interface PinRepresentation {
     val type: Any?
 
     @Composable
-    fun onDraw(nodeState: NodeState, pinState: PinState, pinDragListener: PinDragListener)
+    fun PinView(nodeState: NodeState, pinState: PinState)
 
     fun toPin(pinState: PinState): Pin
 

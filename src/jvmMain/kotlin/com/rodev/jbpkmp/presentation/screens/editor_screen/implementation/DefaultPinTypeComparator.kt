@@ -35,4 +35,4 @@ object DefaultPinTypeComparator : PinTypeComparator {
 }
 
 private val PinState.type
-    get() = pinRepresentation.type as PinType
+    get() = pinDisplay.type as PinType

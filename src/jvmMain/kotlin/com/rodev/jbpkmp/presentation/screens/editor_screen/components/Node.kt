@@ -1,19 +1,14 @@
 package com.rodev.jbpkmp.presentation.screens.editor_screen.components
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -30,14 +25,10 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.WindowPosition.PlatformDefault.x
 import com.rodev.jbpkmp.data.GlobalDataSource
 import com.rodev.jbpkmp.domain.model.NodeEntity
 import com.rodev.jbpkmp.theme.black
 import com.rodev.nodeui.components.node.NodeState
-import com.rodev.nodeui.components.pin.PinDragListener
-import com.rodev.nodeui.components.pin.row.SnapshotRequester
-import com.rodev.nodeui.util.MutableCoordinate
 import kotlin.math.max
 import kotlin.math.roundToInt
 
@@ -45,17 +36,30 @@ const val nodeOutlinePadding = 6
 
 @Composable
 @Preview
+fun NodePreview() {
+    Card(
+        shape = RoundedCornerShape(8.dp),
+        modifier = Modifier.wrapContentSize()
+    ) {
+        Box(
+            modifier = Modifier
+                .background(color = Color.Transparent)
+        ) {
+
+        }
+    }
+}
+
+@Composable
+@Preview
 fun SimpleNode(
     nodeState: NodeState,
     nodeEntity: NodeEntity,
-    pinDragListener: PinDragListener,
-    snapshotRequester: SnapshotRequester,
     selected: Boolean,
     onTap: () -> Unit = {}
 ) {
-    val nodeBodyRelativeCoordinates = remember {
-        MutableCoordinate()
-    }
+    var nodeBodyRelativeCoordinates by remember { mutableStateOf(Offset.Zero) }
+
     Card(
         shape = RoundedCornerShape(8.dp),
         border = if (selected) BorderStroke(3.dp, Color.Yellow) else null,
@@ -73,10 +77,7 @@ fun SimpleNode(
                 }
             }
             .onGloballyPositioned {
-                it.positionInParent().apply {
-                    nodeBodyRelativeCoordinates.x = x
-                    nodeBodyRelativeCoordinates.y = y
-                }
+                nodeBodyRelativeCoordinates = it.positionInParent()
             }
     ) {
         NodeBody(
@@ -88,10 +89,7 @@ fun SimpleNode(
                     onTap()
                 }
                 .onGloballyPositioned {
-                    it.positionInParent().apply {
-                        nodeBodyRelativeCoordinates.x += x
-                        nodeBodyRelativeCoordinates.y += y
-                    }
+                    nodeBodyRelativeCoordinates += it.positionInParent()
                 }
         ) {
             Row(
@@ -138,27 +136,18 @@ fun SimpleNode(
                 }
             }
 
-            val inputPinContainerCoordinates = remember { MutableCoordinate() }
-            val outputPinContainerCoordinates = remember { MutableCoordinate() }
-
             PinContainer(
                 alignment = Alignment.Start,
                 modifier = Modifier
                     .wrapContentSize(align = Alignment.TopStart)
                     .onGloballyPositioned {
-                        it.positionInParent().apply {
-                            inputPinContainerCoordinates.x = nodeBodyRelativeCoordinates.x + x
-                            inputPinContainerCoordinates.y = nodeBodyRelativeCoordinates.y + y
-                        }
+                        nodeState.inputPinContainerPosition = it.positionInParent() + nodeBodyRelativeCoordinates
                     }
             ) {
                 nodeState.inputPins.forEach {
-                    it.pinRowRepresentation.onDraw(
+                    it.pinRowDisplay.PinRowView(
                         nodeState = nodeState,
-                        pinRowState = it,
-                        pinDragListener = pinDragListener,
-                        snapshotRequester = snapshotRequester,
-                        parentCoordinate = inputPinContainerCoordinates
+                        pinRowState = it
                     )
                     Spacer(modifier = Modifier.height(5.dp))
                 }
@@ -169,19 +158,13 @@ fun SimpleNode(
                 modifier = Modifier
                     .wrapContentSize(align = Alignment.TopEnd)
                     .onGloballyPositioned {
-                        it.positionInParent().apply {
-                            outputPinContainerCoordinates.x = nodeBodyRelativeCoordinates.x + x
-                            outputPinContainerCoordinates.y = nodeBodyRelativeCoordinates.y + y
-                        }
+                        nodeState.outputPinContainerPosition = it.positionInParent() + nodeBodyRelativeCoordinates
                     }
             ) {
                 nodeState.outputPins.forEach {
-                    it.pinRowRepresentation.onDraw(
+                    it.pinRowDisplay.PinRowView(
                         nodeState = nodeState,
-                        pinRowState = it,
-                        pinDragListener = pinDragListener,
-                        snapshotRequester = snapshotRequester,
-                        parentCoordinate = outputPinContainerCoordinates
+                        pinRowState = it
                     )
                     Spacer(modifier = Modifier.height(5.dp))
                 }

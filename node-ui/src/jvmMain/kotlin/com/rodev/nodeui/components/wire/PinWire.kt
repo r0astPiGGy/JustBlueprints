@@ -26,7 +26,7 @@ private data class DefaultPinWire(
         drawPath(
             path = path,
             brush = Brush.linearGradient(
-                listOf(Color(inputPin.pinRepresentation.color), Color(outputPin.pinRepresentation.color)),
+                listOf(Color(inputPin.pinDisplay.color), Color(outputPin.pinDisplay.color)),
                 start = Offset(inputPin.center.x, inputPin.center.y),
                 end = Offset(outputPin.center.x, outputPin.center.y)
             ),

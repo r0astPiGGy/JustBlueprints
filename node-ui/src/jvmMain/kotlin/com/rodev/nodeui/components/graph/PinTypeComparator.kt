@@ -8,7 +8,7 @@ interface PinTypeComparator {
 
     object Default : PinTypeComparator {
         override fun connectable(inputPin: PinState, outputPin: PinState): Boolean {
-            return inputPin.pinRepresentation.type == outputPin.pinRepresentation.type
+            return inputPin.pinDisplay.type == outputPin.pinDisplay.type
         }
     }
 

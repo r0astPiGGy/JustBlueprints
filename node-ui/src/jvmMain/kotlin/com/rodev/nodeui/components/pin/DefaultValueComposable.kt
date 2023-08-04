@@ -5,7 +5,7 @@ import androidx.compose.runtime.Composable
 interface DefaultValueComposable {
 
     @Composable
-    fun draw(pinState: PinState)
+    fun DefaultValueView(pinState: PinState)
 
     fun getValue(): String?
 
@@ -15,7 +15,7 @@ interface DefaultValueComposable {
 
 object EmptyDefaultValueComposable : DefaultValueComposable {
     @Composable
-    override fun draw(pinState: PinState) {}
+    override fun DefaultValueView(pinState: PinState) {}
 
     override fun getValue(): String? = null
 
@@ -31,10 +31,10 @@ private class ConnectedPinVisibilityWrapper(
 ) : DefaultValueComposable {
 
     @Composable
-    override fun draw(pinState: PinState) {
+    override fun DefaultValueView(pinState: PinState) {
         if (pinState.connected) return
 
-        defaultValueComposable.draw(pinState)
+        defaultValueComposable.DefaultValueView(pinState)
     }
 
     override fun getValue(): String? = defaultValueComposable.getValue()

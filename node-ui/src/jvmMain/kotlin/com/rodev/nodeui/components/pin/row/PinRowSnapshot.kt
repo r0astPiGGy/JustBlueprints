@@ -1,5 +1,8 @@
 package com.rodev.nodeui.components.pin.row
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
 import com.rodev.nodeui.components.node.NodeState
 
@@ -8,6 +11,28 @@ interface SnapshotRequester {
     val snapshotRequested: Boolean
 
     fun addSnapshot(snapshot: PinRowSnapshot)
+
+}
+
+class DefaultSnapshotRequester(
+    private val snapshotFilter: (PinRowSnapshot) -> Boolean
+) : SnapshotRequester {
+
+    private val mutableSnapshots = mutableListOf<PinRowSnapshot>()
+    val snapshots: List<PinRowSnapshot>
+        get() = mutableSnapshots
+
+    override var snapshotRequested by mutableStateOf(false)
+
+    override fun addSnapshot(snapshot: PinRowSnapshot) {
+        if (snapshotFilter(snapshot)) {
+            mutableSnapshots.add(snapshot)
+        }
+    }
+
+    fun clearSnapshots() {
+        mutableSnapshots.clear()
+    }
 
 }
 

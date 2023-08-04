@@ -8,14 +8,19 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.input.key.key
-import com.rodev.jbpkmp.defaultViewPortViewModel
+import com.rodev.jbpkmp.data.GlobalDataSource
 import com.rodev.jbpkmp.domain.model.Blueprint
 import com.rodev.jbpkmp.domain.model.Project
 import com.rodev.jbpkmp.domain.model.graph.EventGraph
 import com.rodev.jbpkmp.domain.model.loadBlueprint
 import com.rodev.jbpkmp.domain.model.saveBlueprint
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.CreateVariableGraphEvent
-import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.node.VariableNodeRepresentation
+import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.DefaultPinTypeComparator
+import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.ViewPortViewModel
+import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.node.DefaultNodeStateFactory
+import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.node.NodeStateFactoryRegistry
+import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.node.VariableNodeDisplay
+import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.node.VariableNodeStateFactory
 import com.rodev.nodeui.components.node.NodeState
 import kotlinx.coroutines.*
 import kotlinx.serialization.json.Json
@@ -38,6 +43,7 @@ class EditorScreenViewModel(
     private val variablesById = hashMapOf<String, VariableState>()
 
     private val selectionActionVisitor: SelectionActionVisitor = SelectionActionVisitorImpl()
+    private val nodeStateFactory = createNodeStateFactory()
 
     init {
         project = Project.loadFromFolder(projectPath)
@@ -49,16 +55,37 @@ class EditorScreenViewModel(
         }
     }
 
+    private fun createNodeStateFactory() = NodeStateFactoryRegistry().apply {
+        setDefaultNodeStateFactory(DefaultNodeStateFactory(
+            nodeDataSource = GlobalDataSource,
+            nodeTypeDataSource = GlobalDataSource,
+            actionDataSource = GlobalDataSource,
+            pinTypeDataSource = GlobalDataSource,
+            selectionHandler = this@EditorScreenViewModel
+        ))
+        registerNodeStateFactory(typeId = VARIABLE_TYPE_TAG, VariableNodeStateFactory(
+            selectionHandler = this@EditorScreenViewModel,
+            variableStateProvider = this@EditorScreenViewModel,
+            pinTypeDataSource = GlobalDataSource
+        ))
+    }
+
+    private fun createViewPortViewModel(): ViewPortViewModel {
+        return ViewPortViewModel(
+            pinTypeComparator = DefaultPinTypeComparator,
+            nodeStateFactory = nodeStateFactory,
+            actionDataSource = GlobalDataSource,
+            nodeDataSource = GlobalDataSource
+        )
+    }
+
     private suspend fun load() {
         val blueprint = project.loadBlueprint()
         val eventGraph = blueprint.eventGraph
 
         delay(500)
 
-        val viewModel = defaultViewPortViewModel(
-            selectionHandler = this,
-            variableStateProvider = this
-        )
+        val viewModel = createViewPortViewModel()
 
         val localVariables = eventGraph.localVariables.map { it.toState() }
         val globalVariables = eventGraph.globalVariables.map { it.toState() }
@@ -113,8 +140,8 @@ class EditorScreenViewModel(
 
     private fun GraphState.removeVariable(variable: VariableState) {
         viewModel.nodeStates.filter { node ->
-            val representation = node.nodeRepresentation
-            if (representation is VariableNodeRepresentation) {
+            val representation = node.nodeDisplay
+            if (representation is VariableNodeDisplay) {
                 return@filter representation.variableId == variable.id
             }
 

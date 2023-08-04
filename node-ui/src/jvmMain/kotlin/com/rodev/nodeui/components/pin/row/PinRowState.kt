@@ -6,7 +6,7 @@ import androidx.compose.runtime.setValue
 import com.rodev.nodeui.components.pin.PinState
 
 class PinRowState(
-    val pinRowRepresentation: PinRowRepresentation,
+    val pinRowDisplay: PinRowDisplay,
     val pinState: PinState
 ) {
     var hovered by mutableStateOf(false)

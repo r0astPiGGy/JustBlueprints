@@ -41,8 +41,6 @@ class PinConnectionHandler(
 
         if (!pinTypeComparator.connectable(currentDraggingPin, pinState)) return false
 
-//        if (!pinState.supportsMultipleConnection() && pinState.connected) return false
-
         return !pinState.connectedTo(currentDraggingPin)
     }
 
@@ -56,7 +54,7 @@ class PinConnectionHandler(
     }
 
     fun onDragStart(draggingPin: PinState) {
-        if (!draggingPin.supportsMultipleConnection() && draggingPin.isConnected()) {
+        if (!draggingPin.supportsMultipleConnection && draggingPin.isConnected()) {
             disconnectAll(draggingPin)
         }
     }
@@ -70,7 +68,7 @@ class PinConnectionHandler(
 
         val opposite = initiator.getOpposite(inputPin, outputPin)
 
-        if (!opposite.supportsMultipleConnection() && opposite.isConnected()) {
+        if (!opposite.supportsMultipleConnection && opposite.isConnected()) {
             // it can be connected, so it needs disconnection
 
             disconnectAll(opposite)
@@ -145,10 +143,6 @@ class PinConnectionHandler(
 
     private fun PinState.isConnected(): Boolean {
         return connected && connections.isNotEmpty()
-    }
-
-    private fun PinState.supportsMultipleConnection(): Boolean {
-        return pinRepresentation.supportsMultipleConnection
     }
 
     private fun PinState.connectedTo(pinState: PinState): Boolean {

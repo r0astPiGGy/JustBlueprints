@@ -9,9 +9,9 @@ import com.rodev.nodeui.components.node.NodeState
 import com.rodev.nodeui.components.node.NodeStateFactory
 import com.rodev.nodeui.components.pin.PinDragListener
 import com.rodev.nodeui.components.pin.PinState
+import com.rodev.nodeui.components.pin.row.DefaultSnapshotRequester
 import com.rodev.nodeui.components.pin.row.PinRowSnapshot
 import com.rodev.nodeui.components.pin.row.PinRowState
-import com.rodev.nodeui.components.pin.row.SnapshotRequester
 import com.rodev.nodeui.components.wire.Wire
 import com.rodev.nodeui.components.wire.WireFactory
 import com.rodev.nodeui.model.Graph
@@ -22,7 +22,7 @@ open class GraphViewModel(
     pinTypeComparator: PinTypeComparator = PinTypeComparator.Default,
     private val nodeStateFactory: NodeStateFactory,
     private val wireFactory: WireFactory = WireFactory()
-) : PinDragListener, SnapshotRequester {
+) : PinDragListener {
 
     private val pinConnectionHandler = PinConnectionHandler(
         wireFactory = wireFactory,
@@ -34,19 +34,17 @@ open class GraphViewModel(
         ScrollState(initialScrollY)
     )
 
-    private val graphFactory = GraphFactory(nodeStateFactory, pinConnectionHandler)
+    private val snapshotRequester = DefaultSnapshotRequester(::shouldAddPinRowSnapshot)
+    private val graphFactory = GraphFactory(nodeStateFactory)
     private val _nodeStates = mutableStateListOf<NodeState>()
     val nodeStates: List<NodeState>
         get() = _nodeStates
 
-    var temporaryLine by mutableStateOf<Wire?>(null)
+    var temporaryWire by mutableStateOf<Wire?>(null)
         private set
 
-    val lines: List<Wire>
+    val wires: List<Wire>
         get() = pinConnectionHandler.wires
-
-    final override var snapshotRequested by mutableStateOf(false)
-        private set
 
     private var cachedHitTest: PinRowSnapshot? = null
 
@@ -56,12 +54,12 @@ open class GraphViewModel(
     private var currentHoveringPin: PinState? = null
     private var currentHoveringRow: PinRowState? = null
 
-    private val pinSnapshots = mutableSetOf<PinRowSnapshot>()
-
     open fun onEvent(event: GraphEvent) {
         when (event) {
             is NodeAddEvent -> {
                 val node = nodeStateFactory.createNodeState(event.node)
+                node.initListeners()
+
                 _nodeStates.add(node)
             }
 
@@ -79,7 +77,19 @@ open class GraphViewModel(
 
     fun load(graph: Graph) {
         clearNodes()
-        graphFactory.load(graph).let { _nodeStates.addAll(it) }
+
+        val nodes = graphFactory.load(graph, pinConnectionHandler::connect)
+        nodes.forEach { it.initListeners() }
+        _nodeStates.addAll(nodes)
+    }
+
+    private fun NodeState.initListeners() {
+        snapshotRequester = this@GraphViewModel.snapshotRequester
+        setPinDragListener(this@GraphViewModel)
+    }
+
+    private fun shouldAddPinRowSnapshot(snapshot: PinRowSnapshot): Boolean {
+        return pinConnectionHandler.shouldAddSnapshot(snapshot, currentDraggingPin, currentDraggingPinOwner)
     }
 
     fun deleteNode(nodeState: NodeState) {
@@ -102,13 +112,7 @@ open class GraphViewModel(
 
         currentDraggingPinOwner = pinOwner
         currentDraggingPin = pinState
-        snapshotRequested = true
-    }
-
-    override fun addSnapshot(snapshot: PinRowSnapshot) {
-        if (pinConnectionHandler.shouldAddSnapshot(snapshot, currentDraggingPin, currentDraggingPinOwner)) {
-            pinSnapshots.add(snapshot)
-        }
+        snapshotRequester.snapshotRequested = true
     }
 
     override fun onPinDrag(pinState: PinState, offset: Offset, change: PointerInputChange) {
@@ -129,9 +133,9 @@ open class GraphViewModel(
 
             clearCurrentHoveringRow()
 
-            temporaryLine = wireFactory.createWirePreview(
-                pinState.pinRepresentation.color,
-                hoveredPin.pinRepresentation.color,
+            temporaryWire = wireFactory.createWirePreview(
+                pinState.pinDisplay.color,
+                hoveredPin.pinDisplay.color,
                 startPos = Offset(
                     x = start.x,
                     y = start.y
@@ -148,8 +152,8 @@ open class GraphViewModel(
         } else {
             clearCurrentHoveringRow()
             currentHoveringPin = null
-            temporaryLine = wireFactory.createTemporaryWire(
-                pinState.pinRepresentation.color,
+            temporaryWire = wireFactory.createTemporaryWire(
+                pinState.pinDisplay.color,
                 start = Offset(
                     x = start.x,
                     y = start.y
@@ -178,7 +182,7 @@ open class GraphViewModel(
             cachedHitTest = null
         }
 
-        for (pinSnapshot in pinSnapshots) {
+        for (pinSnapshot in snapshotRequester.snapshots) {
             if (pinSnapshot.isInBounds(x, y)) {
                 cachedHitTest = pinSnapshot
                 return pinSnapshot
@@ -206,11 +210,11 @@ open class GraphViewModel(
         currentHoveringPin = null
         currentDraggingPinOwner = null
         cachedHitTest = null
-        snapshotRequested = false
+        snapshotRequester.snapshotRequested = false
         clearCurrentHoveringRow()
-        temporaryLine = null
+        temporaryWire = null
 
-        pinSnapshots.clear()
+        snapshotRequester.clearSnapshots()
     }
 
 

@@ -21,7 +21,7 @@ class StringInputComposable : DefaultValueComposable {
     private var input by mutableStateOf("")
 
     @Composable
-    override fun draw(pinState: PinState) {
+    override fun DefaultValueView(pinState: PinState) {
         TextField(input, onValueChange = { input = it } )
     }
 
@@ -43,7 +43,7 @@ class EnumInputComposable(
     private var input by mutableStateOf(enumEntries.first())
 
     @Composable
-    override fun draw(pinState: PinState) {
+    override fun DefaultValueView(pinState: PinState) {
         Box {
             val width = 200.dp
             var expanded by remember { mutableStateOf(false) }
@@ -100,7 +100,7 @@ class BooleanInputComposable : DefaultValueComposable {
     private var input by mutableStateOf(false)
 
     @Composable
-    override fun draw(pinState: PinState) {
+    override fun DefaultValueView(pinState: PinState) {
         Checkbox(checked = input, onCheckedChange = { input = it }, modifier = Modifier.size(20.dp))
     }
 
