@@ -4,13 +4,10 @@ import com.rodev.generator.action.entity.extra_data.EventExtraData
 import com.rodev.jbpkmp.domain.model.NodeEntity
 import com.rodev.jbpkmp.domain.repository.*
 import com.rodev.jbpkmp.presentation.screens.editor_screen.*
-import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.pin.row.DefaultInputPinRowDisplay
-import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.pin.row.DefaultOutputPinRowDisplay
 import com.rodev.nodeui.components.node.NodeDisplay
 import com.rodev.nodeui.components.node.NodeState
 import com.rodev.nodeui.components.node.NodeStateFactory
 import com.rodev.nodeui.components.pin.PinState
-import com.rodev.nodeui.components.pin.row.PinRowDisplay
 import com.rodev.nodeui.components.pin.row.PinRowState
 import com.rodev.nodeui.model.Node
 
@@ -37,7 +34,6 @@ class DefaultNodeStateFactory(
 
         node.inputPins.map {
             createPinRowState(
-                pinRowDisplay = DefaultInputPinRowDisplay,
                 pinState = pinStateFactory.createInputPinState(nodeModel, it)
             )
         }.let {
@@ -46,7 +42,6 @@ class DefaultNodeStateFactory(
 
         node.outputPins.map {
             createPinRowState(
-                pinRowDisplay = DefaultOutputPinRowDisplay,
                 pinState = pinStateFactory.createOutputPinState(nodeModel, it)
             )
         }.let {
@@ -56,9 +51,8 @@ class DefaultNodeStateFactory(
         return nodeState
     }
 
-    private fun createPinRowState(pinRowDisplay: PinRowDisplay, pinState: PinState): PinRowState {
+    private fun createPinRowState(pinState: PinState): PinRowState {
         return PinRowState(
-            pinRowDisplay = pinRowDisplay,
             pinState = pinState
         )
     }

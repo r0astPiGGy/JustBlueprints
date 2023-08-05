@@ -28,9 +28,6 @@ class NodeState(
     val inputPins = mutableStateListOf<PinRowState>()
     val outputPins = mutableStateListOf<PinRowState>()
 
-    var inputPinContainerPosition by mutableStateOf(Offset.Zero)
-    var outputPinContainerPosition by mutableStateOf(Offset.Zero)
-
     var x by mutableStateOf(initialX)
     var y by mutableStateOf(initialY)
 

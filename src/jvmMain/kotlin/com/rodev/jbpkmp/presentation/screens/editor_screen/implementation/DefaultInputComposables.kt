@@ -10,9 +10,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.rodev.generator.action.entity.extra_data.EnumEntry
 import com.rodev.generator.action.utils.toMap
-import com.rodev.jbpkmp.LocalMutableLocale
-import com.rodev.jbpkmp.presentation.localization.Vocabulary
-import com.rodev.jbpkmp.presentation.localization.supportedLocalesNow
 import com.rodev.nodeui.components.pin.DefaultValueComposable
 import com.rodev.nodeui.components.pin.PinState
 
@@ -22,7 +19,7 @@ class StringInputComposable : DefaultValueComposable {
 
     @Composable
     override fun DefaultValueView(pinState: PinState) {
-        TextField(input, onValueChange = { input = it } )
+        TextField(input, onValueChange = { input = it }, modifier = Modifier.fillMaxWidth() )
     }
 
     override fun getValue(): String {
@@ -45,12 +42,10 @@ class EnumInputComposable(
     @Composable
     override fun DefaultValueView(pinState: PinState) {
         Box {
-            val width = 200.dp
             var expanded by remember { mutableStateOf(false) }
 
             OutlinedButton(
-                onClick = { expanded = !expanded },
-                modifier = Modifier.width(width)
+                onClick = { expanded = !expanded }
             ) {
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -69,7 +64,7 @@ class EnumInputComposable(
             DropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false },
-                modifier = Modifier.width(width)
+                modifier = Modifier
             ) {
                 enumEntries.forEach {
                     DropdownMenuItem(

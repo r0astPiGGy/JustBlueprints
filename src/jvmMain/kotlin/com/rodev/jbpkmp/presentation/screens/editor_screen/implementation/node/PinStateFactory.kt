@@ -13,10 +13,7 @@ import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.Boolea
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.EnumInputComposable
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.StringInputComposable
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.pin.DefaultPinDisplay
-import com.rodev.nodeui.components.pin.PinDisplay
-import com.rodev.nodeui.components.pin.PinDrawFunction
-import com.rodev.nodeui.components.pin.PinState
-import com.rodev.nodeui.components.pin.visibleIfNotConnected
+import com.rodev.nodeui.components.pin.*
 import com.rodev.nodeui.model.ConnectionType
 import com.rodev.nodeui.model.Pin
 
@@ -29,8 +26,6 @@ class PinStateFactory(
     private fun createPinDisplay(pinModel: PinModel): PinDisplay {
         val pinType = pinTypeDataSource[pinModel.type]!!
 
-        val execPin = pinType.id == "exec"
-
         val pinEntity = PinEntity(
             id = pinModel.id,
             color = pinType.color,
@@ -38,13 +33,7 @@ class PinStateFactory(
             type = pinType
         )
 
-        val drawFunction: PinDrawFunction = if (execPin) {
-            ExecDrawFunction
-        } else {
-            DefaultDrawFunction
-        }
-
-        return DefaultPinDisplay(pinEntity, drawFunction)
+        return DefaultPinDisplay(pinEntity)
     }
 
     fun createInputPinState(nodeModel: NodeModel, pin: Pin): PinState {
@@ -74,7 +63,7 @@ class PinStateFactory(
             connectionType = ConnectionType.OUTPUT,
             supportsMultipleConnection = !isExec,
             pinDisplay = createPinDisplay(pinModel),
-            defaultValueComposable = defaultValueComposableRegistry.create(pinModel)
+            defaultValueComposable = EmptyDefaultValueComposable
         ).apply {
             defaultValueComposable.setValue(pinValue)
         }

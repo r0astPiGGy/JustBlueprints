@@ -15,6 +15,7 @@ class PinState(
     val defaultValueComposable: DefaultValueComposable = EmptyDefaultValueComposable,
 ) {
     val connections = mutableListOf<PinWire>()
+
     var position by mutableStateOf(Offset.Zero)
     var center by mutableStateOf(Offset.Zero)
 

@@ -4,8 +4,6 @@ import androidx.compose.runtime.Composable
 import com.rodev.generator.action.entity.PinType
 import com.rodev.jbpkmp.domain.repository.PinTypeDataSource
 import com.rodev.jbpkmp.presentation.screens.editor_screen.*
-import com.rodev.jbpkmp.presentation.screens.editor_screen.components.Pin as PinComposable
-import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.pin.row.DefaultOutputPinRowDisplay
 import com.rodev.nodeui.components.node.NodeState
 import com.rodev.nodeui.components.node.NodeStateFactory
 import com.rodev.nodeui.components.pin.PinDisplay
@@ -40,7 +38,7 @@ class VariableNodeStateFactory(
         ).apply {
             outputPins.add(
                 PinRowState(
-                    pinRowDisplay = DefaultOutputPinRowDisplay,
+//                    pinRowDisplay = DefaultOutputPinRowDisplay,
                     pinState = PinState(
                         id = outputPin.uniqueId,
                         connectionType = ConnectionType.OUTPUT,
@@ -64,16 +62,6 @@ private class VariablePinDisplay(
         get() = ""
     override val color: Int
         get() = type.color
-
-    @Composable
-    override fun PinView(nodeState: NodeState, pinState: PinState) {
-        PinComposable(
-            nodeState = nodeState,
-            pinState = pinState
-        ) {
-            DefaultDrawFunction.drawPin(this, pinState)
-        }
-    }
 
     override fun toPin(pinState: PinState): Pin {
         return createPin(

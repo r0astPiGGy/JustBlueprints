@@ -1,22 +1,22 @@
 [
   {
     "id": "function",
-    "color": "100, 210, 255"
+    "color": "72, 63, 242"
   },
   {
     "id": "pure_function",
-    "color": "4, 222, 113"
+    "color": "11, 170, 81"
   },
   {
     "id": "event",
-    "color": "255, 69, 58"
+    "color": "200, 69, 58"
   },
   {
     "id": "game_value_getter",
-    "color": "191, 90, 242"
+    "color": "151, 30, 202"
   },
   {
     "id": "branch",
-    "color": "142, 142, 147"
+    "color": "122, 122, 127"
   }
 ]

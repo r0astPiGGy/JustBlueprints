@@ -6,7 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.rodev.jbpkmp.domain.model.NodeEntity
 import com.rodev.jbpkmp.presentation.screens.editor_screen.SelectionHandler
-import com.rodev.jbpkmp.presentation.screens.editor_screen.components.SimpleNode
+import com.rodev.jbpkmp.presentation.screens.editor_screen.components.StyledNode
 import com.rodev.jbpkmp.presentation.screens.editor_screen.createNodeTypeTag
 import com.rodev.nodeui.components.node.NodeDisplay
 import com.rodev.nodeui.components.node.NodeState
@@ -21,7 +21,7 @@ class DefaultNodeDisplay(
 
     @Composable
     override fun NodeView(nodeState: NodeState) {
-        SimpleNode(
+        StyledNode(
             nodeState = nodeState,
             nodeEntity = nodeEntity,
             selected = selected,
