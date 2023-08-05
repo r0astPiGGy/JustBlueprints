@@ -57,8 +57,7 @@ class GameValueInterpreter(
             return PinModel(
                 id = id,
                 label = "",
-                type = type,
-                extra = outputPinExtraData
+                type = type
             )
         }
 
@@ -67,23 +66,6 @@ class GameValueInterpreter(
             if (gameValuesWithDisabledSelector.contains(id) || id.startsWith("event_")) {
                 return null
             }
-            return buildCompoundExtraData {
-                add(SelectorExtraData(SelectorType.GameValue))
-                add(ConnectionDisabledExtraData)
-            }
+            return ConnectionDisabledExtraData
         }
 }
-
-val GameValueData.outputPinExtraData: ExtraData?
-    get() {
-        return when (type) {
-            "dictionary" -> DictionaryExtraData(
-                keyType = keyType!!.anyToDynamic(),
-                elementType = valueType!!.anyToDynamic()
-            )
-            "list" -> ListExtraData(
-                elementType = elementType!!.anyToDynamic()
-            )
-            else -> null
-        }
-    }

@@ -4,7 +4,6 @@ import com.rodev.generator.action.LocaleProvider
 import com.rodev.generator.action.entity.*
 import com.rodev.generator.action.entity.extra_data.EventExtraData
 import com.rodev.generator.action.interpreter.ActionInterpreter
-import com.rodev.generator.action.interpreter.game_value.outputPinExtraData
 import com.rodev.jmcc_extractor.entity.EventData
 import com.rodev.jmcc_extractor.entity.GameValueData
 
@@ -55,7 +54,7 @@ class EventInterpreter(
             id = id,
             type = type,
             label = localeProvider.translateGameValue(this),
-            extra = outputPinExtraData
+//            extra = outputPinExtraData
         )
     }
 

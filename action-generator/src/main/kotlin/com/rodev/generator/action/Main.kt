@@ -212,26 +212,8 @@ private fun createPinInterpreterRegistry(localeProvider: LocaleProvider) = PinIn
             add(ConnectionDisabledExtraData)
         }
     }
-    registerPinExtraDataProvider(type = "dictionary") { actionData, argument, rawArgument ->
-        if (rawArgument?.keyType == null || rawArgument.valueType == null) {
-            ActionLogger.log("Key type and value type are null for dictionary '${argument.name}' in action ${actionData.id}")
-            return@registerPinExtraDataProvider null
-        }
-
-        return@registerPinExtraDataProvider DictionaryExtraData(
-            keyType = rawArgument.keyType!!.anyToDynamic(),
-            elementType = rawArgument.valueType!!.anyToDynamic()
-        )
-    }
-    registerPinExtraDataProvider(type = "list") { actionData, argument, rawArgument ->
-        if (rawArgument?.elementType == null) {
-            ActionLogger.log("Element type is null for list '${argument.name}' in action ${actionData.id}")
-            return@registerPinExtraDataProvider null
-        }
-
-        return@registerPinExtraDataProvider ListExtraData(
-            elementType = rawArgument.elementType!!.anyToDynamic()
-        )
+    registerPinExtraDataProvider(type = "boolean") { _, _, _ ->
+        return@registerPinExtraDataProvider ConnectionDisabledExtraData
     }
 }
 
@@ -247,30 +229,6 @@ private fun createNodeInterpreterPipeline(
         return@pipeline it.copy(
             input = action.args.map(::interpretPin)
         )
-//    }.add {
-//        var type = it.type
-//        if (action.id.startsWith("set_variable_get")) {
-//            type = if (action.args[1].type.equals(action.origin) && action.args.size < 3) {
-//                "variable_property"
-//            } else {
-//                "pure_function"
-//            }
-//        }
-//
-//        return@add it.copy(
-//            type = type
-//        )
-//    }.add {
-//        if (it.id.startsWith("set_variable")) {
-//            val output = it.input[0]
-//            val input = it.input.toMutableList().also { list -> list.removeAt(0) }
-//
-//            return@add it.copy(
-//                input = input,
-//                output = listOf(output)
-//            )
-//        }
-//        return@add it
     }.add {
         if (action.containing == "predicate") {
             return@add it.copy(

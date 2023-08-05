@@ -6,9 +6,7 @@ import com.rodev.generator.action.entity.SelectorType
 import com.rodev.generator.action.entity.extra_data.CompoundExtraData
 import com.rodev.generator.action.entity.extra_data.EnumExtraData
 import com.rodev.generator.action.entity.extra_data.ExtraData
-import com.rodev.generator.action.entity.extra_data.SelectorExtraData
 import com.rodev.jbpkmp.domain.model.PinEntity
-import com.rodev.jbpkmp.domain.model.SelectorGroup
 import com.rodev.jbpkmp.domain.repository.DefaultValueComposableRegistry
 import com.rodev.jbpkmp.domain.repository.PinTypeDataSource
 import com.rodev.jbpkmp.domain.repository.SelectorDataSource
@@ -96,10 +94,8 @@ private fun createDefaultValueComposableRegistry(selectorDataSource: SelectorDat
     }
     SelectorType.values().forEach { selectorType ->
         register(selectorType.id) {
-            val extra = it.extra.castTo<SelectorExtraData>()
-
             SelectorInputComposable(
-                selectorDataSource.getSelectorByType(extra.selectorType).selectorList
+                selectorDataSource.getSelectorByType(selectorType).selectorList
             )
         }
     }
