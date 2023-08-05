@@ -5,17 +5,15 @@ import androidx.compose.ui.res.loadImageBitmap
 import androidx.compose.ui.res.useResource
 import com.rodev.generator.action.entity.*
 import com.rodev.generator.action.utils.ColorUtil
-import com.rodev.jbpkmp.domain.repository.ActionDataSource
-import com.rodev.jbpkmp.domain.repository.NodeDataSource
-import com.rodev.jbpkmp.domain.repository.NodeTypeDataSource
-import com.rodev.jbpkmp.domain.repository.PinTypeDataSource
+import com.rodev.jbpkmp.domain.model.SelectorGroup
+import com.rodev.jbpkmp.domain.repository.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
 
 private val json = Json
 
-object GlobalDataSource : NodeDataSource, PinTypeDataSource, NodeTypeDataSource, ActionDataSource {
+object GlobalDataSource : NodeDataSource, PinTypeDataSource, NodeTypeDataSource, ActionDataSource, SelectorDataSource {
 
     private val mutableActions = mutableListOf<Action>()
     private val mutableCategories = mutableListOf<Category>()
@@ -23,6 +21,7 @@ object GlobalDataSource : NodeDataSource, PinTypeDataSource, NodeTypeDataSource,
     private val mutableNodeModels = mutableMapOf<String, NodeModel>()
     private val mutablePinTypes = mutableMapOf<String, PinType>()
     private val mutableNodeTypes = mutableMapOf<String, NodeType>()
+    private val selectors = mutableMapOf<SelectorType, SelectorGroup>()
 
     private lateinit var actionDataSource: ActionDataSource
 
@@ -40,30 +39,13 @@ object GlobalDataSource : NodeDataSource, PinTypeDataSource, NodeTypeDataSource,
         useResource<List<NodeModel>>("data/node-models.json", json::decodeFromStream).forEach { mutableNodeModels[it.id] = it }
         useResource<List<PinType>>("data/pin-types.json", json::decodeFromStream).forEach { mutablePinTypes[it.id] = it }
         useResource<List<NodeType>>("data/node-types.json", json::decodeFromStream).forEach { mutableNodeTypes[it.id] = it }
+        useResource<List<SelectorGroup>>("data/selectors.json", json::decodeFromStream).forEach { selectors[it.type] = it }
 
         mutableActions.forEach {
             loadIconByPath(it.iconPath)
         }
 
         actionDataSource = ActionDataSourceImpl(mutableActions, mutableCategories)
-    }
-
-    private fun registerNativeNodes() {
-        mutableNodeModels["native_variable"] = NodeModel(
-            id = "native_variable",
-            type = "variable",
-            input = emptyList(),
-            output = listOf(
-                PinModel(
-                    id = "output",
-                    type = "variable"
-                )
-            )
-        )
-        mutableNodeTypes["variable"] = NodeType(
-            id = "variable",
-            color = 0.inv()
-        )
     }
 
     private fun loadIconByPath(path: String) {
@@ -87,5 +69,7 @@ object GlobalDataSource : NodeDataSource, PinTypeDataSource, NodeTypeDataSource,
     ): List<T> = actionDataSource.getActions(rootTransformFunction, leafTransformFunction)
 
     override fun getActionById(id: String): Action = actionDataSource.getActionById(id)
+
+    override fun getSelectorByType(type: SelectorType) = selectors[type]!!
 
 }

@@ -61,6 +61,7 @@ class EditorScreenViewModel(
             nodeTypeDataSource = GlobalDataSource,
             actionDataSource = GlobalDataSource,
             pinTypeDataSource = GlobalDataSource,
+            selectorDataSource = GlobalDataSource,
             selectionHandler = this@EditorScreenViewModel
         ))
         registerNodeStateFactory(typeId = VARIABLE_TYPE_TAG, VariableNodeStateFactory(

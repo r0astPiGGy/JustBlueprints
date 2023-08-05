@@ -3,6 +3,7 @@ package com.rodev.jbpkmp
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -344,7 +345,25 @@ fun main() {
             color = Color(30, 30, 30),
             modifier = Modifier.fillMaxSize()
         ) {
-            VariablePreview()
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier
+                    .width(300.dp)
+                    .border(width = 1.dp, color = Color.White)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .width(300.dp)
+                        .background(Color.Red)
+                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .width(150.dp)
+                        .background(Color.Yellow)
+                )
+            }
         }
     }
 }

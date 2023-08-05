@@ -8,7 +8,10 @@
       {
         "id": "exec",
         "label": "",
-        "type": "exec"
+        "type": "exec",
+        "extra": {
+          "type": "exec_pair"
+        }
       },
       {
         "id" : "branch_condition",
@@ -19,7 +22,10 @@
     "output" : [ {
       "id" : "branch_true",
       "label" : "True",
-      "type" : "exec"
+      "type" : "exec",
+      "extra": {
+        "type": "exec_pair"
+      }
     }, {
       "id" : "branch_false",
       "label" : "False",

@@ -3,10 +3,8 @@ package com.rodev.generator.action
 import com.rodev.generator.action.entity.*
 import com.rodev.generator.action.entity.Pins.execPin
 import com.rodev.generator.action.entity.Pins.predicatePin
-import com.rodev.generator.action.entity.extra_data.DictionaryExtraData
-import com.rodev.generator.action.entity.extra_data.EnumEntry
-import com.rodev.generator.action.entity.extra_data.EnumExtraData
-import com.rodev.generator.action.entity.extra_data.ListExtraData
+import com.rodev.generator.action.entity.Pins.selectorPin
+import com.rodev.generator.action.entity.extra_data.*
 import com.rodev.generator.action.interpreter.BulkNodeCompoundInterpreter
 import com.rodev.generator.action.interpreter.action.ActionDataInterpreter
 import com.rodev.generator.action.interpreter.action.NodeInterpreter
@@ -198,14 +196,21 @@ private fun createPinInterpreterRegistry(localeProvider: LocaleProvider) = PinIn
     registerPinExtraDataProvider(type = "enum") { actionData, argument, _ ->
         val enums = argument.`enum`
 
+        fun List<String>.toEnumExtraData(): EnumExtraData {
+            return EnumExtraData(map {
+                EnumEntry(id = it, localeProvider.translateEnumName(actionData, argument, it))
+            })
+        }
+
         if (enums == null) {
             ActionLogger.log("Enum is null for argument ${argument.name} in action ${actionData.id}")
             return@registerPinExtraDataProvider null
         }
 
-        return@registerPinExtraDataProvider EnumExtraData(enums.map {
-            EnumEntry(id = it, localeProvider.translateEnumName(actionData, argument, it))
-        })
+        return@registerPinExtraDataProvider buildCompoundExtraData {
+            add(enums.toEnumExtraData())
+            add(ConnectionDisabledExtraData)
+        }
     }
     registerPinExtraDataProvider(type = "dictionary") { actionData, argument, rawArgument ->
         if (rawArgument?.keyType == null || rawArgument.valueType == null) {
@@ -271,6 +276,13 @@ private fun createNodeInterpreterPipeline(
             return@add it.copy(
                 type = "pure_function",
                 output = listOf(predicatePin("return_value"))
+            )
+        }
+        return@add it
+    }.add {
+        SelectorType.fromId(action.`object`)?.let { selector ->
+            return@add it.copy(
+                input = it.input.toMutableList().also { list -> list.add(0, selectorPin(selector)) }
             )
         }
         return@add it

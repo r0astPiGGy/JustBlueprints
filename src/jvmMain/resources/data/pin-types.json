@@ -60,7 +60,19 @@
         "color": -10230046
     },
     {
+        "id": "game_value",
+        "color": 0
+    },
+    {
         "id": "exec",
         "color": -1
+    },
+    {
+        "id": "entity",
+        "color": -10230046
+    },
+    {
+        "id": "player",
+        "color": -16668682
     }
 ]

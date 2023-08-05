@@ -10,6 +10,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.rodev.generator.action.entity.extra_data.EnumEntry
 import com.rodev.generator.action.utils.toMap
+import com.rodev.jbpkmp.domain.model.Selector
+import com.rodev.jbpkmp.domain.model.SelectorGroup
 import com.rodev.nodeui.components.pin.DefaultValueComposable
 import com.rodev.nodeui.components.pin.PinState
 
@@ -28,6 +30,64 @@ class StringInputComposable : DefaultValueComposable {
 
     override fun setValue(any: String?) {
         input = any ?: ""
+    }
+
+}
+
+class SelectorInputComposable(
+    private val selectors: List<Selector>
+) : DefaultValueComposable {
+
+    private val entriesById = selectors.toMap { it.id }
+    private var input by mutableStateOf(selectors.first())
+
+    @Composable
+    override fun DefaultValueView(pinState: PinState) {
+        Box {
+            var expanded by remember { mutableStateOf(false) }
+
+            OutlinedButton(
+                onClick = { expanded = !expanded }
+            ) {
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(input.name)
+
+                    Icon(
+                        imageVector = Icons.Default.ArrowDropDown,
+                        contentDescription = null
+                    )
+                }
+            }
+
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+                modifier = Modifier
+            ) {
+                selectors.forEach {
+                    DropdownMenuItem(
+                        onClick = {
+                            input = it
+                            expanded = false
+                        }
+                    ) {
+                        Text(it.name)
+                    }
+                }
+            }
+        }
+    }
+
+    override fun getValue(): String = input.id
+
+    override fun setValue(any: String?) {
+        if (any == null) return
+
+        entriesById[any]?.let { input = it }
     }
 
 }

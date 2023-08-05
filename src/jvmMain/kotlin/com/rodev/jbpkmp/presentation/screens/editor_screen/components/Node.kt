@@ -22,6 +22,7 @@ import com.rodev.jbpkmp.data.GlobalDataSource
 import com.rodev.jbpkmp.domain.model.NodeEntity
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.node.DefaultDrawFunction
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.node.ExecDrawFunction
+import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.node.SpecificNodePins
 import com.rodev.nodeui.components.node.NodeState
 import com.rodev.nodeui.components.pin.PinState
 import com.rodev.nodeui.components.pin.pinDragModifier
@@ -234,8 +235,84 @@ fun PinComposableRevamped(
 }
 
 @Composable
+private fun DoubleExecPinRow(
+    nodeState: NodeState,
+    inputPinRowState: PinRowState,
+    outputPinRowState: PinRowState,
+    absoluteBodyOffset: Offset
+) {
+    val updatableBodyOffset by rememberUpdatedState(absoluteBodyOffset)
+    var offset by remember { mutableStateOf(Offset.Zero) }
+
+    val bodyOffset by remember { derivedStateOf {
+        offset + updatableBodyOffset
+    } }
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier
+            .fillMaxWidth()
+            .onGloballyPositioned {
+                offset = it.positionInParent()
+            }
+    ) {
+        Box(
+            modifier = Modifier.requiredWidth(100.dp)
+        ) {
+            InputPinRow(
+                nodeState = nodeState,
+                absoluteBodyOffset = bodyOffset,
+                pinRowState = inputPinRowState
+            )
+        }
+
+        var outputBoxOffset by remember { mutableStateOf(Offset.Zero) }
+
+        val boxOffset by remember { derivedStateOf {
+            outputBoxOffset + bodyOffset
+        } }
+
+        Box(
+            modifier = Modifier
+                .requiredWidth(100.dp)
+                .onGloballyPositioned {
+                    outputBoxOffset = it.positionInParent()
+                }
+        ) {
+            OutputPinRow(
+                nodeState = nodeState,
+                absoluteBodyOffset = boxOffset,
+                pinRowState = outputPinRowState
+            )
+        }
+    }
+}
+
+@Composable
+private fun DisabledConnectionRow(
+    pinRowState: PinRowState
+) {
+    Column(
+        modifier = Modifier
+            .padding(
+                start = boundSpacing.dp,
+                end = boundSpacing.dp
+            )
+    ) {
+        Text(
+            text = pinRowState.pinState.pinDisplay.name,
+            color = MaterialTheme.colors.onBackground,
+            modifier = Modifier.fillMaxWidth()
+        )
+        pinRowState.pinState.defaultValueComposable.DefaultValueView(pinRowState.pinState)
+    }
+}
+
+@Composable
 @Preview
 fun StyledNode(
+    specificNodePins: SpecificNodePins,
     nodeState: NodeState,
     nodeEntity: NodeEntity,
     selected: Boolean,
@@ -260,6 +337,8 @@ fun StyledNode(
             }
     ) {
         var bodyOffset by remember { mutableStateOf(Offset.Zero) }
+
+        // CompositionLocal candidate
         val absoluteBodyPosition by remember { derivedStateOf {
             bodyOffset + Offset(nodeState.x, nodeState.y)
         } }
@@ -315,19 +394,35 @@ fun StyledNode(
                 Text(nodeEntity.header, color = Color.White)
             }
             NodeSpacer()
-            nodeState.outputPins.forEach {
-                OutputPinRow(
-                    nodeState,
-                    absoluteBodyPosition,
-                    it
+
+            specificNodePins.execPinPair?.let {
+                DoubleExecPinRow(
+                    nodeState = nodeState,
+                    inputPinRowState = it.input,
+                    outputPinRowState = it.output,
+                    absoluteBodyOffset = absoluteBodyPosition
                 )
                 NodeSpacer()
             }
-            nodeState.inputPins.forEach {
+            specificNodePins.outputPins.forEach {
+                OutputPinRow(
+                    nodeState = nodeState,
+                    pinRowState = it,
+                    absoluteBodyOffset = absoluteBodyPosition
+                )
+                NodeSpacer()
+            }
+            specificNodePins.inputPins.forEach {
                 InputPinRow(
-                    nodeState,
-                    absoluteBodyPosition,
-                    it
+                    nodeState = nodeState,
+                    pinRowState = it,
+                    absoluteBodyOffset = absoluteBodyPosition
+                )
+                NodeSpacer()
+            }
+            specificNodePins.connectionDisabledInputPins.forEach {
+                DisabledConnectionRow(
+                    pinRowState = it
                 )
                 NodeSpacer()
             }

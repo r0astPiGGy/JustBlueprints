@@ -22,7 +22,7 @@ class EventInterpreter(
         }
 
         return NodeCompound(
-            id = eventData.id,
+            id = "event_" + eventData.id,
             type = "event",
             name = localeProvider.translateEventName(eventData),
             category = category,

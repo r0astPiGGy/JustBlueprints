@@ -2,13 +2,8 @@ package com.rodev.generator.action.interpreter.game_value
 
 import com.rodev.generator.action.LocaleProvider
 import com.rodev.generator.action.anyToDynamic
-import com.rodev.generator.action.entity.NodeCompound
-import com.rodev.generator.action.entity.PinModel
-import com.rodev.generator.action.entity.extra_data.DictionaryExtraData
-import com.rodev.generator.action.entity.extra_data.ExtraData
-import com.rodev.generator.action.entity.extra_data.ListExtraData
-import com.rodev.generator.action.entity.extra_data.SelectorDisabledExtraData
-import com.rodev.generator.action.entity.iconPathFrom
+import com.rodev.generator.action.entity.*
+import com.rodev.generator.action.entity.extra_data.*
 import com.rodev.generator.action.interpreter.ActionInterpreter
 import com.rodev.jmcc_extractor.entity.GameValueData
 
@@ -49,7 +44,7 @@ class GameValueInterpreter(
             id = gameValue.id + "_gamevalue_getter",
             type = "game_value_getter",
             name = name,
-            input = emptyList(),
+            input = listOf(Pins.selectorPin(SelectorType.GameValue)),
             output = listOf(gameValue.output),
             iconPath = iconPathFrom("game_values", gameValue.id),
             category = "game_values",
@@ -70,9 +65,12 @@ class GameValueInterpreter(
     private val GameValueData.nodeExtraData: ExtraData?
         get() {
             if (gameValuesWithDisabledSelector.contains(id) || id.startsWith("event_")) {
-                return SelectorDisabledExtraData
+                return null
             }
-            return null
+            return buildCompoundExtraData {
+                add(SelectorExtraData(SelectorType.GameValue))
+                add(ConnectionDisabledExtraData)
+            }
         }
 }
 

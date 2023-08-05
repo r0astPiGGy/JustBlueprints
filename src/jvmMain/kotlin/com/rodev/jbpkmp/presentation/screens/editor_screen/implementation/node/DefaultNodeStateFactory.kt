@@ -16,10 +16,11 @@ class DefaultNodeStateFactory(
     private val nodeTypeDataSource: NodeTypeDataSource,
     private val actionDataSource: ActionDataSource,
     private val selectionHandler: SelectionHandler,
+    selectorDataSource: SelectorDataSource,
     pinTypeDataSource: PinTypeDataSource
 ) : NodeStateFactory {
 
-    private val pinStateFactory = PinStateFactory(pinTypeDataSource)
+    private val pinStateFactory = PinStateFactory(pinTypeDataSource, selectorDataSource)
 
     override fun createNodeState(node: Node): NodeState {
         val typeId = node.getType()
