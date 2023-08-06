@@ -52,7 +52,7 @@ class DefaultNodeDisplay(
     @Composable
     private fun Details() {
         actionDetails?.let { details ->
-            Text(text = "Информация о действии '${details.name}'", fontStyle = FontStyle.Italic)
+            Text(text = details.name, fontStyle = FontStyle.Italic)
             Spacer(modifier = Modifier.size(8.dp))
             details.description?.let {
                 Text(text = "Описание", fontStyle = FontStyle.Italic)

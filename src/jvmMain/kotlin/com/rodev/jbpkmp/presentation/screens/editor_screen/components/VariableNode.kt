@@ -2,17 +2,21 @@ package com.rodev.jbpkmp.presentation.screens.editor_screen.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.input.pointer.PointerIconDefaults
+import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInParent
@@ -24,6 +28,7 @@ import androidx.compose.ui.unit.sp
 import com.rodev.nodeui.components.node.NodeState
 import kotlin.math.roundToInt
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun VariableNode(
     nodeState: NodeState,
@@ -65,9 +70,13 @@ fun VariableNode(
                 .onGloballyPositioned {
                     bodyOffset = it.positionInParent()
                 }
-                .clickable {
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null
+                ) {
                     onTap()
                 }
+                .pointerHoverIcon(PointerIconDefaults.Hand)
         ) {
             Row(
                 horizontalArrangement = Arrangement.End,

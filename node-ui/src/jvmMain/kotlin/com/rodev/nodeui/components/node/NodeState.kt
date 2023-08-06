@@ -35,8 +35,8 @@ class NodeState(
         pinDragListener?.onPinDragStart(this, pinState)
     }
 
-    fun onPinDrag(pinState: PinState, offset: Offset, change: PointerInputChange) {
-        pinDragListener?.onPinDrag(pinState, offset, change)
+    fun onPinDrag(sourceAbsolutePosition: Offset, pinState: PinState, offset: Offset, change: PointerInputChange) {
+        pinDragListener?.onPinDrag(sourceAbsolutePosition, pinState, offset, change)
     }
 
     fun onPinDragEnd(pinState: PinState) {

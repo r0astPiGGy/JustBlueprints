@@ -115,14 +115,18 @@ open class GraphViewModel(
         snapshotRequester.snapshotRequested = true
     }
 
-    override fun onPinDrag(pinState: PinState, offset: Offset, change: PointerInputChange) {
+    override fun onPinDrag(
+        sourceAbsolutePosition: Offset,
+        pinState: PinState,
+        offset: Offset,
+        change: PointerInputChange
+    ) {
         require(pinState == currentDraggingPin)
 
-        val pos = pinState.position
         val start = pinState.center
 
-        val endX = pos.x + change.position.x
-        val endY = pos.y + change.position.y
+        val endX = sourceAbsolutePosition.x + change.position.x
+        val endY = sourceAbsolutePosition.y + change.position.y
 
         val pinRowSnapshot = hitTest(endX, endY)
         val hoveredRow = pinRowSnapshot?.pinRowState

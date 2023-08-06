@@ -34,6 +34,33 @@ class StringInputComposable : DefaultValueComposable {
 
 }
 
+class DecimalInputComposable : DefaultValueComposable {
+    private var input by mutableStateOf("")
+
+    @Composable
+    override fun DefaultValueView(pinState: PinState) {
+        TextField(
+            input,
+            onValueChange = {
+                if (it.isNotEmpty() && it.toDoubleOrNull() == null) return@TextField
+
+                input = it
+            },
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
+
+    override fun getValue(): String {
+        return input
+    }
+
+    override fun setValue(any: String?) {
+        input = any ?: ""
+    }
+
+
+}
+
 class SelectorInputComposable(
     private val selectors: List<Selector>
 ) : DefaultValueComposable {

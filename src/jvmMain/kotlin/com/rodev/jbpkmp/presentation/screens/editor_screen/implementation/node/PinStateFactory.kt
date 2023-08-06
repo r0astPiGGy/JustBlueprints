@@ -13,10 +13,7 @@ import com.rodev.jbpkmp.domain.repository.SelectorDataSource
 import com.rodev.jbpkmp.domain.repository.get
 import com.rodev.jbpkmp.presentation.screens.editor_screen.getId
 import com.rodev.jbpkmp.presentation.screens.editor_screen.getValue
-import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.BooleanInputComposable
-import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.EnumInputComposable
-import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.SelectorInputComposable
-import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.StringInputComposable
+import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.*
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.pin.DefaultPinDisplay
 import com.rodev.nodeui.components.pin.*
 import com.rodev.nodeui.model.ConnectionType
@@ -98,6 +95,9 @@ private fun createDefaultValueComposableRegistry(selectorDataSource: SelectorDat
                 selectorDataSource.getSelectorByType(selectorType).selectorList
             )
         }
+    }
+    register("number") {
+        DecimalInputComposable()
     }
     register("enum") {
         val extra = it.extra.castTo<EnumExtraData>()

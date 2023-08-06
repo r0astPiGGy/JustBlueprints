@@ -3,26 +3,32 @@ package com.rodev.jbpkmp.presentation.screens.editor_screen.components
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.interaction.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.*
+import androidx.compose.ui.graphics.drawscope.ContentDrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.painter.BitmapPainter
+import androidx.compose.ui.input.pointer.PointerIconDefaults
+import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.*
 import androidx.compose.ui.unit.*
 import com.rodev.generator.action.entity.PinType
 import com.rodev.jbpkmp.data.GlobalDataSource
 import com.rodev.jbpkmp.domain.model.NodeEntity
-import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.node.DefaultDrawFunction
-import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.node.ExecDrawFunction
-import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.node.SpecificNodePins
+import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.node.*
+import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.pin.DefaultPinShape
+import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.pin.ExecPinShape
 import com.rodev.nodeui.components.node.NodeState
 import com.rodev.nodeui.components.pin.PinState
 import com.rodev.nodeui.components.pin.pinDragModifier
@@ -41,6 +47,7 @@ val backgroundColor = Color(60, 58, 54, alpha = 230)
 val pinColor = Color(11, 218, 81)
 val pinOutline = Color(0, 0, 0)
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun InputPinRow(
     nodeState: NodeState,
@@ -55,6 +62,8 @@ fun InputPinRow(
 
     var lastRowMeasurement by remember { mutableStateOf<LayoutCoordinates?>(null) }
 
+    val interactionSource = remember { MutableInteractionSource() }
+
     Row(
         modifier = Modifier
             .ignorePadding(pinPadding)
@@ -62,7 +71,12 @@ fun InputPinRow(
             .onGloballyPositioned {
                 lastRowMeasurement = it
                 rowOffset = it.positionInParent()
-            },
+            }
+            .pinDragModifier(nodeState, pinRowState.pinState) {
+                absoluteRowOffset
+            }
+            .hoverable(interactionSource)
+            .pointerHoverIcon(PointerIconDefaults.Crosshair),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start
     ) {
@@ -94,9 +108,9 @@ fun InputPinRow(
             )
         }
         PinComposableRevamped(
-            nodeState,
             pinRowState.pinState,
-            absoluteRowOffset
+            absoluteRowOffset,
+            interactionSource
         )
         Column(
             modifier = Modifier
@@ -123,6 +137,7 @@ private fun PinState.isExec(): Boolean {
     return type?.id == "exec"
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun OutputPinRow(
     nodeState: NodeState,
@@ -137,6 +152,8 @@ fun OutputPinRow(
 
     var lastRowMeasurement by remember { mutableStateOf<LayoutCoordinates?>(null) }
 
+    val interactionSource = remember { MutableInteractionSource() }
+
     Row(
         modifier = Modifier
             .ignorePadding(pinPadding)
@@ -144,7 +161,12 @@ fun OutputPinRow(
             .onGloballyPositioned {
                 lastRowMeasurement = it
                 rowOffset = it.positionInParent()
-            },
+            }
+            .pinDragModifier(nodeState, pinRowState.pinState) {
+                absoluteRowOffset
+            }
+            .hoverable(interactionSource)
+            .pointerHoverIcon(PointerIconDefaults.Crosshair),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.End
     ) {
@@ -191,31 +213,35 @@ fun OutputPinRow(
             )
             pinRowState.pinState.defaultValueComposable.DefaultValueView(pinRowState.pinState)
         }
-        PinComposableRevamped(nodeState, pinRowState.pinState, absoluteRowOffset)
+        PinComposableRevamped(pinRowState.pinState, absoluteRowOffset, interactionSource)
     }
 }
 
 @Composable
 fun PinComposableRevamped(
-    nodeState: NodeState,
     pinState: PinState,
-    rowOffset: Offset
+    rowOffset: Offset,
+    interactionSource: MutableInteractionSource
 ) {
     var pinOffset by remember { mutableStateOf(Offset.Zero) }
     var centerInParent by remember { mutableStateOf(Offset.Zero) }
 
     val updatableRowOffset by rememberUpdatedState(rowOffset)
 
-    val absolutePinPosition by remember { derivedStateOf {
-        updatableRowOffset + pinOffset
-    } }
-
     val absolutePinCenter by remember { derivedStateOf {
-        absolutePinPosition + centerInParent
+        updatableRowOffset + pinOffset + centerInParent
     } }
 
-    pinState.position = absolutePinPosition
+    // TODO remove Side effect
     pinState.center = absolutePinCenter
+
+    val shape = remember {
+        if (pinState.isExec()) {
+            ExecPinShape
+        } else {
+            DefaultPinShape
+        }
+    }
 
     Canvas(
         modifier = Modifier
@@ -224,12 +250,31 @@ fun PinComposableRevamped(
                 pinOffset = it.positionInParent()
                 centerInParent = Offset(it.size.center.x.toFloat(), it.size.center.y.toFloat())
             }
-            .pinDragModifier(nodeState, pinState),
+            .clip(shape)
+            .indication(interactionSource, PinHoverIndication)
     ) {
-        if (pinState.isExec()) {
-            ExecDrawFunction.drawPin(this, pinState)
-        } else {
-            DefaultDrawFunction.drawPin(this, pinState)
+        drawRect(color = Color(pinState.pinDisplay.color))
+    }
+}
+
+private object PinHoverIndication : Indication {
+
+    private class PinHoverIndicationInstance(
+        private val isHovered: State<Boolean>
+    ) : IndicationInstance {
+        override fun ContentDrawScope.drawIndication() {
+            drawContent()
+            if (isHovered.value) {
+                drawRect(color = Color.White.copy(alpha = 0.2f), size = size)
+            }
+        }
+    }
+
+    @Composable
+    override fun rememberUpdatedInstance(interactionSource: InteractionSource): IndicationInstance {
+        val isHovered = interactionSource.collectIsHoveredAsState()
+        return remember(interactionSource) {
+            PinHoverIndicationInstance(isHovered)
         }
     }
 }
@@ -309,6 +354,7 @@ private fun DisabledConnectionRow(
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 @Preview
 fun StyledNode(
@@ -351,9 +397,13 @@ fun StyledNode(
                 .onGloballyPositioned {
                     bodyOffset = it.positionInParent()
                 }
-                .clickable {
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null
+                ) {
                     onTap()
                 }
+                .pointerHoverIcon(PointerIconDefaults.Hand)
                 .drawBehind {
                     if (selected) {
                         drawRect(color = Color.White, style = Stroke(2f))

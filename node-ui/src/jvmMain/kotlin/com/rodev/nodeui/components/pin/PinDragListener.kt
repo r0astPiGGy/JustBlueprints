@@ -11,13 +11,17 @@ interface PinDragListener {
 
     fun onPinDragStart(pinOwner: NodeState, pinState: PinState)
 
-    fun onPinDrag(pinState: PinState, offset: Offset, change: PointerInputChange)
+    fun onPinDrag(sourceAbsolutePosition: Offset, pinState: PinState, offset: Offset, change: PointerInputChange)
 
     fun onPinDragEnd()
 
 }
 
-fun Modifier.pinDragModifier(nodeState: NodeState, pinState: PinState): Modifier {
+fun Modifier.pinDragModifier(
+    nodeState: NodeState,
+    pinState: PinState,
+    sourceAbsolutePositionProvider: () -> Offset
+): Modifier {
     return this.pointerInput(Unit) {
         detectDragGestures(
             onDragStart = {
@@ -27,7 +31,7 @@ fun Modifier.pinDragModifier(nodeState: NodeState, pinState: PinState): Modifier
                 nodeState.onPinDragEnd(pinState)
             }
         ) { change: PointerInputChange, dragAmount: Offset ->
-            nodeState.onPinDrag(pinState, dragAmount, change)
+            nodeState.onPinDrag(sourceAbsolutePositionProvider(), pinState, dragAmount, change)
             change.consume()
         }
     }
