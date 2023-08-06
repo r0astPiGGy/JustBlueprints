@@ -22,9 +22,14 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.Save
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Build
 import androidx.compose.material.icons.outlined.Done
+import androidx.compose.material.icons.outlined.Save
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -76,27 +81,27 @@ fun EditorScreen(navController: NavController, projectPath: String) {
                 startContent = {
                     // Back button
                     MaterialIconButton(
-                        imageVector = Icons.Outlined.ArrowBack,
+                        imageVector = Icons.Default.ArrowBack,
                         onClick = { navController.navigateBack() }
                     )
 
                     // Settings button
                     MaterialIconButton(
-                        imageVector = Icons.Outlined.Settings,
+                        imageVector = Icons.Default.Settings,
                         onClick = { showSettingsScreen = true }
                     )
                 },
                 endContent = {
                     // Build button
                     MaterialIconButton(
-                        imageVector = Icons.Outlined.Build,
+                        imageVector = Icons.Default.Build,
                         enabled = !viewModel.state.isLoading,
                         onClick = { viewModel.onEvent(EditorScreenEvent.BuildProject) }
                     )
 
                     // Save button
                     MaterialIconButton(
-                        imageVector = Icons.Outlined.Done,
+                        imageVector = Icons.Default.Save,
                         enabled = !viewModel.state.isLoading,
                         onClick = { viewModel.onEvent(EditorScreenEvent.SaveProject) }
                     )

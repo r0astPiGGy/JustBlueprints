@@ -49,6 +49,7 @@ compose.desktop {
 }
 
 dependencies {
+    commonMainImplementation("org.jetbrains.compose.material:material-icons-extended-desktop:1.4.3")
     commonMainImplementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
     commonMainImplementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
 }
