@@ -18,10 +18,7 @@ class VariableNodeDisplay(
 
     private val subHeader by derivedStateOf {
         return@derivedStateOf if (variableState is GlobalVariableState) {
-            when (variableState.type) {
-                GlobalVariable.Type.SAVED -> "Сохранённая переменная"
-                GlobalVariable.Type.GAME -> "Игровая переменная"
-            }
+            variableState.type.typeName
         } else {
             "Локальная переменная"
         }
@@ -49,7 +46,8 @@ class VariableNodeDisplay(
             NodeStateSelectableWrapper(
                 selectGetter = { selected },
                 selectSetter = { selected = it },
-                nodeState = nodeState
+                nodeState = nodeState,
+                detailsComposable = { variableState.Details() }
             )
         )
     }

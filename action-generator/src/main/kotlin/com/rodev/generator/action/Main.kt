@@ -162,12 +162,15 @@ fun main() = runBlocking {
             patchFunction = ::patchNodeType
         )
 
+    val actionDetails = nodeCompounds.map { it.toActionDetails() }
+
     BulkWriter.bulkWrite {
         file("actions.json") { writeJson(interpretedActions) }
         file("categories.json") { writeJson(categories) }
         file("node-models.json") { writeJson(interpretedNodeModels) }
         file("pin-types.json") { writeJson(pinTypes) }
         file("node-types.json") { writeJson(nodeTypes) }
+        file("action-details.json") { writeJson(actionDetails) }
 
         folder("src/jvmMain/resources/data")
         folder("action-generator-output") {
@@ -265,6 +268,14 @@ class DefaultNodeInterpreter(
 ) : NodeInterpreter {
 
     override fun interpret(action: ActionData, rawActionData: RawActionData): NodeCompound {
+        val details = ActionDetails(
+            id = action.id,
+            name = localeProvider.translateActionName(action),
+            description = localeProvider.translateActionDescription(action),
+            additionalInfo = localeProvider.translateActionAdditionalInformation(rawActionData),
+            worksWith = localeProvider.translateActionWorksWith(rawActionData)
+        )
+
         return NodeCompound(
             id = action.id,
             type = "function",
@@ -272,7 +283,8 @@ class DefaultNodeInterpreter(
             input = emptyList(),
             output = emptyList(),
             iconPath = iconPathFrom("actions", action.id),
-            category = categoryResolver.resolveCategoryFor(action) ?: "no-category"
+            category = categoryResolver.resolveCategoryFor(action) ?: "no-category",
+            details = details
         )
     }
 }

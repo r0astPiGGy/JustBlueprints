@@ -1,8 +1,15 @@
 package com.rodev.jbpkmp.presentation.screens.editor_screen
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import com.rodev.jbpkmp.domain.model.variable.GlobalVariable
 import com.rodev.jbpkmp.domain.model.variable.LocalVariable
 import com.rodev.jbpkmp.presentation.localization.name
@@ -31,6 +38,22 @@ class LocalVariableState(
         selectionActionVisitor.deleteLocalVariable(this)
     }
 
+    @Composable
+    override fun Details() {
+        TextField(
+            value = name,
+            onValueChange = { name = it },
+            label = { Text("Имя переменной") },
+            modifier = Modifier.fillMaxWidth()
+        )
+        TextField(
+            value = value.toString(),
+            onValueChange = { value = it },
+            label = { Text("Дефолтное значение") },
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
+
 }
 
 class GlobalVariableState(
@@ -48,6 +71,60 @@ class GlobalVariableState(
 
     override fun onDelete(selectionActionVisitor: SelectionActionVisitor) {
         selectionActionVisitor.deleteGlobalVariable(this)
+    }
+
+    @Composable
+    override fun Details() {
+        TextField(
+            value = name,
+            onValueChange = { name = it },
+            label = { Text("Имя переменной") },
+            modifier = Modifier.fillMaxWidth()
+        )
+        TextField(
+            value = value.toString(),
+            onValueChange = { value = it },
+            label = { Text("Дефолтное значение") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Box {
+            var expanded by remember { mutableStateOf(false) }
+
+            OutlinedButton(
+                onClick = { expanded = !expanded }
+            ) {
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(type.typeName)
+
+                    Icon(
+                        imageVector = Icons.Default.ArrowDropDown,
+                        contentDescription = null
+                    )
+                }
+            }
+
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+                modifier = Modifier
+            ) {
+                GlobalVariable.Type.values().forEach {
+                    DropdownMenuItem(
+                        onClick = {
+                            type = it
+                            expanded = false
+                        }
+                    ) {
+                        Text(it.typeName)
+                    }
+                }
+            }
+        }
     }
 }
 

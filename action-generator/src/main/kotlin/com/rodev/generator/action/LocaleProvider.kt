@@ -1,10 +1,7 @@
 package com.rodev.generator.action
 
 import com.rodev.generator.action.entity.Action
-import com.rodev.jmcc_extractor.entity.ActionData
-import com.rodev.jmcc_extractor.entity.Argument
-import com.rodev.jmcc_extractor.entity.EventData
-import com.rodev.jmcc_extractor.entity.GameValueData
+import com.rodev.jmcc_extractor.entity.*
 import java.util.*
 
 class LocaleProvider(
@@ -13,6 +10,26 @@ class LocaleProvider(
 
     fun translateActionName(action: ActionData): String {
         return localeDataSource.getOrDefault("creative_plus.action.${action.id}.name")
+    }
+
+    fun translateActionDescription(action: ActionData): String {
+        return localeDataSource.getOrDefault("creative_plus.action.${action.id}.description")
+    }
+
+    fun translateActionAdditionalInformation(rawActionData: RawActionData): List<String> {
+        val additionalInfo = rawActionData.additionalInfo ?: return emptyList()
+
+        return additionalInfo.map {
+            localeDataSource.getOrDefault("creative_plus.action.${rawActionData.id}.additional_information.$it")
+        }
+    }
+
+    fun translateActionWorksWith(rawActionData: RawActionData): List<String> {
+        val worksWith = rawActionData.worksWith ?: return emptyList()
+
+        return worksWith.map {
+            localeDataSource.getOrDefault("creative_plus.action.${rawActionData.id}.work_with.$it")
+        }
     }
 
     fun translateArgName(actionData: ActionData, arg: Argument): String {
@@ -37,10 +54,46 @@ class LocaleProvider(
         return localeDataSource.getOrDefault(key)
     }
 
+    fun translateEventDescription(eventData: EventData): String {
+        val key = "creative_plus.trigger.${eventData.id}.description"
+
+        return localeDataSource.getOrDefault(key)
+    }
+
+    fun translateEventAdditionalInformation(eventData: EventData): List<String> {
+        val additionalInfo = eventData.additionalInfo ?: return emptyList()
+
+        return additionalInfo.map {
+            localeDataSource.getOrDefault("creative_plus.trigger.${eventData.id}.additional_information.$it")
+        }
+    }
+
+    fun translateEventWorksWith(eventData: EventData): List<String> {
+        val worksWith = eventData.worksWith ?: return emptyList()
+
+        return worksWith.map {
+            localeDataSource.getOrDefault("creative_plus.trigger.${eventData.id}.work_with.$it")
+        }
+    }
+
     fun translateGameValue(gameValueData: GameValueData): String {
         val key = String.format("creative_plus.game_value.%s.name", gameValueData.id)
 
         return localeDataSource.getOrDefault(key)
+    }
+
+    fun translateGameValueDescription(gameValueData: GameValueData): String? {
+        val key = String.format("creative_plus.game_value.%s.description", gameValueData.id)
+
+        return localeDataSource.get(key)
+    }
+
+    fun translateGameValueWorksWith(gameValue: GameValueData): List<String> {
+        val worksWith = gameValue.worksWith ?: return emptyList()
+
+        return worksWith.map {
+            localeDataSource.getOrDefault("creative_plus.game_value.${gameValue.id}.work_with.$it")
+        }
     }
 
     private fun translateSubCategory(parentCategory: String, category: String): String {

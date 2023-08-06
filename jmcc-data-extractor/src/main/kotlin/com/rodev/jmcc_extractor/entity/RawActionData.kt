@@ -7,7 +7,9 @@ data class RawActionData(
     val id: String,
     val category: String,
     val subcategory: String? = null,
-    val args: List<RawArgument>
+    val args: List<RawArgument>,
+    val additionalInfo: List<String>? = null,
+    val worksWith: List<String>? = null
 )
 
 fun RawActionData.getArgumentById(id: String): RawArgument? {

@@ -1,6 +1,18 @@
 package com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.node
 
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.Divider
+import androidx.compose.material.Text
 import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.rodev.generator.action.entity.ActionDetails
 import com.rodev.generator.action.entity.extra_data.CompoundExtraData
 import com.rodev.generator.action.entity.extra_data.ConnectionDisabledExtraData
 import com.rodev.generator.action.entity.extra_data.ExecPairExtraData
@@ -19,6 +31,7 @@ import com.rodev.nodeui.model.Node
 class DefaultNodeDisplay(
     private val nodeEntity: NodeEntity,
     private val selectionHandler: SelectionHandler,
+    private val actionDetails: ActionDetails?
 ) : NodeDisplay {
 
     private var selected: Boolean by mutableStateOf(false)
@@ -36,6 +49,37 @@ class DefaultNodeDisplay(
         )
     }
 
+    @Composable
+    private fun Details() {
+        actionDetails?.let { details ->
+            Text(text = "Информация о действии '${details.name}'", fontStyle = FontStyle.Italic)
+            Spacer(modifier = Modifier.size(8.dp))
+            details.description?.let {
+                Text(text = "Описание", fontStyle = FontStyle.Italic)
+                Spacer(modifier = Modifier.size(5.dp))
+                Text(text = it, fontSize = 13.sp)
+                Spacer(modifier = Modifier.size(8.dp))
+            }
+            if (details.additionalInfo.isNotEmpty()) {
+                Text(text = "Дополнительно", fontStyle = FontStyle.Italic)
+                Spacer(modifier = Modifier.size(5.dp))
+                details.additionalInfo.forEach {
+                    Text(text = it, fontSize = 13.sp)
+                    Spacer(modifier = Modifier.size(5.dp))
+                }
+                Spacer(modifier = Modifier.size(3.dp))
+            }
+            if (details.worksWith.isNotEmpty()) {
+                Text(text = "Работает с:", fontStyle = FontStyle.Italic)
+                Spacer(modifier = Modifier.size(5.dp))
+                details.worksWith.forEach {
+                    Text(text = it, fontSize = 13.sp)
+                    Spacer(modifier = Modifier.size(5.dp))
+                }
+            }
+        }
+    }
+
     private fun onSelect(nodeState: NodeState) {
         if (selected) {
             selectionHandler.resetSelection()
@@ -45,7 +89,8 @@ class DefaultNodeDisplay(
             NodeStateSelectableWrapper(
                 selectGetter = { selected },
                 selectSetter = { selected = it },
-                nodeState = nodeState
+                nodeState = nodeState,
+                detailsComposable = { Details() }
             )
         )
     }

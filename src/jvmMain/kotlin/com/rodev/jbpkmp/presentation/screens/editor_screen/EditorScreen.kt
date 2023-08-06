@@ -1,6 +1,6 @@
 package com.rodev.jbpkmp.presentation.screens.editor_screen
 
-import androidx.compose.foundation.border
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -76,14 +76,37 @@ fun EditorScreen(navController: NavController, projectPath: String) {
                 }
             )
 
+            HorizontalDivider()
+
             DraggableContext {
                 Row(
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    Overview(
-                        modifier = Modifier.width(300.dp),
-                        viewModel = viewModel
-                    )
+                    VerticalDivider()
+
+                    Column(
+                        modifier = Modifier
+                            .requiredWidth(300.dp)
+                    ) {
+
+                        Overview(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f),
+                            viewModel = viewModel
+                        )
+
+                        HorizontalDivider()
+
+                        Details(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f),
+                            viewModel = viewModel
+                        )
+                    }
+
+                    VerticalDivider()
 
                     val currentGraph = viewModel.currentGraph
 
@@ -124,6 +147,8 @@ fun EditorScreen(navController: NavController, projectPath: String) {
                     }
                 }
             }
+
+            HorizontalDivider()
         }
 
         Sheet(showSettingsScreen) {
@@ -133,6 +158,48 @@ fun EditorScreen(navController: NavController, projectPath: String) {
             )
         }
     }
+}
+
+const val dividerSize = 4
+
+@Composable
+fun Pane(
+    modifier: Modifier = Modifier,
+    content: @Composable ColumnScope.() -> Unit
+) {
+    Box(
+        modifier = modifier
+            .height(IntrinsicSize.Max)
+    ) {
+        val scrollState = rememberScrollState()
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(end = 12.dp)
+                .verticalScroll(scrollState),
+            content = content
+        )
+    }
+}
+
+@Composable
+fun VerticalDivider() {
+    Divider(
+        modifier = Modifier
+            .fillMaxHeight()
+            .width(dividerSize.dp),
+        color = Color.Black
+    )
+}
+
+@Composable
+fun HorizontalDivider() {
+    Divider(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(dividerSize.dp),
+        color = Color.Black
+    )
 }
 
 @Composable

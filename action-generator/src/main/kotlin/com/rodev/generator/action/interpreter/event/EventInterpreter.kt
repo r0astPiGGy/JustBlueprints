@@ -28,7 +28,14 @@ class EventInterpreter(
             input = emptyList(),
             output = eventData.output,
             iconPath = iconPathFrom("events", eventData.id),
-            extra = eventData.extraData
+            extra = eventData.extraData,
+            details = ActionDetails(
+                id = eventData.id,
+                name = localeProvider.translateEventName(eventData),
+                description = localeProvider.translateEventDescription(eventData),
+                additionalInfo = localeProvider.translateEventAdditionalInformation(eventData),
+                worksWith = localeProvider.translateEventWorksWith(eventData)
+            )
         )
     }
 

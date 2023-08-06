@@ -10,9 +10,9 @@ data class GlobalVariable(
     val type: Type
 ) : Variable {
 
-    enum class Type {
-        SAVED,
-        GAME
+    enum class Type(val typeName: String) {
+        SAVED("Сохранённая переменная"),
+        GAME("Игровая переменная")
     }
 
 }

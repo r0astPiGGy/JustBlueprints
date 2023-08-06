@@ -16,6 +16,7 @@ class DefaultNodeStateFactory(
     private val nodeTypeDataSource: NodeTypeDataSource,
     private val actionDataSource: ActionDataSource,
     private val selectionHandler: SelectionHandler,
+    private val actionDetailsDataSource: ActionDetailsDataSource,
     selectorDataSource: SelectorDataSource,
     pinTypeDataSource: PinTypeDataSource
 ) : NodeStateFactory {
@@ -78,7 +79,8 @@ class DefaultNodeStateFactory(
                 headerColor = nodeType.color,
                 iconPath = action.iconPath
             ),
-            selectionHandler
+            selectionHandler,
+            actionDetailsDataSource[node.id]
         )
     }
 

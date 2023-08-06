@@ -7,4 +7,6 @@ data class EventData(
     val id: String,
     val cancellable: Boolean = false,
     val category: String? = null,
+    val worksWith: List<String>? = null,
+    val additionalInfo: List<String>? = null
 )

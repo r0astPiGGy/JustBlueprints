@@ -38,7 +38,9 @@ class EditorScreenViewModel(
     val state = EditorScreenState(isLoading = true)
 
     private var loadingJob: Job? = null
-    private var selectable: Selectable? = null
+
+    var selectable: Selectable? by mutableStateOf(null)
+        private set
 
     private val variablesById = hashMapOf<String, VariableState>()
 
@@ -62,7 +64,8 @@ class EditorScreenViewModel(
             actionDataSource = GlobalDataSource,
             pinTypeDataSource = GlobalDataSource,
             selectorDataSource = GlobalDataSource,
-            selectionHandler = this@EditorScreenViewModel
+            selectionHandler = this@EditorScreenViewModel,
+            actionDetailsDataSource = GlobalDataSource
         ))
         registerNodeStateFactory(typeId = VARIABLE_TYPE_TAG, VariableNodeStateFactory(
             selectionHandler = this@EditorScreenViewModel,

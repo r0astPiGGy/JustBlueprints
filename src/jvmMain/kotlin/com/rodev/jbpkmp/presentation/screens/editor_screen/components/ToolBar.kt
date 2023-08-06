@@ -39,10 +39,5 @@ fun ToolBar(
                 endContent()
             }
         }
-
-        Divider(
-            modifier = Modifier.fillMaxWidth(),
-            color = MaterialTheme.colors.onBackground
-        )
     }
 }

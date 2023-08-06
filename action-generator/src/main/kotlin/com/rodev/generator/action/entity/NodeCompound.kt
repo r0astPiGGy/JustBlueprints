@@ -13,6 +13,7 @@ data class NodeCompound(
     val output: List<PinModel>,
     val iconPath: String,
     val category: String,
+    val details: ActionDetails,
     val extra: ExtraData? = null,
 )
 
@@ -37,29 +38,10 @@ fun NodeCompound.toAction(): Action {
     )
 }
 
+fun NodeCompound.toActionDetails(): ActionDetails {
+    return details.copy(id = id, name = name)
+}
+
 fun extractTypes(pinModels: List<PinModel>): Set<String> {
     return pinModels.map { it.type }.toSet()
-}
-
-fun NodeModel.compound(action: Action): NodeCompound {
-    return action.compound(this)
-}
-
-fun compound(nodes: List<NodeModel>, actions: List<Action>): List<NodeCompound> {
-    val mappedNodes = nodes.toMap(NodeModel::id)
-
-    return actions.mapNotNull { a -> mappedNodes[a.id]?.let { a.compound(it) } }
-}
-
-fun Action.compound(node: NodeModel): NodeCompound {
-    return NodeCompound(
-        id = id,
-        type = node.type,
-        name = name,
-        input = node.input,
-        output = node.output,
-        iconPath = iconPath,
-        category = category,
-        extra = node.extra
-    )
 }

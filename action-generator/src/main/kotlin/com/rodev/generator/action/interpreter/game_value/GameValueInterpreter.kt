@@ -48,7 +48,13 @@ class GameValueInterpreter(
             output = listOf(gameValue.output),
             iconPath = iconPathFrom("game_values", gameValue.id),
             category = "game_values",
-            extra = gameValue.nodeExtraData
+            extra = gameValue.nodeExtraData,
+            details = ActionDetails(
+                id = gameValue.id,
+                name = name,
+                description = localeProvider.translateGameValueDescription(gameValue),
+                worksWith = localeProvider.translateGameValueWorksWith(gameValue)
+            )
         )
     }
 

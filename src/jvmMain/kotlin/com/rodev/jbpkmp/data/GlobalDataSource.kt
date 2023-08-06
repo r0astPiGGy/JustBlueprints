@@ -13,7 +13,14 @@ import kotlinx.serialization.json.decodeFromStream
 
 private val json = Json
 
-object GlobalDataSource : NodeDataSource, PinTypeDataSource, NodeTypeDataSource, ActionDataSource, SelectorDataSource {
+object GlobalDataSource :
+    NodeDataSource,
+    PinTypeDataSource,
+    NodeTypeDataSource,
+    ActionDataSource,
+    ActionDetailsDataSource,
+    SelectorDataSource
+{
 
     private val mutableActions = mutableListOf<Action>()
     private val mutableCategories = mutableListOf<Category>()
@@ -22,6 +29,7 @@ object GlobalDataSource : NodeDataSource, PinTypeDataSource, NodeTypeDataSource,
     private val mutablePinTypes = mutableMapOf<String, PinType>()
     private val mutableNodeTypes = mutableMapOf<String, NodeType>()
     private val selectors = mutableMapOf<SelectorType, SelectorGroup>()
+    private val actionDetails = mutableMapOf<String, ActionDetails>()
 
     private lateinit var actionDataSource: ActionDataSource
 
@@ -40,6 +48,7 @@ object GlobalDataSource : NodeDataSource, PinTypeDataSource, NodeTypeDataSource,
         useResource<List<PinType>>("data/pin-types.json", json::decodeFromStream).forEach { mutablePinTypes[it.id] = it }
         useResource<List<NodeType>>("data/node-types.json", json::decodeFromStream).forEach { mutableNodeTypes[it.id] = it }
         useResource<List<SelectorGroup>>("data/selectors.json", json::decodeFromStream).forEach { selectors[it.type] = it }
+        useResource<List<ActionDetails>>("data/action-details.json", json::decodeFromStream).forEach { actionDetails[it.id] = it }
 
         mutableActions.forEach {
             loadIconByPath(it.iconPath)
@@ -71,5 +80,7 @@ object GlobalDataSource : NodeDataSource, PinTypeDataSource, NodeTypeDataSource,
     override fun getActionById(id: String): Action = actionDataSource.getActionById(id)
 
     override fun getSelectorByType(type: SelectorType) = selectors[type]!!
+
+    override fun getActionDetailsById(id: String): ActionDetails? = actionDetails[id]
 
 }
