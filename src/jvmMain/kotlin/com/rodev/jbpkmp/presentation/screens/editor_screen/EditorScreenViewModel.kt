@@ -58,20 +58,24 @@ class EditorScreenViewModel(
     }
 
     private fun createNodeStateFactory() = NodeStateFactoryRegistry().apply {
-        setDefaultNodeStateFactory(DefaultNodeStateFactory(
-            nodeDataSource = GlobalDataSource,
-            nodeTypeDataSource = GlobalDataSource,
-            actionDataSource = GlobalDataSource,
-            pinTypeDataSource = GlobalDataSource,
-            selectorDataSource = GlobalDataSource,
-            selectionHandler = this@EditorScreenViewModel,
-            actionDetailsDataSource = GlobalDataSource
-        ))
-        registerNodeStateFactory(typeId = VARIABLE_TYPE_TAG, VariableNodeStateFactory(
-            selectionHandler = this@EditorScreenViewModel,
-            variableStateProvider = this@EditorScreenViewModel,
-            pinTypeDataSource = GlobalDataSource
-        ))
+        setDefaultNodeStateFactory(
+            DefaultNodeStateFactory(
+                nodeDataSource = GlobalDataSource,
+                nodeTypeDataSource = GlobalDataSource,
+                actionDataSource = GlobalDataSource,
+                pinTypeDataSource = GlobalDataSource,
+                selectorDataSource = GlobalDataSource,
+                selectionHandler = this@EditorScreenViewModel,
+                actionDetailsDataSource = GlobalDataSource
+            )
+        )
+        registerNodeStateFactory(
+            typeId = VARIABLE_TYPE_TAG, VariableNodeStateFactory(
+                selectionHandler = this@EditorScreenViewModel,
+                variableStateProvider = this@EditorScreenViewModel,
+                pinTypeDataSource = GlobalDataSource
+            )
+        )
     }
 
     private fun createViewPortViewModel(): ViewPortViewModel {

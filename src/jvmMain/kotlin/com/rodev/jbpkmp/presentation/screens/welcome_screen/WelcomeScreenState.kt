@@ -12,6 +12,6 @@ sealed class LoadProjectResult {
 
     class Failure(val msg: String) : LoadProjectResult()
 
-    class Success(val projectPath: String): LoadProjectResult()
+    class Success(val projectPath: String) : LoadProjectResult()
 
 }

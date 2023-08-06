@@ -7,7 +7,7 @@ import com.rodev.nodeui.model.Pin
 import com.rodev.nodeui.model.tag.MapTag
 import com.rodev.nodeui.model.tag.MapTagBuilderScope
 import com.rodev.nodeui.model.tag.buildMapTag
-import java.util.*
+import java.util.UUID
 
 const val VARIABLE_TYPE_TAG = "variable"
 const val NODE_TYPE_ID_TAG = "type"

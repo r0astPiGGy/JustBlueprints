@@ -9,7 +9,6 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.res.painterResource
 
 sealed class ContextTreeNode {
     abstract val name: String
@@ -49,6 +48,7 @@ fun ContextTreeNode.updateVisibility(predicate: (ContextTreeNode.Leaf) -> Boolea
             mutableVisibility = result
             return result
         }
+
         is ContextTreeNode.Root -> {
             var result = false
             child.forEach {

@@ -3,19 +3,31 @@ package com.rodev.jbpkmp.presentation.screens.editor_screen.components
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredWidth
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.input.pointer.PointerIconDefaults
+import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -28,7 +40,6 @@ import androidx.compose.ui.unit.sp
 import com.rodev.nodeui.components.node.NodeState
 import kotlin.math.roundToInt
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun VariableNode(
     nodeState: NodeState,
@@ -44,10 +55,12 @@ fun VariableNode(
         elevation = 10.dp,
         modifier = Modifier
             .wrapContentSize()
-            .offset { IntOffset(
-                nodeState.x.roundToInt(),
-                nodeState.y.roundToInt()
-            ) }
+            .offset {
+                IntOffset(
+                    nodeState.x.roundToInt(),
+                    nodeState.y.roundToInt()
+                )
+            }
             .pointerInput(Unit) {
                 detectDragGestures { change, dragAmount ->
                     nodeState.x = (dragAmount.x + nodeState.x).coerceAtLeast(0f)
@@ -59,9 +72,11 @@ fun VariableNode(
     ) {
         var bodyOffset by remember { mutableStateOf(Offset.Zero) }
         var rowOffset by remember { mutableStateOf(Offset.Zero) }
-        val absoluteBodyPosition by remember { derivedStateOf {
-            bodyOffset + Offset(nodeState.x, nodeState.y) + rowOffset
-        } }
+        val absoluteBodyPosition by remember {
+            derivedStateOf {
+                bodyOffset + Offset(nodeState.x, nodeState.y) + rowOffset
+            }
+        }
 
         Column(
             modifier = Modifier
@@ -76,7 +91,7 @@ fun VariableNode(
                 ) {
                     onTap()
                 }
-                .pointerHoverIcon(PointerIconDefaults.Hand)
+                .pointerHoverIcon(PointerIcon.Hand)
         ) {
             Row(
                 horizontalArrangement = Arrangement.End,
@@ -85,7 +100,11 @@ fun VariableNode(
                         val cornerRadius = CornerRadius(5f)
                         drawRoundRect(color = backgroundColor, cornerRadius = cornerRadius)
                         if (selected) {
-                            drawRoundRect(color = Color.White, cornerRadius = cornerRadius, style = Stroke(2f))
+                            drawRoundRect(
+                                color = Color.White,
+                                cornerRadius = cornerRadius,
+                                style = Stroke(2f)
+                            )
                         }
                     }
                     .fillMaxWidth()

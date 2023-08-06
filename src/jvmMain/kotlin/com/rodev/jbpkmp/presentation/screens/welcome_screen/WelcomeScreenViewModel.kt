@@ -85,11 +85,13 @@ class WelcomeScreenViewModel(
     }
 
     private fun openProject(project: RecentProject) {
-        updateState { it.copy(
-            loadProjectResult = LoadProjectResult.Success(
-                projectPath = project.path
+        updateState {
+            it.copy(
+                loadProjectResult = LoadProjectResult.Success(
+                    projectPath = project.path
+                )
             )
-        ) }
+        }
     }
 
     fun resetState() {

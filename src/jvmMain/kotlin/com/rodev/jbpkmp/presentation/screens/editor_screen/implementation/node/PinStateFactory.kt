@@ -13,9 +13,16 @@ import com.rodev.jbpkmp.domain.repository.SelectorDataSource
 import com.rodev.jbpkmp.domain.repository.get
 import com.rodev.jbpkmp.presentation.screens.editor_screen.getId
 import com.rodev.jbpkmp.presentation.screens.editor_screen.getValue
-import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.*
+import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.BooleanInputComposable
+import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.DecimalInputComposable
+import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.EnumInputComposable
+import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.SelectorInputComposable
+import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.StringInputComposable
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.pin.DefaultPinDisplay
-import com.rodev.nodeui.components.pin.*
+import com.rodev.nodeui.components.pin.EmptyDefaultValueComposable
+import com.rodev.nodeui.components.pin.PinDisplay
+import com.rodev.nodeui.components.pin.PinState
+import com.rodev.nodeui.components.pin.visibleIfNotConnected
 import com.rodev.nodeui.model.ConnectionType
 import com.rodev.nodeui.model.Pin
 
@@ -24,7 +31,8 @@ class PinStateFactory(
     selectorDataSource: SelectorDataSource
 ) {
 
-    private val defaultValueComposableRegistry = createDefaultValueComposableRegistry(selectorDataSource)
+    private val defaultValueComposableRegistry =
+        createDefaultValueComposableRegistry(selectorDataSource)
 
     private fun createPinDisplay(pinModel: PinModel): PinDisplay {
         val pinType = pinTypeDataSource[pinModel.type]!!
@@ -49,7 +57,8 @@ class PinStateFactory(
             connectionType = ConnectionType.INPUT,
             supportsMultipleConnection = false,
             pinDisplay = createPinDisplay(pinModel),
-            defaultValueComposable = defaultValueComposableRegistry.create(pinModel).visibleIfNotConnected()
+            defaultValueComposable = defaultValueComposableRegistry.create(pinModel)
+                .visibleIfNotConnected()
         ).apply {
             defaultValueComposable.setValue(pinValue)
         }
@@ -85,29 +94,30 @@ class PinStateFactory(
 
 }
 
-private fun createDefaultValueComposableRegistry(selectorDataSource: SelectorDataSource) = DefaultValueComposableRegistry.create {
-    register("text") {
-        StringInputComposable()
-    }
-    SelectorType.values().forEach { selectorType ->
-        register(selectorType.id) {
-            SelectorInputComposable(
-                selectorDataSource.getSelectorByType(selectorType).selectorList
-            )
+private fun createDefaultValueComposableRegistry(selectorDataSource: SelectorDataSource) =
+    DefaultValueComposableRegistry.create {
+        register("text") {
+            StringInputComposable()
+        }
+        SelectorType.values().forEach { selectorType ->
+            register(selectorType.id) {
+                SelectorInputComposable(
+                    selectorDataSource.getSelectorByType(selectorType).selectorList
+                )
+            }
+        }
+        register("number") {
+            DecimalInputComposable()
+        }
+        register("enum") {
+            val extra = it.extra.castTo<EnumExtraData>()
+
+            EnumInputComposable(extra.values)
+        }
+        register("boolean") {
+            BooleanInputComposable()
         }
     }
-    register("number") {
-        DecimalInputComposable()
-    }
-    register("enum") {
-        val extra = it.extra.castTo<EnumExtraData>()
-
-        EnumInputComposable(extra.values)
-    }
-    register("boolean") {
-        BooleanInputComposable()
-    }
-}
 
 private inline fun <reified T : ExtraData> ExtraData?.castTo(): T {
     if (this is CompoundExtraData) {

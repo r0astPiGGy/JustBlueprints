@@ -21,7 +21,7 @@ class ActionDataSourceImpl(
         actions.forEach {
             actionsByCategory
                 .computeIfAbsent(it.category) { ArrayList() }
-                    .add(it)
+                .add(it)
 
             actionsById[it.id] = it
         }
@@ -90,7 +90,10 @@ private class ActionTransformHelper<T>(
         val categories = mutableListOf<CategoryWrapper>()
         val actions = mutableListOf<T>()
 
-        fun getChildCategory(path: String, categoryProvider: (String) -> Category?): CategoryWrapper? {
+        fun getChildCategory(
+            path: String,
+            categoryProvider: (String) -> Category?
+        ): CategoryWrapper? {
             val resolvedPath = computePath(path)
             val category = categoryProvider(resolvedPath) ?: return null
 

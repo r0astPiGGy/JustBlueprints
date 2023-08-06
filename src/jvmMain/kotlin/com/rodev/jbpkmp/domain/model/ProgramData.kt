@@ -2,8 +2,6 @@ package com.rodev.jbpkmp.domain.model
 
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
-import java.io.File
 
 @Serializable
 data class ProgramData(

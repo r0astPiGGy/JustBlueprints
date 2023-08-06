@@ -1,7 +1,11 @@
 package com.rodev.jbpkmp.presentation.navigation
 
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 
 class NavController(
     private val startDestination: String,
@@ -56,7 +60,7 @@ interface ArgumentBundle {
 
 }
 
-class MutableArgumentBundle: ArgumentBundle {
+class MutableArgumentBundle : ArgumentBundle {
 
     private val values = hashMapOf<String, Any>()
 

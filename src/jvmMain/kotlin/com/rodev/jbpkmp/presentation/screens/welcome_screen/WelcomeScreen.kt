@@ -19,7 +19,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -28,7 +33,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.rodev.jbpkmp.data.ProgramDataRepositoryImpl
 import com.rodev.jbpkmp.domain.model.RecentProject
-import com.rodev.jbpkmp.presentation.localization.*
+import com.rodev.jbpkmp.presentation.localization.Vocabulary
+import com.rodev.jbpkmp.presentation.localization.appName
+import com.rodev.jbpkmp.presentation.localization.authors
+import com.rodev.jbpkmp.presentation.localization.chooseFile
+import com.rodev.jbpkmp.presentation.localization.createNewProject
+import com.rodev.jbpkmp.presentation.localization.noRecentProjects
+import com.rodev.jbpkmp.presentation.localization.openProject
 import com.rodev.jbpkmp.presentation.navigation.NavController
 import com.rodev.jbpkmp.presentation.navigation.Screen
 import com.rodev.jbpkmp.presentation.navigation.argumentBundleOf
@@ -55,13 +66,15 @@ fun WelcomeScreen(navController: NavController) {
 
     LaunchedEffect(viewModel.state.loadProjectResult) {
         viewModel.state.loadProjectResult?.let {
-            when(it) {
+            when (it) {
                 LoadProjectResult.Loading -> {
 
                 }
+
                 is LoadProjectResult.Failure -> {
 
                 }
+
                 is LoadProjectResult.Success -> {
                     navController.navigate(Screen.EditorScreen.name, argumentBundleOf {
                         putString("projectPath", it.projectPath)

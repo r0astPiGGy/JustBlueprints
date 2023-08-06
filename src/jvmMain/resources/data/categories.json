@@ -1,226 +1,226 @@
 [
-    {
-        "path": "call_function",
-        "name": "Вызов функций"
-    },
-    {
-        "path": "control",
-        "name": "Контроль действий"
-    },
-    {
-        "path": "controller",
-        "name": "Контроллер"
-    },
-    {
-        "path": "entity.movement",
-        "name": "Передвижение"
-    },
-    {
-        "path": "entity.parameters",
-        "name": "Параметры"
-    },
-    {
-        "path": "entity.appearance",
-        "name": "Внешний вид"
-    },
-    {
-        "path": "entity.goals",
-        "name": "Цели"
-    },
-    {
-        "path": "entity.miscellaneous",
-        "name": "Разное"
-    },
-    {
-        "path": "entity.settings",
-        "name": "Настройки"
-    },
-    {
-        "path": "entity",
-        "name": "Действие над сущностью"
-    },
-    {
-        "path": "game.block",
-        "name": "Действия с блоками"
-    },
-    {
-        "path": "game.event",
-        "name": "Действия с событиями"
-    },
-    {
-        "path": "game.scoreboard",
-        "name": "Действия с скорбордами"
-    },
-    {
-        "path": "game.entity",
-        "name": "Создание сущностей"
-    },
-    {
-        "path": "game.web",
-        "name": "Веб-действия"
-    },
-    {
-        "path": "game",
-        "name": "Действие над миром"
-    },
-    {
-        "path": "game.settings",
-        "name": "Настройки мира"
-    },
-    {
-        "path": "if_entity",
-        "name": "Если сущность"
-    },
-    {
-        "path": "if_game",
-        "name": "Если в мире"
-    },
-    {
-        "path": "if_player.misc",
-        "name": "Прочие условия"
-    },
-    {
-        "path": "if_player.item",
-        "name": "Предметные условия"
-    },
-    {
-        "path": "if_player.toggleable",
-        "name": "Бинарные условия"
-    },
-    {
-        "path": "if_player.location",
-        "name": "Условия местоположения"
-    },
-    {
-        "path": "if_variable",
-        "name": "Если переменная"
-    },
-    {
-        "path": "player.inventory_menus",
-        "name": "Инвентарные меню"
-    },
-    {
-        "path": "player",
-        "name": "Действие над игроком"
-    },
-    {
-        "path": "player.movement",
-        "name": "Передвижение"
-    },
-    {
-        "path": "player.communication",
-        "name": "Коммуникация"
-    },
-    {
-        "path": "player.world",
-        "name": "Мир"
-    },
-    {
-        "path": "player.item_management",
-        "name": "Управление инвентарём"
-    },
-    {
-        "path": "player.parameters",
-        "name": "Параметры"
-    },
-    {
-        "path": "player.appearance",
-        "name": "Внешний вид"
-    },
-    {
-        "path": "player.particle",
-        "name": "Частицы"
-    },
-    {
-        "path": "player.miscellaneous",
-        "name": "Разное"
-    },
-    {
-        "path": "player.settings",
-        "name": "Настройки"
-    },
-    {
-        "path": "repeat",
-        "name": "Повторение"
-    },
-    {
-        "path": "select.creation",
-        "name": "Создание выборки"
-    },
-    {
-        "path": "select.filter",
-        "name": "Фильтрация выборки"
-    },
-    {
-        "path": "set_variable.numerical",
-        "name": "Числовые операции"
-    },
-    {
-        "path": "set_variable.setting",
-        "name": "Присвоение значений"
-    },
-    {
-        "path": "set_variable.item",
-        "name": "Операции над предметами"
-    },
-    {
-        "path": "set_variable.vector",
-        "name": "Действия над векторами"
-    },
-    {
-        "path": "set_variable.location",
-        "name": "Операции над местоположениями"
-    },
-    {
-        "path": "set_variable.list",
-        "name": "Действия над списками"
-    },
-    {
-        "path": "set_variable.map",
-        "name": "Действия над словарями"
-    },
-    {
-        "path": "set_variable.text",
-        "name": "Операции над текстом"
-    },
-    {
-        "path": "set_variable.world",
-        "name": "Действия над миром"
-    },
-    {
-        "path": "set_variable",
-        "name": "Установка переменной"
-    },
-    {
-        "path": "set_variable.misc",
-        "name": "Прочие действия"
-    },
-    {
-        "path": "set_variable.particle",
-        "name": "Действия над частицами"
-    },
-    {
-        "path": "start_process",
-        "name": "Вызов процесса"
-    },
-    {
-        "path": "events.player",
-        "name": "События игрока"
-    },
-    {
-        "path": "events",
-        "name": "События"
-    },
-    {
-        "path": "events.entity",
-        "name": "События сущности"
-    },
-    {
-        "path": "events.world",
-        "name": "События мира"
-    },
-    {
-        "path": "game_values",
-        "name": "Игровые значения"
-    }
+  {
+    "path": "call_function",
+    "name": "Вызов функций"
+  },
+  {
+    "path": "control",
+    "name": "Контроль действий"
+  },
+  {
+    "path": "controller",
+    "name": "Контроллер"
+  },
+  {
+    "path": "entity.movement",
+    "name": "Передвижение"
+  },
+  {
+    "path": "entity.parameters",
+    "name": "Параметры"
+  },
+  {
+    "path": "entity.appearance",
+    "name": "Внешний вид"
+  },
+  {
+    "path": "entity.goals",
+    "name": "Цели"
+  },
+  {
+    "path": "entity.miscellaneous",
+    "name": "Разное"
+  },
+  {
+    "path": "entity.settings",
+    "name": "Настройки"
+  },
+  {
+    "path": "entity",
+    "name": "Действие над сущностью"
+  },
+  {
+    "path": "game.block",
+    "name": "Действия с блоками"
+  },
+  {
+    "path": "game.event",
+    "name": "Действия с событиями"
+  },
+  {
+    "path": "game.scoreboard",
+    "name": "Действия с скорбордами"
+  },
+  {
+    "path": "game.entity",
+    "name": "Создание сущностей"
+  },
+  {
+    "path": "game.web",
+    "name": "Веб-действия"
+  },
+  {
+    "path": "game",
+    "name": "Действие над миром"
+  },
+  {
+    "path": "game.settings",
+    "name": "Настройки мира"
+  },
+  {
+    "path": "if_entity",
+    "name": "Если сущность"
+  },
+  {
+    "path": "if_game",
+    "name": "Если в мире"
+  },
+  {
+    "path": "if_player.misc",
+    "name": "Прочие условия"
+  },
+  {
+    "path": "if_player.item",
+    "name": "Предметные условия"
+  },
+  {
+    "path": "if_player.toggleable",
+    "name": "Бинарные условия"
+  },
+  {
+    "path": "if_player.location",
+    "name": "Условия местоположения"
+  },
+  {
+    "path": "if_variable",
+    "name": "Если переменная"
+  },
+  {
+    "path": "player.inventory_menus",
+    "name": "Инвентарные меню"
+  },
+  {
+    "path": "player",
+    "name": "Действие над игроком"
+  },
+  {
+    "path": "player.movement",
+    "name": "Передвижение"
+  },
+  {
+    "path": "player.communication",
+    "name": "Коммуникация"
+  },
+  {
+    "path": "player.world",
+    "name": "Мир"
+  },
+  {
+    "path": "player.item_management",
+    "name": "Управление инвентарём"
+  },
+  {
+    "path": "player.parameters",
+    "name": "Параметры"
+  },
+  {
+    "path": "player.appearance",
+    "name": "Внешний вид"
+  },
+  {
+    "path": "player.particle",
+    "name": "Частицы"
+  },
+  {
+    "path": "player.miscellaneous",
+    "name": "Разное"
+  },
+  {
+    "path": "player.settings",
+    "name": "Настройки"
+  },
+  {
+    "path": "repeat",
+    "name": "Повторение"
+  },
+  {
+    "path": "select.creation",
+    "name": "Создание выборки"
+  },
+  {
+    "path": "select.filter",
+    "name": "Фильтрация выборки"
+  },
+  {
+    "path": "set_variable.numerical",
+    "name": "Числовые операции"
+  },
+  {
+    "path": "set_variable.setting",
+    "name": "Присвоение значений"
+  },
+  {
+    "path": "set_variable.item",
+    "name": "Операции над предметами"
+  },
+  {
+    "path": "set_variable.vector",
+    "name": "Действия над векторами"
+  },
+  {
+    "path": "set_variable.location",
+    "name": "Операции над местоположениями"
+  },
+  {
+    "path": "set_variable.list",
+    "name": "Действия над списками"
+  },
+  {
+    "path": "set_variable.map",
+    "name": "Действия над словарями"
+  },
+  {
+    "path": "set_variable.text",
+    "name": "Операции над текстом"
+  },
+  {
+    "path": "set_variable.world",
+    "name": "Действия над миром"
+  },
+  {
+    "path": "set_variable",
+    "name": "Установка переменной"
+  },
+  {
+    "path": "set_variable.misc",
+    "name": "Прочие действия"
+  },
+  {
+    "path": "set_variable.particle",
+    "name": "Действия над частицами"
+  },
+  {
+    "path": "start_process",
+    "name": "Вызов процесса"
+  },
+  {
+    "path": "events.player",
+    "name": "События игрока"
+  },
+  {
+    "path": "events",
+    "name": "События"
+  },
+  {
+    "path": "events.entity",
+    "name": "События сущности"
+  },
+  {
+    "path": "events.world",
+    "name": "События мира"
+  },
+  {
+    "path": "game_values",
+    "name": "Игровые значения"
+  }
 ]

@@ -1,78 +1,78 @@
 [
-    {
-        "id": "item",
-        "color": -10230046
-    },
-    {
-        "id": "potion",
-        "color": -51361
-    },
-    {
-        "id": "sound",
-        "color": -10593050
-    },
-    {
-        "id": "list",
-        "color": -10742
-    },
-    {
-        "id": "any",
-        "color": -10230046
-    },
-    {
-        "id": "enum",
-        "color": -13479684
-    },
-    {
-        "id": "number",
-        "color": -47814
-    },
-    {
-        "id": "condition",
-        "color": -50384
-    },
-    {
-        "id": "boolean",
-        "color": -50384
-    },
-    {
-        "id": "dictionary",
-        "color": -24822
-    },
-    {
-        "id": "variable",
-        "color": -13577896
-    },
-    {
-        "id": "location",
-        "color": -5468568
-    },
-    {
-        "id": "particle",
-        "color": -4236558
-    },
-    {
-        "id": "vector",
-        "color": -10230046
-    },
-    {
-        "id": "text",
-        "color": -10230046
-    },
-    {
-        "id": "game_value",
-        "color": 0
-    },
-    {
-        "id": "exec",
-        "color": -1
-    },
-    {
-        "id": "entity",
-        "color": -10230046
-    },
-    {
-        "id": "player",
-        "color": -16668682
-    }
+  {
+    "id": "item",
+    "color": -10230046
+  },
+  {
+    "id": "potion",
+    "color": -51361
+  },
+  {
+    "id": "sound",
+    "color": -10593050
+  },
+  {
+    "id": "list",
+    "color": -10742
+  },
+  {
+    "id": "any",
+    "color": -10230046
+  },
+  {
+    "id": "enum",
+    "color": -13479684
+  },
+  {
+    "id": "number",
+    "color": -47814
+  },
+  {
+    "id": "condition",
+    "color": -50384
+  },
+  {
+    "id": "boolean",
+    "color": -50384
+  },
+  {
+    "id": "dictionary",
+    "color": -24822
+  },
+  {
+    "id": "variable",
+    "color": -13577896
+  },
+  {
+    "id": "location",
+    "color": -5468568
+  },
+  {
+    "id": "particle",
+    "color": -4236558
+  },
+  {
+    "id": "vector",
+    "color": -10230046
+  },
+  {
+    "id": "text",
+    "color": -10230046
+  },
+  {
+    "id": "game_value",
+    "color": 0
+  },
+  {
+    "id": "exec",
+    "color": -1
+  },
+  {
+    "id": "entity",
+    "color": -10230046
+  },
+  {
+    "id": "player",
+    "color": -16668682
+  }
 ]

@@ -5,13 +5,30 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.MaterialTheme
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredWidth
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -29,7 +46,11 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.singleWindowApplication
-import com.rodev.jbpkmp.presentation.screens.editor_screen.components.*
+import com.rodev.jbpkmp.presentation.screens.editor_screen.components.backgroundColor
+import com.rodev.jbpkmp.presentation.screens.editor_screen.components.headerColor
+import com.rodev.jbpkmp.presentation.screens.editor_screen.components.ignorePadding
+import com.rodev.jbpkmp.presentation.screens.editor_screen.components.pinColor
+import com.rodev.jbpkmp.presentation.screens.editor_screen.components.pinOutline
 import kotlin.math.cos
 import kotlin.math.roundToInt
 import kotlin.math.sin
@@ -68,7 +89,7 @@ private fun Pin() {
 
 @Composable
 private fun ExecPin() {
-    Canvas(modifier = androidx.compose.ui.Modifier.size(pinSize.dp)) {
+    Canvas(modifier = Modifier.size(pinSize.dp)) {
         val path = Path().apply {
             val origin = Offset(
                 x = center.x,
@@ -89,7 +110,6 @@ private fun ExecPin() {
         drawPath(path, color = Color.White)
     }
 }
-
 
 
 @Composable
@@ -202,10 +222,12 @@ fun VariablePreview() {
         elevation = 10.dp,
         modifier = Modifier
             .wrapContentSize()
-            .offset { IntOffset(
-                offset.x.roundToInt(),
-                offset.y.roundToInt()
-            ) }
+            .offset {
+                IntOffset(
+                    offset.x.roundToInt(),
+                    offset.y.roundToInt()
+                )
+            }
             .pointerInput(Unit) {
                 detectDragGestures { change, dragAmount ->
                     change.consume()
@@ -227,7 +249,11 @@ fun VariablePreview() {
                     .drawBehind {
                         val cornerRadius = CornerRadius(5f)
                         drawRoundRect(color = headerColor, cornerRadius = cornerRadius)
-                        drawRoundRect(color = Color.White, cornerRadius = cornerRadius, style = Stroke(2f))
+                        drawRoundRect(
+                            color = Color.White,
+                            cornerRadius = cornerRadius,
+                            style = Stroke(2f)
+                        )
                     }
                     .fillMaxWidth()
             ) {
@@ -283,10 +309,12 @@ fun NodePreview() {
         elevation = 10.dp,
         modifier = Modifier
             .wrapContentSize()
-            .offset { IntOffset(
-                offset.x.roundToInt(),
-                offset.y.roundToInt()
-            ) }
+            .offset {
+                IntOffset(
+                    offset.x.roundToInt(),
+                    offset.y.roundToInt()
+                )
+            }
             .pointerInput(Unit) {
                 detectDragGestures { change, dragAmount ->
                     change.consume()

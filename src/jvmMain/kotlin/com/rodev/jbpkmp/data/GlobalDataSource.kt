@@ -4,7 +4,6 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.res.loadImageBitmap
 import androidx.compose.ui.res.useResource
 import com.rodev.generator.action.entity.*
-import com.rodev.generator.action.utils.ColorUtil
 import com.rodev.jbpkmp.domain.model.SelectorGroup
 import com.rodev.jbpkmp.domain.repository.*
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -19,8 +18,7 @@ object GlobalDataSource :
     NodeTypeDataSource,
     ActionDataSource,
     ActionDetailsDataSource,
-    SelectorDataSource
-{
+    SelectorDataSource {
 
     private val mutableActions = mutableListOf<Action>()
     private val mutableCategories = mutableListOf<Category>()
@@ -42,13 +40,33 @@ object GlobalDataSource :
         mutablePinTypes.clear()
         mutableNodeTypes.clear()
 
-        useResource<List<Action>>("data/actions.json", json::decodeFromStream).let(mutableActions::addAll)
-        useResource<List<Category>>("data/categories.json", json::decodeFromStream).let(mutableCategories::addAll)
-        useResource<List<NodeModel>>("data/node-models.json", json::decodeFromStream).forEach { mutableNodeModels[it.id] = it }
-        useResource<List<PinType>>("data/pin-types.json", json::decodeFromStream).forEach { mutablePinTypes[it.id] = it }
-        useResource<List<NodeType>>("data/node-types.json", json::decodeFromStream).forEach { mutableNodeTypes[it.id] = it }
-        useResource<List<SelectorGroup>>("data/selectors.json", json::decodeFromStream).forEach { selectors[it.type] = it }
-        useResource<List<ActionDetails>>("data/action-details.json", json::decodeFromStream).forEach { actionDetails[it.id] = it }
+        useResource<List<Action>>(
+            "data/actions.json",
+            json::decodeFromStream
+        ).let(mutableActions::addAll)
+        useResource<List<Category>>("data/categories.json", json::decodeFromStream).let(
+            mutableCategories::addAll
+        )
+        useResource<List<NodeModel>>(
+            "data/node-models.json",
+            json::decodeFromStream
+        ).forEach { mutableNodeModels[it.id] = it }
+        useResource<List<PinType>>(
+            "data/pin-types.json",
+            json::decodeFromStream
+        ).forEach { mutablePinTypes[it.id] = it }
+        useResource<List<NodeType>>(
+            "data/node-types.json",
+            json::decodeFromStream
+        ).forEach { mutableNodeTypes[it.id] = it }
+        useResource<List<SelectorGroup>>(
+            "data/selectors.json",
+            json::decodeFromStream
+        ).forEach { selectors[it.type] = it }
+        useResource<List<ActionDetails>>(
+            "data/action-details.json",
+            json::decodeFromStream
+        ).forEach { actionDetails[it.id] = it }
 
         mutableActions.forEach {
             loadIconByPath(it.iconPath)

@@ -9,4 +9,4 @@ data class FunctionGraph(
     val functionId: String,
     override val variables: List<LocalVariable>,
     override val graph: Graph
-): GraphEntity
+) : GraphEntity

@@ -1,9 +1,15 @@
 package com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.node
 
-import androidx.compose.runtime.*
-import com.rodev.jbpkmp.domain.model.variable.GlobalVariable
-import com.rodev.jbpkmp.presentation.screens.editor_screen.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import com.rodev.jbpkmp.presentation.screens.editor_screen.GlobalVariableState
+import com.rodev.jbpkmp.presentation.screens.editor_screen.SelectionHandler
+import com.rodev.jbpkmp.presentation.screens.editor_screen.VariableState
 import com.rodev.jbpkmp.presentation.screens.editor_screen.components.VariableNode
+import com.rodev.jbpkmp.presentation.screens.editor_screen.createVariableNodeTag
 import com.rodev.nodeui.components.node.NodeDisplay
 import com.rodev.nodeui.components.node.NodeState
 import com.rodev.nodeui.model.Node

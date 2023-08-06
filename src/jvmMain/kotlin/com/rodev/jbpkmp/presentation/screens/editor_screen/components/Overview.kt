@@ -5,12 +5,20 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -27,10 +35,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.rodev.jbpkmp.domain.model.variable.GlobalVariable
 import com.rodev.jbpkmp.presentation.localization.Vocabulary
-import com.rodev.jbpkmp.presentation.localization.localVariables
 import com.rodev.jbpkmp.presentation.localization.globalVariables
-import com.rodev.jbpkmp.presentation.localization.name
-import com.rodev.jbpkmp.presentation.screens.editor_screen.*
+import com.rodev.jbpkmp.presentation.localization.localVariables
+import com.rodev.jbpkmp.presentation.screens.editor_screen.EditorScreenEvent
+import com.rodev.jbpkmp.presentation.screens.editor_screen.EditorScreenViewModel
+import com.rodev.jbpkmp.presentation.screens.editor_screen.GlobalVariableState
+import com.rodev.jbpkmp.presentation.screens.editor_screen.LocalVariableState
+import com.rodev.jbpkmp.presentation.screens.editor_screen.SelectionHandler
+import com.rodev.jbpkmp.presentation.screens.editor_screen.VariableState
 
 @Composable
 fun Overview(

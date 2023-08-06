@@ -1,7 +1,5 @@
 package com.rodev.jbpkmp.presentation.localization
 
-import androidx.compose.material.MaterialTheme
-
 const val appName = "JustBlueprints"
 
 // WelcomeScreen

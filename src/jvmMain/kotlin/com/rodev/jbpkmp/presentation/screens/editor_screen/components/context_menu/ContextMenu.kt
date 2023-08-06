@@ -162,11 +162,13 @@ private fun handlePopupOnKeyEvent(
                 focusManager.moveFocus(FocusDirection.Next)
                 true
             }
+
             KeyEvent.VK_UP -> {
                 inputModeManager.requestInputMode(InputMode.Keyboard)
                 focusManager.moveFocus(FocusDirection.Previous)
                 true
             }
+
             else -> false
         }
     } else {

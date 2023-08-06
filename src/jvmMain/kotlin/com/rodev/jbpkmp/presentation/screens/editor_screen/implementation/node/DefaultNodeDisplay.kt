@@ -131,10 +131,12 @@ class DefaultNodeDisplay(
             selectionHandler.resetSelection()
             return
         }
-        selectionHandler.onSelect(NodeStateSelectableWrapper(selectGetter = { selected },
-            selectSetter = { selected = it },
-            nodeState = nodeState,
-            detailsComposable = { Details() }))
+        selectionHandler.onSelect(
+            NodeStateSelectableWrapper(selectGetter = { selected },
+                selectSetter = { selected = it },
+                nodeState = nodeState,
+                detailsComposable = { Details() })
+        )
     }
 
     override fun toNode(nodeState: NodeState): Node {

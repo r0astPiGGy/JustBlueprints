@@ -18,7 +18,7 @@ import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.painter.BitmapPainter
-import androidx.compose.ui.input.pointer.PointerIconDefaults
+import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.*
@@ -56,9 +56,11 @@ fun InputPinRow(
 ) {
     var rowOffset by remember { mutableStateOf(Offset.Zero) }
     val updatableBodyOffset by rememberUpdatedState(absoluteBodyOffset)
-    val absoluteRowOffset by remember { derivedStateOf {
-        rowOffset + updatableBodyOffset
-    } }
+    val absoluteRowOffset by remember {
+        derivedStateOf {
+            rowOffset + updatableBodyOffset
+        }
+    }
 
     var lastRowMeasurement by remember { mutableStateOf<LayoutCoordinates?>(null) }
 
@@ -76,7 +78,7 @@ fun InputPinRow(
                 absoluteRowOffset
             }
             .hoverable(interactionSource)
-            .pointerHoverIcon(PointerIconDefaults.Crosshair),
+            .pointerHoverIcon(PointerIcon.Crosshair),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start
     ) {
@@ -146,9 +148,11 @@ fun OutputPinRow(
 ) {
     var rowOffset by remember { mutableStateOf(Offset.Zero) }
     val updatableBodyOffset by rememberUpdatedState(absoluteBodyOffset)
-    val absoluteRowOffset by remember { derivedStateOf {
-        rowOffset + updatableBodyOffset
-    } }
+    val absoluteRowOffset by remember {
+        derivedStateOf {
+            rowOffset + updatableBodyOffset
+        }
+    }
 
     var lastRowMeasurement by remember { mutableStateOf<LayoutCoordinates?>(null) }
 
@@ -166,7 +170,7 @@ fun OutputPinRow(
                 absoluteRowOffset
             }
             .hoverable(interactionSource)
-            .pointerHoverIcon(PointerIconDefaults.Crosshair),
+            .pointerHoverIcon(PointerIcon.Crosshair),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.End
     ) {
@@ -228,9 +232,11 @@ fun PinComposableRevamped(
 
     val updatableRowOffset by rememberUpdatedState(rowOffset)
 
-    val absolutePinCenter by remember { derivedStateOf {
-        updatableRowOffset + pinOffset + centerInParent
-    } }
+    val absolutePinCenter by remember {
+        derivedStateOf {
+            updatableRowOffset + pinOffset + centerInParent
+        }
+    }
 
     // TODO remove Side effect
     pinState.center = absolutePinCenter
@@ -289,9 +295,11 @@ private fun DoubleExecPinRow(
     val updatableBodyOffset by rememberUpdatedState(absoluteBodyOffset)
     var offset by remember { mutableStateOf(Offset.Zero) }
 
-    val bodyOffset by remember { derivedStateOf {
-        offset + updatableBodyOffset
-    } }
+    val bodyOffset by remember {
+        derivedStateOf {
+            offset + updatableBodyOffset
+        }
+    }
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -314,9 +322,11 @@ private fun DoubleExecPinRow(
 
         var outputBoxOffset by remember { mutableStateOf(Offset.Zero) }
 
-        val boxOffset by remember { derivedStateOf {
-            outputBoxOffset + bodyOffset
-        } }
+        val boxOffset by remember {
+            derivedStateOf {
+                outputBoxOffset + bodyOffset
+            }
+        }
 
         Box(
             modifier = Modifier
@@ -369,10 +379,12 @@ fun StyledNode(
         elevation = 10.dp,
         modifier = Modifier
             .wrapContentSize()
-            .offset { IntOffset(
-                nodeState.x.roundToInt(),
-                nodeState.y.roundToInt()
-            ) }
+            .offset {
+                IntOffset(
+                    nodeState.x.roundToInt(),
+                    nodeState.y.roundToInt()
+                )
+            }
             .pointerInput(Unit) {
                 detectDragGestures { change, dragAmount ->
                     nodeState.x = (dragAmount.x + nodeState.x).coerceAtLeast(0f)
@@ -385,9 +397,11 @@ fun StyledNode(
         var bodyOffset by remember { mutableStateOf(Offset.Zero) }
 
         // CompositionLocal candidate
-        val absoluteBodyPosition by remember { derivedStateOf {
-            bodyOffset + Offset(nodeState.x, nodeState.y)
-        } }
+        val absoluteBodyPosition by remember {
+            derivedStateOf {
+                bodyOffset + Offset(nodeState.x, nodeState.y)
+            }
+        }
 
         Column(
             modifier = Modifier
@@ -403,7 +417,7 @@ fun StyledNode(
                 ) {
                     onTap()
                 }
-                .pointerHoverIcon(PointerIconDefaults.Hand)
+                .pointerHoverIcon(PointerIcon.Hand)
                 .drawBehind {
                     if (selected) {
                         drawRect(color = Color.White, style = Stroke(2f))

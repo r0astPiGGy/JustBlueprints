@@ -24,10 +24,10 @@ interface DefaultValueComposableRegistry {
 }
 
 
-
 typealias DefaultValueComposableProvider = (PinModel) -> DefaultValueComposable
 
-private class DefaultValueComposableRegistryImpl : DefaultValueComposableRegistry, DefaultValueComposableRegistry.Scope {
+private class DefaultValueComposableRegistryImpl : DefaultValueComposableRegistry,
+    DefaultValueComposableRegistry.Scope {
 
     private val providers = hashMapOf<String, DefaultValueComposableProvider>()
 
