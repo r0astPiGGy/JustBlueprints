@@ -1,23 +1,27 @@
 package com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.node
 
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.Divider
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.rodev.generator.action.entity.ActionDetails
 import com.rodev.generator.action.entity.extra_data.CompoundExtraData
 import com.rodev.generator.action.entity.extra_data.ConnectionDisabledExtraData
 import com.rodev.generator.action.entity.extra_data.ExecPairExtraData
 import com.rodev.generator.action.entity.extra_data.ExtraData
 import com.rodev.jbpkmp.domain.model.NodeEntity
+import com.rodev.jbpkmp.presentation.localization.Vocabulary
+import com.rodev.jbpkmp.presentation.localization.additionally
+import com.rodev.jbpkmp.presentation.localization.description
+import com.rodev.jbpkmp.presentation.localization.worksWith
 import com.rodev.jbpkmp.presentation.screens.editor_screen.SelectionHandler
 import com.rodev.jbpkmp.presentation.screens.editor_screen.components.StyledNode
 import com.rodev.jbpkmp.presentation.screens.editor_screen.createNodeTypeTag
@@ -40,40 +44,82 @@ class DefaultNodeDisplay(
     override fun NodeView(nodeState: NodeState) {
         val specificNodePins = rememberSpecificNodePins(nodeState)
 
-        StyledNode(
-            specificNodePins,
+        StyledNode(specificNodePins,
             nodeState = nodeState,
             nodeEntity = nodeEntity,
             selected = selected,
-            onTap = { onSelect(nodeState) }
-        )
+            onTap = { onSelect(nodeState) })
     }
 
     @Composable
     private fun Details() {
+        val localization = Vocabulary.localization
+
         actionDetails?.let { details ->
-            Text(text = details.name, fontStyle = FontStyle.Italic)
+            Text(
+                text = details.name,
+                fontStyle = FontStyle.Italic,
+                color = MaterialTheme.colors.onBackground
+            )
+
             Spacer(modifier = Modifier.size(8.dp))
+
             details.description?.let {
-                Text(text = "Описание", fontStyle = FontStyle.Italic)
+                Text(
+                    text = localization.description(),
+                    fontStyle = FontStyle.Italic,
+                    color = MaterialTheme.colors.onBackground
+                )
+
                 Spacer(modifier = Modifier.size(5.dp))
-                Text(text = it, fontSize = 13.sp)
+
+                Text(
+                    text = it,
+                    style = MaterialTheme.typography.h5,
+                    color = MaterialTheme.colors.onBackground
+                )
+
                 Spacer(modifier = Modifier.size(8.dp))
             }
+
             if (details.additionalInfo.isNotEmpty()) {
-                Text(text = "Дополнительно", fontStyle = FontStyle.Italic)
+                Text(
+                    text = localization.additionally(),
+                    fontStyle = FontStyle.Italic,
+                    color = MaterialTheme.colors.onBackground
+                )
+
                 Spacer(modifier = Modifier.size(5.dp))
+
                 details.additionalInfo.forEach {
-                    Text(text = it, fontSize = 13.sp)
+                    Text(
+                        text = it,
+                        style = MaterialTheme.typography.h5,
+                        color = MaterialTheme.colors.onBackground
+                    )
+
                     Spacer(modifier = Modifier.size(5.dp))
                 }
+
                 Spacer(modifier = Modifier.size(3.dp))
             }
+
             if (details.worksWith.isNotEmpty()) {
-                Text(text = "Работает с:", fontStyle = FontStyle.Italic)
+                Text(
+                    text = localization.worksWith(),
+                    fontStyle = FontStyle.Italic,
+                    color = MaterialTheme.colors.onBackground
+                )
+
                 Spacer(modifier = Modifier.size(5.dp))
+
                 details.worksWith.forEach {
-                    Text(text = it, fontSize = 13.sp)
+                    Text(
+                        text = it,
+                        style = MaterialTheme.typography.h5,
+                        color = MaterialTheme.colors.onBackground
+                    )
+
                     Spacer(modifier = Modifier.size(5.dp))
                 }
             }
@@ -85,19 +131,14 @@ class DefaultNodeDisplay(
             selectionHandler.resetSelection()
             return
         }
-        selectionHandler.onSelect(
-            NodeStateSelectableWrapper(
-                selectGetter = { selected },
-                selectSetter = { selected = it },
-                nodeState = nodeState,
-                detailsComposable = { Details() }
-            )
-        )
+        selectionHandler.onSelect(NodeStateSelectableWrapper(selectGetter = { selected },
+            selectSetter = { selected = it },
+            nodeState = nodeState,
+            detailsComposable = { Details() }))
     }
 
     override fun toNode(nodeState: NodeState): Node {
-        return Node(
-            x = nodeState.x,
+        return Node(x = nodeState.x,
             y = nodeState.y,
             uniqueId = nodeState.id,
             inputPins = nodeState.inputPins.map { it.pinState }.map { it.pinDisplay.toPin(it) },
@@ -129,9 +170,11 @@ private fun findSpecificNodePins(nodeState: NodeState): SpecificNodePins {
             it.isExecPair() && inputExec == null -> {
                 inputExec = it
             }
+
             it.isConnectionDisabled() -> {
                 connectionDisabledInputPins.add(it)
             }
+
             else -> {
                 inputPins.add(it)
             }
@@ -154,10 +197,7 @@ private fun findSpecificNodePins(nodeState: NodeState): SpecificNodePins {
     }
 
     return SpecificNodePins(
-        inputPins,
-        outputPins,
-        connectionDisabledInputPins,
-        execPinPair
+        inputPins, outputPins, connectionDisabledInputPins, execPinPair
     )
 }
 
@@ -188,6 +228,5 @@ class SpecificNodePins(
 )
 
 class ExecPinPair(
-    val input: PinRowState,
-    val output: PinRowState
+    val input: PinRowState, val output: PinRowState
 )

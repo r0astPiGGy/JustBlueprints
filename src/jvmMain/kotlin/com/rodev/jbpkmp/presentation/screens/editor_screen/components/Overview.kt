@@ -172,17 +172,25 @@ fun CollapsibleList(
             Icon(
                 imageVector = Icons.Default.ArrowDropDown,
                 contentDescription = null,
-                modifier = Modifier.rotate(rotation)
+                modifier = Modifier.rotate(rotation),
+                tint = MaterialTheme.colors.onBackground
             )
 
-            Text(text = header)
+            Text(
+                text = header,
+                color = MaterialTheme.colors.onBackground
+            )
 
             Row(
                 horizontalArrangement = Arrangement.End,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 IconButton(onClick = onAddAction) {
-                    Icon(Icons.Default.AddCircle, contentDescription = null)
+                    Icon(
+                        imageVector = Icons.Default.AddCircle,
+                        contentDescription = null,
+                        tint = MaterialTheme.colors.onBackground
+                    )
                 }
             }
         }

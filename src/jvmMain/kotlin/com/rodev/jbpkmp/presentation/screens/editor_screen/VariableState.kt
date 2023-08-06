@@ -12,7 +12,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.rodev.jbpkmp.domain.model.variable.GlobalVariable
 import com.rodev.jbpkmp.domain.model.variable.LocalVariable
-import com.rodev.jbpkmp.presentation.localization.name
+import com.rodev.jbpkmp.presentation.localization.Vocabulary
+import com.rodev.jbpkmp.presentation.localization.variableName
+import com.rodev.jbpkmp.presentation.localization.defaultValue
 import java.util.UUID
 
 sealed interface VariableState : Selectable {
@@ -40,17 +42,32 @@ class LocalVariableState(
 
     @Composable
     override fun Details() {
-        TextField(
+        val localization = Vocabulary.localization
+
+        OutlinedTextField(
             value = name,
             onValueChange = { name = it },
-            label = { Text("Имя переменной") },
-            modifier = Modifier.fillMaxWidth()
+            label = { Text(localization.variableName()) },
+            modifier = Modifier.fillMaxWidth(),
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                unfocusedBorderColor = MaterialTheme.colors.onBackground,
+                unfocusedLabelColor = MaterialTheme.colors.onBackground,
+                placeholderColor = MaterialTheme.colors.onBackground,
+                textColor = MaterialTheme.colors.onBackground
+            )
         )
-        TextField(
+
+        OutlinedTextField(
             value = value.toString(),
             onValueChange = { value = it },
-            label = { Text("Дефолтное значение") },
-            modifier = Modifier.fillMaxWidth()
+            label = { Text(localization.defaultValue()) },
+            modifier = Modifier.fillMaxWidth(),
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                unfocusedBorderColor = MaterialTheme.colors.onBackground,
+                unfocusedLabelColor = MaterialTheme.colors.onBackground,
+                placeholderColor = MaterialTheme.colors.onBackground,
+                textColor = MaterialTheme.colors.onBackground
+            )
         )
     }
 
@@ -75,17 +92,32 @@ class GlobalVariableState(
 
     @Composable
     override fun Details() {
-        TextField(
+        val localization = Vocabulary.localization
+
+        OutlinedTextField(
             value = name,
             onValueChange = { name = it },
-            label = { Text("Имя переменной") },
-            modifier = Modifier.fillMaxWidth()
+            label = { Text(localization.variableName()) },
+            modifier = Modifier.fillMaxWidth(),
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                unfocusedBorderColor = MaterialTheme.colors.onBackground,
+                unfocusedLabelColor = MaterialTheme.colors.onBackground,
+                placeholderColor = MaterialTheme.colors.onBackground,
+                textColor = MaterialTheme.colors.onBackground
+            )
         )
-        TextField(
+
+        OutlinedTextField(
             value = value.toString(),
             onValueChange = { value = it },
-            label = { Text("Дефолтное значение") },
-            modifier = Modifier.fillMaxWidth()
+            label = { Text(localization.defaultValue()) },
+            modifier = Modifier.fillMaxWidth(),
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                unfocusedBorderColor = MaterialTheme.colors.onBackground,
+                unfocusedLabelColor = MaterialTheme.colors.onBackground,
+                placeholderColor = MaterialTheme.colors.onBackground,
+                textColor = MaterialTheme.colors.onBackground
+            )
         )
 
         Box {

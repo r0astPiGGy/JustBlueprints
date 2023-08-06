@@ -1,5 +1,7 @@
 package com.rodev.jbpkmp.presentation.localization
 
+import androidx.compose.material.MaterialTheme
+
 const val appName = "JustBlueprints"
 
 // WelcomeScreen
@@ -87,6 +89,36 @@ val globalVariables = Translatable(
     "Глобальные переменные",
     hashMapOf(
         ENGLISH to "Global variables"
+    )
+)
+val variableName = Translatable(
+    "Имя переменной",
+    hashMapOf(
+        ENGLISH to "Variable name"
+    )
+)
+val defaultValue = Translatable(
+    "Дефолтное значение",
+    hashMapOf(
+        ENGLISH to "Default value"
+    )
+)
+val description = Translatable(
+    "Описание",
+    hashMapOf(
+        ENGLISH to "Description"
+    )
+)
+val additionally = Translatable(
+    "Дополнительно",
+    hashMapOf(
+        ENGLISH to "Additionally"
+    )
+)
+val worksWith = Translatable(
+    "Работает с:",
+    hashMapOf(
+        ENGLISH to "Works with:"
     )
 )
 
