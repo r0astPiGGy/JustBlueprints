@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
+import androidx.compose.material.Checkbox
+import androidx.compose.material.CheckboxDefaults
 import androidx.compose.material.Divider
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
@@ -142,18 +144,13 @@ fun SettingsScreen(
                     style = MaterialTheme.typography.h3
                 )
 
-                Switch(
+                Checkbox(
                     checked = useDarkTheme,
                     onCheckedChange = {
                         useDarkTheme = it
                         themeSetter(it)
                     },
-                    colors = SwitchDefaults.colors(
-                        checkedThumbColor = MaterialTheme.colors.primary,
-                        checkedTrackColor = MaterialTheme.colors.primary,
-                        uncheckedThumbColor = MaterialTheme.colors.background,
-                        uncheckedTrackColor = MaterialTheme.colors.background,
-                    )
+                    colors = CheckboxDefaults.colors(checkedColor = MaterialTheme.colors.primary)
                 )
             }
 
