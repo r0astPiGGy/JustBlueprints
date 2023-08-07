@@ -21,8 +21,6 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Surface
-import androidx.compose.material.Switch
-import androidx.compose.material.SwitchDefaults
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -42,6 +40,7 @@ import com.rodev.jbpkmp.presentation.localization.Vocabulary
 import com.rodev.jbpkmp.presentation.localization.cancel
 import com.rodev.jbpkmp.presentation.localization.language
 import com.rodev.jbpkmp.presentation.localization.languageDescription
+import com.rodev.jbpkmp.presentation.localization.openLastProject
 import com.rodev.jbpkmp.presentation.localization.save
 import com.rodev.jbpkmp.presentation.localization.supportedLocalesNow
 import com.rodev.jbpkmp.presentation.localization.useDarkTheme
@@ -54,7 +53,10 @@ fun SettingsScreen(
     val viewModel = remember { SettingsScreenViewModel(ProgramDataRepositoryImpl()) }
     val localization = Vocabulary.localization
 
-    var useDarkTheme by remember { mutableStateOf(viewModel.repository.load().settings.useDarkTheme) }
+    val settings = viewModel.repository.load().settings
+
+    var useDarkTheme by remember { mutableStateOf(settings.useDarkTheme) }
+    var openLastProject by remember { mutableStateOf(settings.openLastProject) }
 
     Surface(
         shape = RoundedCornerShape(10.dp),
@@ -156,6 +158,27 @@ fun SettingsScreen(
 
             Divider(Modifier.fillMaxWidth())
 
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = localization.openLastProject(),
+                    style = MaterialTheme.typography.h3
+                )
+
+                Checkbox(
+                    checked = openLastProject,
+                    onCheckedChange = {
+                        openLastProject = it
+                    },
+                    colors = CheckboxDefaults.colors(checkedColor = MaterialTheme.colors.primary)
+                )
+            }
+
+            Divider(Modifier.fillMaxWidth())
+
             Row {
                 val buttonWidth = 150.dp
 
@@ -172,7 +195,8 @@ fun SettingsScreen(
                     onClick = {
                         SettingsScreenEvent.SaveSettings(
                             language = localization.locale.language,
-                            useDarkTheme = useDarkTheme
+                            useDarkTheme = useDarkTheme,
+                            openLastProject = openLastProject
                         ).let(viewModel::onEvent)
 
                         onDismissRequest()

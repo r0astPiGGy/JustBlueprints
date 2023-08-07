@@ -61,6 +61,12 @@ val useDarkTheme = Translatable(
         ENGLISH to "Use dark theme"
     )
 )
+var openLastProject = Translatable(
+    "Открывать последний редактируемый проект при запуске",
+    hashMapOf(
+        ENGLISH to "Opens the last edited project on startup"
+    )
+)
 val save = Translatable(
     "Сохранить",
     hashMapOf(

@@ -19,5 +19,7 @@ data class RecentProject(
 @Serializable
 data class Settings(
     var languageCode: String = "ru",
-    var useDarkTheme: Boolean = true
+    var useDarkTheme: Boolean = true,
+    var openLastProject: Boolean = false,
+    var lastOpenProjectPath: String = ""
 )

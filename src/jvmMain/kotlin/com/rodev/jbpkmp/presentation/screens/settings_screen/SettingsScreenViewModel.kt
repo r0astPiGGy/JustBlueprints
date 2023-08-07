@@ -12,6 +12,7 @@ class SettingsScreenViewModel(
                 repository.update {
                     settings.languageCode = event.language
                     settings.useDarkTheme = event.useDarkTheme
+                    settings.openLastProject = event.openLastProject
                 }
             }
         }

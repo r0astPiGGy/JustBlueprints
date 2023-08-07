@@ -92,6 +92,10 @@ class WelcomeScreenViewModel(
                 )
             )
         }
+
+        repository.update {
+            settings.lastOpenProjectPath = project.path
+        }
     }
 
     fun resetState() {
