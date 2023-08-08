@@ -9,6 +9,7 @@ import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.input.key.key
 import com.rodev.jbpkmp.data.GlobalDataSource
+import com.rodev.jbpkmp.domain.compiler.BlueprintCompiler
 import com.rodev.jbpkmp.domain.model.Blueprint
 import com.rodev.jbpkmp.domain.model.Project
 import com.rodev.jbpkmp.domain.model.graph.EventGraph
@@ -38,6 +39,8 @@ class EditorScreenViewModel(
     val state = EditorScreenState(isLoading = true)
 
     private var loadingJob: Job? = null
+
+    private val blueprintCompiler = BlueprintCompiler()
 
     var selectable: Selectable? by mutableStateOf(null)
         private set
@@ -186,7 +189,15 @@ class EditorScreenViewModel(
     fun onEvent(event: EditorScreenEvent) {
         when (event) {
             is EditorScreenEvent.BuildProject -> {
+                val blueprint = getBlueprint() ?: return
 
+                try {
+                    val compiledData = blueprintCompiler.compile(blueprint)
+
+                    println(compiledData)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
             }
 
             is EditorScreenEvent.SaveProject -> {
@@ -240,20 +251,28 @@ class EditorScreenViewModel(
         loadingJob = null
     }
 
-    private fun saveGraphModel(graphState: GraphState) {
+    private fun getBlueprint(): Blueprint? {
+        return currentGraph?.let(::getBlueprint)
+    }
+
+    private fun getBlueprint(graphState: GraphState): Blueprint {
         val graph = graphState.viewModel.save()
 
+        return Blueprint(
+            eventGraph = EventGraph(
+                localVariables = graphState.variables.map { it.toLocalVariable() },
+                globalVariables = state.variables.map { it.toGlobalVariable() },
+                graph = graph
+            ),
+            processes = emptyList(),
+            functions = emptyList()
+        )
+    }
+
+    private fun saveGraphModel(graphState: GraphState) {
         project.saveBlueprint(
             json = json,
-            blueprint = Blueprint(
-                eventGraph = EventGraph(
-                    localVariables = graphState.variables.map { it.toLocalVariable() },
-                    globalVariables = state.variables.map { it.toGlobalVariable() },
-                    graph = graph
-                ),
-                processes = emptyList(),
-                functions = emptyList()
-            )
+            blueprint = getBlueprint(graphState)
         )
     }
 

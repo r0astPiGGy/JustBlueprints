@@ -6,10 +6,10 @@ import com.rodev.nodeui.model.Node
 
 interface NodeDataSource {
 
-    fun getNodeModelById(id: String): NodeModel
+    fun getNodeModelById(id: String): NodeModel?
 
 }
 
 fun NodeDataSource.getNodeById(id: String): Node {
-    return getNodeModelById(id).toNode()
+    return getNodeModelById(id)!!.toNode()
 }

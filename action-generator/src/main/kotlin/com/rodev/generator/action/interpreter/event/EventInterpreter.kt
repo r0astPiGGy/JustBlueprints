@@ -2,7 +2,7 @@ package com.rodev.generator.action.interpreter.event
 
 import com.rodev.generator.action.LocaleProvider
 import com.rodev.generator.action.entity.*
-import com.rodev.generator.action.entity.extra_data.EventExtraData
+import com.rodev.generator.action.entity.extra_data.*
 import com.rodev.generator.action.interpreter.ActionInterpreter
 import com.rodev.jmcc_extractor.entity.EventData
 import com.rodev.jmcc_extractor.entity.GameValueData
@@ -42,7 +42,7 @@ class EventInterpreter(
     private val EventData.output: List<PinModel>
         get() {
             return mutableListOf(
-                Pins.execPin("exec"),
+                Pins.execPin("exec").copy(extra = ExecNextExtraData),
             ).also {
                 it.addAll(
                     with(eventDataMapper) {
@@ -61,10 +61,13 @@ class EventInterpreter(
             id = id,
             type = type,
             label = localeProvider.translateGameValue(this),
-//            extra = outputPinExtraData
+            extra = GameValueExtraData(id)
         )
     }
 
-    private val EventData.extraData: EventExtraData
-        get() = EventExtraData(cancellable)
+    private val EventData.extraData: ExtraData
+        get() = buildCompoundExtraData {
+            add(EventExtraData(cancellable))
+            add(HandlerExtraData(id))
+        }
 }

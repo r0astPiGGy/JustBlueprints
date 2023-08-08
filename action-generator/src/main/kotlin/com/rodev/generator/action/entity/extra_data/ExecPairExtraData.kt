@@ -4,5 +4,5 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-@SerialName("exec_pair")
+@SerialName("exec-pair")
 object ExecPairExtraData : ExtraData()

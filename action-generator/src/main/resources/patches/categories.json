@@ -22,5 +22,9 @@
   {
     "path": "no-category",
     "name": "Без категории"
+  },
+  {
+    "path": "factory",
+    "name": "Фабрики"
   }
 ]

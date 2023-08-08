@@ -10,7 +10,7 @@
         "label": "",
         "type": "exec",
         "extra": {
-          "type": "exec_pair"
+          "type": "exec-pair"
         }
       },
       {
@@ -24,16 +24,210 @@
       "label" : "True",
       "type" : "exec",
       "extra": {
-        "type": "exec_pair"
+        "type": "compound_extra_data",
+        "extras": [
+          {
+            "type": "exec-container"
+          },
+          {
+            "type": "exec-pair"
+          }
+        ]
       }
     }, {
       "id" : "branch_false",
       "label" : "False",
-      "type" : "exec"
+      "type" : "exec",
+      "extra": {
+        "type": "exec-container"
+      }
     } ],
     "iconPath": "images/icons/native/native_branch.png",
     "details": {
       "description": "Если условие истинно, поток выполнения идёт в True, иначе в False"
+    }
+  },
+  {
+    "id" : "native_item_factory",
+    "type" : "factory",
+    "name" : "Предмет",
+    "category" : "factory",
+    "input" : [
+      {
+        "id": "item-json",
+        "label": "JSON предмета",
+        "type": "text",
+        "extra": {
+          "type": "connection_disabled"
+        }
+      }
+    ],
+    "output" : [
+      {
+        "id" : "output",
+        "label" : " ",
+        "type" : "item"
+      }
+    ],
+    "iconPath": "images/icons/native/native_item_factory.png",
+    "details": {
+      "description": "Предмет"
+    }
+  },
+  {
+    "id" : "native_text_factory",
+    "type" : "factory",
+    "name" : "Текст",
+    "category" : "factory",
+    "input" : [
+      {
+        "id": "text",
+        "label": "Текст",
+        "type": "text",
+        "extra": {
+          "type": "connection_disabled"
+        }
+      }
+    ],
+    "output" : [
+      {
+        "id" : "output",
+        "label" : " ",
+        "type" : "text"
+      }
+    ],
+    "iconPath": "images/icons/native/native_text_factory.png",
+    "details": {
+      "description": "Текст"
+    }
+  },
+  {
+    "id" : "native_number_factory",
+    "type" : "factory",
+    "name" : "Число",
+    "category" : "factory",
+    "input" : [
+      {
+        "id": "number",
+        "label": "Число",
+        "type": "number",
+        "extra": {
+          "type": "connection_disabled"
+        }
+      }
+    ],
+    "output" : [
+      {
+        "id" : "output",
+        "label" : " ",
+        "type" : "number"
+      }
+    ],
+    "iconPath": "images/icons/native/native_number_factory.png",
+    "details": {
+      "description": "Число"
+    }
+  },
+  {
+    "id" : "native_sound_factory",
+    "type" : "factory",
+    "name" : "Звук",
+    "category" : "factory",
+    "input" : [
+      {
+        "id": "sound",
+        "label": "ID",
+        "type": "text",
+        "extra": {
+          "type": "connection_disabled"
+        }
+      },
+      {
+        "id": "volume",
+        "label": "Громкость",
+        "type": "number",
+        "extra": {
+          "type": "connection_disabled"
+        }
+      },
+      {
+        "id": "pitch",
+        "label": "Высота",
+        "type": "number",
+        "extra": {
+          "type": "connection_disabled"
+        }
+      }
+    ],
+    "output" : [
+      {
+        "id" : "output",
+        "label" : " ",
+        "type" : "sound"
+      }
+    ],
+    "iconPath": "images/icons/native/native_sound_factory.png",
+    "details": {
+      "description": "Звук"
+    }
+  },
+  {
+    "id" : "native_location_factory",
+    "type" : "factory",
+    "name" : "Локация",
+    "category" : "factory",
+    "input" : [
+      {
+        "id": "x",
+        "label": "X",
+        "type": "number",
+        "extra": {
+          "type": "connection_disabled"
+        }
+      },
+      {
+        "id": "y",
+        "label": "Y",
+        "type": "number",
+        "extra": {
+          "type": "connection_disabled"
+        }
+      },
+      {
+        "id": "z",
+        "label": "Z",
+        "type": "number",
+        "extra": {
+          "type": "connection_disabled"
+        }
+      },
+      {
+        "id": "yaw",
+        "label": "Yaw",
+        "type": "number",
+        "extra": {
+          "type": "connection_disabled"
+        }
+      },
+      {
+        "id": "pitch",
+        "label": "Pitch",
+        "type": "number",
+        "extra": {
+          "type": "connection_disabled"
+        }
+      }
+    ],
+    "output" : [
+      {
+        "id" : "output",
+        "label" : " ",
+        "type" : "location"
+      }
+    ],
+    "iconPath": "images/icons/native/native_location_factory.png",
+    "details": {
+      "description": "Локация"
     }
   }
 ]

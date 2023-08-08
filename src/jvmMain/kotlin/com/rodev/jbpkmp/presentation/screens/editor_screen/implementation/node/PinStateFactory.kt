@@ -19,6 +19,7 @@ import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.EnumIn
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.SelectorInputComposable
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.StringInputComposable
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.pin.DefaultPinDisplay
+import com.rodev.jbpkmp.util.castTo
 import com.rodev.nodeui.components.pin.EmptyDefaultValueComposable
 import com.rodev.nodeui.components.pin.PinDisplay
 import com.rodev.nodeui.components.pin.PinState
@@ -118,13 +119,3 @@ private fun createDefaultValueComposableRegistry(selectorDataSource: SelectorDat
             BooleanInputComposable()
         }
     }
-
-private inline fun <reified T : ExtraData> ExtraData?.castTo(): T {
-    if (this is CompoundExtraData) {
-        return getExtraDataTypeOf<T>()!!
-    }
-
-    this as T
-
-    return this
-}

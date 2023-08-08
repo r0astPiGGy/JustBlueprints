@@ -16,4 +16,6 @@ rootProject.name = "JustBlueprints"
 
 include(":node-ui")
 include(":action-generator")
-include("jmcc-data-extractor")
+include("data-extractor")
+include("compiler")
+include("common")

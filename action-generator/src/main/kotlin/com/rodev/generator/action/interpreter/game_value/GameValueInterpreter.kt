@@ -44,7 +44,7 @@ class GameValueInterpreter(
             id = gameValue.id + "_gamevalue_getter",
             type = "game_value_getter",
             name = name,
-            input = listOf(Pins.selectorPin(SelectorType.GameValue)),
+            input = gameValue.input,
             output = listOf(gameValue.output),
             iconPath = iconPathFrom("game_values", gameValue.id),
             category = "game_values",
@@ -58,6 +58,14 @@ class GameValueInterpreter(
         )
     }
 
+    private val GameValueData.input: List<PinModel>
+        get() {
+            if (!gameValuesWithDisabledSelector.contains(id) && !id.startsWith("event_")) {
+                return listOf(Pins.selectorPin(SelectorType.GameValue))
+            }
+            return emptyList()
+        }
+
     private val GameValueData.output: PinModel
         get() {
             return PinModel(
@@ -67,11 +75,6 @@ class GameValueInterpreter(
             )
         }
 
-    private val GameValueData.nodeExtraData: ExtraData?
-        get() {
-            if (gameValuesWithDisabledSelector.contains(id) || id.startsWith("event_")) {
-                return null
-            }
-            return ConnectionDisabledExtraData
-        }
+    private val GameValueData.nodeExtraData: ExtraData
+        get() = GameValueExtraData(id)
 }

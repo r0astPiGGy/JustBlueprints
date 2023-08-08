@@ -34,6 +34,9 @@ open class GraphViewModel(
         ScrollState(initialScrollY)
     )
 
+    val scrollOffset: Offset
+        get() = Offset(scrollState.xValue.toFloat(), scrollState.yValue.toFloat())
+
     private val snapshotRequester = DefaultSnapshotRequester(::shouldAddPinRowSnapshot)
     private val graphFactory = GraphFactory(nodeStateFactory)
     private val _nodeStates = mutableStateListOf<NodeState>()

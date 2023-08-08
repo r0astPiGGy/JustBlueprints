@@ -85,7 +85,7 @@ object GlobalDataSource :
 
     fun getIconById(id: String) = mutableIcons[id]
 
-    override fun getNodeModelById(id: String) = mutableNodeModels[id]!!
+    override fun getNodeModelById(id: String) = mutableNodeModels[id]
 
     override fun getPinTypeById(id: String): PinType? = mutablePinTypes[id]
 

@@ -3,22 +3,37 @@ package com.rodev.generator.action.interpreter.category
 import com.rodev.generator.action.LocaleProvider
 import com.rodev.generator.action.entity.Action
 import com.rodev.generator.action.entity.Category
+import com.rodev.generator.action.interpreter.Interpreter
 import com.rodev.generator.action.interpreter.ListInterpreter
 import com.rodev.jmcc_extractor.entity.RawActionData
 
 class CategoryInterpreter(
     private val localeProvider: LocaleProvider
-) : ListInterpreter<Action, Category>() {
+) : Interpreter<List<Action>, List<Category>> {
 
     override fun interpret(input: List<Action>): List<Category> {
-        return super.interpret(input).distinct()
-    }
+        val list = mutableListOf<Category>()
 
-    override fun interpretElement(input: Action): Category {
-        return Category(
-            path = input.category,
-            name = localeProvider.translateCategory(input)
-        )
+        for (action in input) {
+            val categories = action.category.split(".")
+
+            val category = Category(
+                path = categories[0],
+                name = localeProvider.translateCategory(categories[0])
+            )
+
+            list.add(category)
+
+            if (categories.size > 1) {
+                list.add(Category(
+                    path = action.category,
+                    localeProvider.translateCategory(action.category)
+                ))
+            }
+
+        }
+
+        return list.distinct()
     }
 
 }

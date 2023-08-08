@@ -45,7 +45,7 @@ open class ViewPortViewModel(
     override fun onEvent(event: GraphEvent) {
         when (event) {
             is ShowContextMenuGraphEvent -> {
-                lastContextMenuInvokePosition = event.position
+                lastContextMenuInvokePosition = event.position + scrollOffset
 
                 contextMenuModel = ContextMenuModel(
                     borderColor = Color(Random.nextInt(), Random.nextInt(), Random.nextInt()),

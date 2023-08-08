@@ -31,6 +31,8 @@ kotlin {
                 implementation(compose.desktop.currentOs)
                 implementation(project(":node-ui"))
                 implementation(project(":action-generator"))
+                implementation(project(":common"))
+                implementation(project(":compiler"))
             }
         }
         val jvmTest by getting
@@ -39,7 +41,7 @@ kotlin {
 
 compose.desktop {
     application {
-        mainClass = "MainKt"
+        mainClass = "com.rodev.jbpkmp.MainKt"
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "JustBlueprints"

@@ -1,7 +1,9 @@
 package com.rodev.generator.action
 
 import com.rodev.generator.action.entity.*
+import com.rodev.generator.action.entity.Pins.containerExecPin
 import com.rodev.generator.action.entity.Pins.execPin
+import com.rodev.generator.action.entity.Pins.outputExecPin
 import com.rodev.generator.action.entity.Pins.predicatePin
 import com.rodev.generator.action.entity.Pins.selectorPin
 import com.rodev.generator.action.entity.extra_data.*
@@ -20,6 +22,7 @@ import com.rodev.generator.action.interpreter.pin_type.PinTypeInterpreter
 import com.rodev.generator.action.patch.applyPatcher
 import com.rodev.generator.action.patch.entity.*
 import com.rodev.generator.action.utils.Resources
+import com.rodev.generator.action.utils.toMap
 import com.rodev.generator.action.writer.BulkWriter
 import com.rodev.jmcc_extractor.*
 import com.rodev.jmcc_extractor.entity.ActionData
@@ -30,6 +33,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
 import java.io.File
+import kotlin.math.abs
 import kotlin.time.ExperimentalTime
 import kotlin.time.measureTimedValue
 
@@ -174,25 +178,25 @@ fun main() = runBlocking {
 
         folder("src/jvmMain/resources/data")
         folder("action-generator-output") {
-            file("action-namespaces.txt") { extractedActions.writeNamespacesTo(this) }
             file("log.txt") { ActionLogger.writeTo(this) }
+            file("absent-actions.txt") { writeJson(compareData(extractedActions, extractedRawActions)) }
         }
     }
 }
 
-private fun List<ActionData>.writeNamespacesTo(file: File) {
-    val map = hashMapOf<String, Int>()
+fun compareData(actions: List<ActionData>, rawActions: List<RawActionData>): List<String> {
+    val rawMapped = rawActions.toMap(RawActionData::id)
+    val actionsMapped = actions.toMap(ActionData::id)
 
-    forEach {
-        val id = it.id.replace(it.name, "")
-        map.compute(id) { _, v -> (v ?: 0) + 1 }
+    val absentActions = mutableListOf<String>()
+
+    actionsMapped.keys.forEach {
+        if (rawMapped[it] == null) {
+            absentActions += it
+        }
     }
 
-    val list = map.map { it }.sortedWith { o1, o2 ->
-        compareValues(o1.value, o2.value)
-    }
-
-    file.writeText(list.joinToString(separator = "\n") { "${it.key} : ${it.value}" })
+    return absentActions
 }
 
 private fun createPinInterpreterRegistry(localeProvider: LocaleProvider) = PinInterpreterRegistry.build(localeProvider) {
@@ -228,6 +232,10 @@ private fun createNodeInterpreterPipeline(
     localeProvider: LocaleProvider,
     categoryResolver: ActionCategoryResolver
 ) = NodeInterpreterPipeline.build(pinInterpreterRegistry, DefaultNodeInterpreter(localeProvider, categoryResolver)) {
+    fun List<PinModel>.addFirst(pinModel: PinModel): List<PinModel> {
+        return toMutableList().also { list -> list.add(0, pinModel) }
+    }
+
     pipeline {
         return@pipeline it.copy(
             input = action.args.map(::interpretPin)
@@ -248,14 +256,43 @@ private fun createNodeInterpreterPipeline(
         }
         return@add it
     }.add {
-        if (it.type == "function") {
-            fun List<PinModel>.addExec(id: String): List<PinModel> {
-                return toMutableList().also { list -> list.add(0, execPin(id)) }
-            }
+        val extra = when {
+            action.containing == "predicate" -> ConditionalExtraData
+            rawAction.type == "container" -> ContainerExtraData
+            else -> null
+        }
 
+        return@add it.copy(
+            extra = extra
+        )
+    }.add{
+        if (it.extra is ContainerExtraData) {
             return@add it.copy(
-                input = it.input.addExec("in-exec"),
-                output = it.output.addExec("out-exec")
+                output = it.output.addFirst(containerExecPin("Тело"))
+            )
+        }
+        if (rawAction.type == "container_with_conditional") {
+            return@add it.copy(
+                input = it.input.addFirst(predicatePin("condition")),
+                output = it.output.addFirst(containerExecPin("Тело")),
+                extra = if (it.extra == null) ContainerExtraData else buildCompoundExtraData {
+                    add(ContainerExtraData)
+                    add(it.extra)
+                }
+            )
+        }
+        if (rawAction.type == "basic_with_conditional") {
+            return@add it.copy(
+                input = it.input.addFirst(predicatePin("condition"))
+            )
+        }
+
+        return@add it
+    }.add {
+        if (it.type == "function") {
+            return@add it.copy(
+                input = it.input.addFirst(execPin("in-exec")),
+                output = it.output.addFirst(outputExecPin("out-exec"))
             )
         }
         return@add it

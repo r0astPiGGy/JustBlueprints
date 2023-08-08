@@ -37,8 +37,8 @@ class LocaleProvider(
         return localeDataSource.getOrDefault(localeId)
     }
 
-    fun translateCategory(action: Action): String {
-        val split = action.category.split(".")
+    fun translateCategory(category: String): String {
+        val split = category.split(".")
 
         return if (split.size < 2) {
             val key = resolveTranslationKeyForCategory(split[0]) + ".name"

@@ -11,6 +11,8 @@ import com.rodev.jbpkmp.domain.repository.SelectorDataSource
 import com.rodev.jbpkmp.domain.repository.get
 import com.rodev.jbpkmp.presentation.screens.editor_screen.SelectionHandler
 import com.rodev.jbpkmp.presentation.screens.editor_screen.getType
+import com.rodev.jbpkmp.util.castTo
+import com.rodev.jbpkmp.util.contains
 import com.rodev.nodeui.components.node.NodeDisplay
 import com.rodev.nodeui.components.node.NodeState
 import com.rodev.nodeui.components.node.NodeStateFactory
@@ -32,7 +34,7 @@ class DefaultNodeStateFactory(
 
     override fun createNodeState(node: Node): NodeState {
         val typeId = node.getType()
-        val nodeModel = nodeDataSource.getNodeModelById(typeId)
+        val nodeModel = nodeDataSource.getNodeModelById(typeId)!!
 
         val nodeState = NodeState(
             id = node.uniqueId,
@@ -67,14 +69,14 @@ class DefaultNodeStateFactory(
     }
 
     private fun getNodeRepresentation(typeId: String): NodeDisplay {
-        val node = nodeDataSource.getNodeModelById(typeId)
+        val node = nodeDataSource.getNodeModelById(typeId)!!
         val nodeType = nodeTypeDataSource[node.type]!!
         val action = actionDataSource.getActionById(typeId)
         val extra = node.extra
 
         var subHeader: String? = null
 
-        if (extra is EventExtraData && extra.cancellable) {
+        if (extra.contains<EventExtraData>() && extra.castTo<EventExtraData>().cancellable) {
             subHeader = "Отменяемое"
         }
 

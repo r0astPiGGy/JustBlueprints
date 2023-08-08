@@ -1,5 +1,6 @@
 package com.rodev.jbpkmp.domain.model.variable
 
+import com.rodev.jbp.compiler.module.value.VariableConstant
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -14,5 +15,10 @@ data class GlobalVariable(
         SAVED("Сохранённая переменная"),
         GAME("Игровая переменная")
     }
+
+    override fun toVariableConstant() = VariableConstant(
+        name,
+        if (type == Type.SAVED) VariableConstant.Scope.SAVE else VariableConstant.Scope.GAME
+    )
 
 }
