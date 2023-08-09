@@ -9,12 +9,16 @@ import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.input.key.key
 import com.rodev.jbpkmp.data.GlobalDataSource
+import com.rodev.jbpkmp.data.TempStorageServiceImpl
 import com.rodev.jbpkmp.domain.compiler.BlueprintCompiler
+import com.rodev.jbpkmp.domain.compiler.exception.BlueprintCompileException
 import com.rodev.jbpkmp.domain.model.Blueprint
 import com.rodev.jbpkmp.domain.model.Project
 import com.rodev.jbpkmp.domain.model.graph.EventGraph
 import com.rodev.jbpkmp.domain.model.loadBlueprint
 import com.rodev.jbpkmp.domain.model.saveBlueprint
+import com.rodev.jbpkmp.domain.remote.ApiResult
+import com.rodev.jbpkmp.domain.remote.TempStorageService
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.CreateVariableGraphEvent
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.DefaultPinTypeComparator
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.ViewPortViewModel
@@ -31,14 +35,15 @@ class EditorScreenViewModel(
 ) : SelectionHandler, VariableStateProvider {
 
     private val json = Json { prettyPrint = true }
-    private val project: Project
+    private val tempStorageService: TempStorageService = TempStorageServiceImpl()
+    val project: Project
 
     var currentGraph by mutableStateOf<GraphState?>(null)
         private set
 
-    val state = EditorScreenState(isLoading = true)
+    val state = EditorScreenState()
 
-    private var loadingJob: Job? = null
+    private var buildJob: Job? = null
 
     private val blueprintCompiler = BlueprintCompiler()
 
@@ -53,11 +58,8 @@ class EditorScreenViewModel(
     init {
         project = Project.loadFromFolder(projectPath)
         // load current graph
-        loadingJob = CoroutineScope(Dispatchers.Default).launch {
-            load()
-            state.isLoading = false
-            loadingJob = null
-        }
+        load()
+        state.result = null
     }
 
     private fun createNodeStateFactory() = NodeStateFactoryRegistry().apply {
@@ -90,11 +92,9 @@ class EditorScreenViewModel(
         )
     }
 
-    private suspend fun load() {
+    private fun load() {
         val blueprint = project.loadBlueprint()
         val eventGraph = blueprint.eventGraph
-
-        delay(500)
 
         val viewModel = createViewPortViewModel()
 
@@ -189,15 +189,7 @@ class EditorScreenViewModel(
     fun onEvent(event: EditorScreenEvent) {
         when (event) {
             is EditorScreenEvent.BuildProject -> {
-                val blueprint = getBlueprint() ?: return
-
-                try {
-                    val compiledData = blueprintCompiler.compile(blueprint)
-
-                    println(compiledData)
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
+                buildProject()
             }
 
             is EditorScreenEvent.SaveProject -> {
@@ -228,12 +220,7 @@ class EditorScreenViewModel(
 
     private fun handleDragAndDropEvent(variableState: VariableState, position: Offset) {
         val currentGraph = currentGraph ?: return
-
-        val scrollPosition = currentGraph.viewModel.scrollState.let {
-            Offset(it.xValue.toFloat(), it.yValue.toFloat())
-        }
-
-        val targetPosition = scrollPosition + position
+        val targetPosition = currentGraph.viewModel.scrollOffset + position
 
         currentGraph.viewModel.onEvent(
             CreateVariableGraphEvent(variableState, targetPosition)
@@ -244,15 +231,72 @@ class EditorScreenViewModel(
         return variablesById[id]
     }
 
+    fun resetState() {
+        state.reset()
+    }
+
     fun onDispose() {
         resetSelection()
         onEvent(EditorScreenEvent.SaveProject)
-        loadingJob?.cancel()
-        loadingJob = null
+        buildJob?.cancel()
+        buildJob = null
     }
 
     private fun getBlueprint(): Blueprint? {
         return currentGraph?.let(::getBlueprint)
+    }
+
+    private fun buildProject() {
+        val blueprint = getBlueprint() ?: return
+
+        // Build project async
+        buildJob = CoroutineScope(Dispatchers.Default).launch {
+            build(blueprint)
+
+            buildJob = null
+        }
+    }
+
+    private suspend fun build(blueprint: Blueprint) {
+        state.result = ScreenResult.Loading(state = LoadingState.COMPILE)
+
+        val data = try {
+            // TODO handle BlueprintCompileException
+            blueprintCompiler.compile(blueprint)
+        } catch (e: Exception) {
+            state.result = ScreenResult.Error(
+                stage = LoadingState.COMPILE,
+                message = e.message,
+                stackTrace = e.stackTraceToString()
+            )
+            null
+        }
+
+        data ?: return
+
+        state.result = ScreenResult.Loading(state = LoadingState.UPLOAD)
+
+        when (val apiResult = tempStorageService.upload(data)) {
+            is ApiResult.Failure -> {
+                state.result = ScreenResult.Error(
+                    stage = LoadingState.UPLOAD,
+                    message = apiResult.message,
+                    stackTrace = null
+                )
+            }
+            is ApiResult.Exception -> {
+                state.result = ScreenResult.Error(
+                    stage = LoadingState.UPLOAD,
+                    message = apiResult.exception.message,
+                    stackTrace = apiResult.exception.stackTraceToString()
+                )
+            }
+            is ApiResult.Success -> {
+                state.result = ScreenResult.SuccessUpload(
+                    uploadCommand = apiResult.data.commandToLoad
+                )
+            }
+        }
     }
 
     private fun getBlueprint(graphState: GraphState): Blueprint {

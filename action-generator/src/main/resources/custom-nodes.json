@@ -17,6 +17,22 @@
         "id" : "branch_condition",
         "label" : "Условие",
         "type" : "condition"
+      },
+      {
+        "id": "invert_condition",
+        "type": "boolean",
+        "label": "Инвертировать",
+        "extra": {
+          "type": "compound_extra_data",
+          "extras": [
+            {
+              "type": "invert-condition"
+            },
+            {
+              "type": "connection_disabled"
+            }
+          ]
+        }
       }
     ],
     "output" : [ {

@@ -1,5 +1,6 @@
 package com.rodev.generator.action.entity
 
+import com.rodev.generator.action.entity.Pins.Type.BOOLEAN
 import com.rodev.generator.action.entity.Pins.Type.CONDITION
 import com.rodev.generator.action.entity.Pins.Type.EXECUTION
 import com.rodev.generator.action.entity.extra_data.*
@@ -42,6 +43,16 @@ object Pins {
         id = id,
         type = CONDITION,
         label = name
+    )
+
+    fun invertConditionPin(id: String, name: String = "Инвертировать") = PinModel(
+        id = id,
+        type = BOOLEAN,
+        label = name,
+        extra = buildCompoundExtraData {
+            add(InvertConditionExtraData)
+            add(ConnectionDisabledExtraData)
+        }
     )
 
     fun selectorPin(selectorType: SelectorType) = PinModel(

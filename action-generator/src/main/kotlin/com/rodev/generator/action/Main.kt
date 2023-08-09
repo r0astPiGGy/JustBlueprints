@@ -3,6 +3,7 @@ package com.rodev.generator.action
 import com.rodev.generator.action.entity.*
 import com.rodev.generator.action.entity.Pins.containerExecPin
 import com.rodev.generator.action.entity.Pins.execPin
+import com.rodev.generator.action.entity.Pins.invertConditionPin
 import com.rodev.generator.action.entity.Pins.outputExecPin
 import com.rodev.generator.action.entity.Pins.predicatePin
 import com.rodev.generator.action.entity.Pins.selectorPin
@@ -232,8 +233,8 @@ private fun createNodeInterpreterPipeline(
     localeProvider: LocaleProvider,
     categoryResolver: ActionCategoryResolver
 ) = NodeInterpreterPipeline.build(pinInterpreterRegistry, DefaultNodeInterpreter(localeProvider, categoryResolver)) {
-    fun List<PinModel>.addFirst(pinModel: PinModel): List<PinModel> {
-        return toMutableList().also { list -> list.add(0, pinModel) }
+    fun List<PinModel>.addFirst(vararg pinModels: PinModel): List<PinModel> {
+        return pinModels.toMutableList().also { it.addAll(this) }
     }
 
     pipeline {
@@ -273,7 +274,10 @@ private fun createNodeInterpreterPipeline(
         }
         if (rawAction.type == "container_with_conditional") {
             return@add it.copy(
-                input = it.input.addFirst(predicatePin("condition")),
+                input = it.input.addFirst(
+                    predicatePin("condition"),
+                    invertConditionPin("invert_condition")
+                ),
                 output = it.output.addFirst(containerExecPin("Тело")),
                 extra = if (it.extra == null) ContainerExtraData else buildCompoundExtraData {
                     add(ContainerExtraData)

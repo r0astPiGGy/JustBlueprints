@@ -6578,7 +6578,8 @@
         "name": "Цикл с условием",
         "input": [
             "exec",
-            "condition"
+            "condition",
+            "boolean"
         ],
         "output": [
             "exec"
@@ -12740,7 +12741,8 @@
         "name": "Ветвление",
         "input": [
             "exec",
-            "condition"
+            "condition",
+            "boolean"
         ],
         "output": [
             "exec"

@@ -145,8 +145,8 @@ internal val DropdownMenuVerticalPadding = 8.dp
 internal const val InTransitionDuration = 120
 internal const val OutTransitionDuration = 75
 
-@ExperimentalComposeUiApi
-private fun handlePopupOnKeyEvent(
+@OptIn(ExperimentalComposeUiApi::class)
+fun handlePopupOnKeyEvent(
     keyEvent: androidx.compose.ui.input.key.KeyEvent,
     onDismissRequest: () -> Unit,
     focusManager: FocusManager,

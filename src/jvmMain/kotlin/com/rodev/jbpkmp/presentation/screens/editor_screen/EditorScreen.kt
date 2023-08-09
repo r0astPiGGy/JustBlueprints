@@ -1,36 +1,16 @@
 package com.rodev.jbpkmp.presentation.screens.editor_screen
 
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredWidth
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Divider
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.foundation.*
+import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.outlined.ArrowBack
-import androidx.compose.material.icons.outlined.Build
-import androidx.compose.material.icons.outlined.Done
-import androidx.compose.material.icons.outlined.Save
-import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -43,10 +23,18 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.rodev.jbpkmp.ViewPortPreview
+import com.rodev.jbpkmp.domain.remote.UploadResult
 import com.rodev.jbpkmp.presentation.components.Sheet
+import com.rodev.jbpkmp.presentation.localization.Vocabulary.localization
+import com.rodev.jbpkmp.presentation.localization.openLastProject
+import com.rodev.jbpkmp.presentation.localization.save
+import com.rodev.jbpkmp.presentation.localization.useDarkTheme
 import com.rodev.jbpkmp.presentation.navigation.NavController
 import com.rodev.jbpkmp.presentation.screens.editor_screen.components.Details
 import com.rodev.jbpkmp.presentation.screens.editor_screen.components.DraggableContext
@@ -54,6 +42,8 @@ import com.rodev.jbpkmp.presentation.screens.editor_screen.components.DropTarget
 import com.rodev.jbpkmp.presentation.screens.editor_screen.components.Overview
 import com.rodev.jbpkmp.presentation.screens.editor_screen.components.ToolBar
 import com.rodev.jbpkmp.presentation.screens.settings_screen.SettingsScreen
+import com.rodev.jbpkmp.presentation.screens.settings_screen.SettingsScreenEvent
+import org.jetbrains.skia.paragraph.TextBox
 
 @Composable
 fun EditorScreen(navController: NavController, projectPath: String) {
@@ -91,6 +81,9 @@ fun EditorScreen(navController: NavController, projectPath: String) {
                         onClick = { showSettingsScreen = true }
                     )
                 },
+                centerContent = {
+                    Text(text = viewModel.project.name)
+                },
                 endContent = {
                     // Build button
                     MaterialIconButton(
@@ -110,7 +103,10 @@ fun EditorScreen(navController: NavController, projectPath: String) {
 
             HorizontalDivider()
 
-            DraggableContext {
+            DraggableContext(
+                modifier = Modifier
+                    .weight(1f)
+            ) {
                 Row(
                     modifier = Modifier.fillMaxSize()
                 ) {
@@ -186,7 +182,17 @@ fun EditorScreen(navController: NavController, projectPath: String) {
             }
 
             HorizontalDivider()
+
+            ActionBar(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(40.dp)
+                    .background(MaterialTheme.colors.background),
+                screenState = viewModel.state
+            )
         }
+
+        ResultDialog(screenState = viewModel.state)
 
         Sheet(showSettingsScreen) {
             SettingsScreen(
@@ -197,27 +203,206 @@ fun EditorScreen(navController: NavController, projectPath: String) {
     }
 }
 
-const val dividerSize = 4
-
 @Composable
-fun Pane(
-    modifier: Modifier = Modifier,
-    content: @Composable ColumnScope.() -> Unit
+fun ResultDialog(
+    screenState: EditorScreenState
 ) {
-    Box(
-        modifier = modifier
-            .height(IntrinsicSize.Max)
+    if (screenState.isLoading) return
+    val result = screenState.result ?: return
+    val dismissRequest = remember {
+        { screenState.reset() }
+    }
+
+    Sheet(
+        true,
+        onDismissRequest = dismissRequest
     ) {
-        val scrollState = rememberScrollState()
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(end = 12.dp)
-                .verticalScroll(scrollState),
-            content = content
-        )
+        when (result) {
+            is ScreenResult.SuccessUpload -> {
+                SuccessUploadScreen(
+                    modifier = Modifier,
+                    uploadCommand = result.uploadCommand,
+                    onDismiss = dismissRequest
+                )
+            }
+            is ScreenResult.Error -> {
+                ErrorScreen(
+                    modifier = Modifier
+                        .fillMaxSize(0.5f),
+                    error = result,
+                    onDismiss = dismissRequest
+                )
+            }
+            is ScreenResult.Loading -> {}
+        }
+
     }
 }
+
+@Composable
+fun SuccessUploadScreen(
+    modifier: Modifier = Modifier,
+    uploadCommand: String,
+    onDismiss: () -> Unit
+) {
+    Surface(
+        shape = RoundedCornerShape(10.dp),
+        modifier = modifier
+    ) {
+        val columnPadding = 15.dp
+
+        Column(
+            modifier = Modifier
+                .padding(columnPadding),
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
+            Column {
+                Text(
+                    text = "Код был загружен на сервер",
+                    fontSize = MaterialTheme.typography.h3.fontSize
+                )
+                Text(
+                    text = "Он будет удалён через 3 минуты, успейте использовать команду"
+                )
+            }
+
+            Spacer(modifier = Modifier.height(columnPadding))
+
+            val clipboard = LocalClipboardManager.current
+
+            Button(
+                onClick = {
+                    clipboard.setText(AnnotatedString(uploadCommand))
+                    onDismiss()
+                },
+                modifier = Modifier
+                    .width(150.dp)
+                    .align(Alignment.End)
+            ) {
+                Text(text = "Скопировать")
+            }
+        }
+    }
+}
+
+@Composable
+fun ErrorScreen(
+    modifier: Modifier = Modifier,
+    error: ScreenResult.Error,
+    onDismiss: () -> Unit
+) {
+    val title = when (error.stage) {
+        LoadingState.UPLOAD -> "При загрузке кода произошла ошибка"
+        LoadingState.SAVE -> "При сохранении произошла ошибка"
+        LoadingState.COMPILE -> "При компиляции произошла ошибка"
+    }
+
+    Surface(
+        shape = RoundedCornerShape(10.dp),
+        modifier = modifier
+    ) {
+        val columnPadding = 15.dp
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(columnPadding),
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
+            Column {
+                Text(
+                    text = title,
+                    fontSize = MaterialTheme.typography.h3.fontSize
+                )
+                error.message?.let {
+                    Text(
+                        text = it
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(columnPadding))
+
+            // Stacktrace text
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            ) {
+                val stateVertical = rememberScrollState(0)
+                val stateHorizontal = rememberScrollState(0)
+
+                SelectionContainer {
+                    Text(
+                        text = error.stackTrace ?: "No stacktrace provided",
+                        color = MaterialTheme.colors.error,
+                        fontFamily = FontFamily.Monospace,
+                        modifier = Modifier
+                            .verticalScroll(stateVertical)
+                            .padding(end = 12.dp, bottom = 12.dp)
+                            .horizontalScroll(stateHorizontal)
+                    )
+                }
+                VerticalScrollbar(
+                    modifier = Modifier.align(Alignment.CenterEnd)
+                        .fillMaxHeight(),
+                    adapter = rememberScrollbarAdapter(stateVertical)
+                )
+                HorizontalScrollbar(
+                    modifier = Modifier.align(Alignment.BottomStart)
+                        .fillMaxWidth()
+                        .padding(end = 12.dp),
+                    adapter = rememberScrollbarAdapter(stateHorizontal)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(columnPadding))
+
+            Button(
+                onClick = onDismiss,
+                modifier = Modifier
+                    .width(150.dp)
+                    .align(Alignment.End)
+            ) {
+                Text(text = "Ок")
+            }
+        }
+    }
+}
+
+@Composable
+fun ActionBar(
+    modifier: Modifier = Modifier,
+    screenState: EditorScreenState
+) {
+    Row(
+        modifier = modifier
+            .padding(10.dp),
+        horizontalArrangement = Arrangement.End,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        val result = screenState.result
+
+        if (result is ScreenResult.Loading) {
+            val message = when (result.state) {
+                LoadingState.SAVE -> "Сохранение проекта..."
+                LoadingState.COMPILE -> "Компиляция блюпринта..."
+                LoadingState.UPLOAD -> "Загрузка кода на сервер..."
+            }
+
+            Text(text = message)
+
+            Spacer(modifier = Modifier.width(10.dp))
+
+            LinearProgressIndicator(
+                modifier = Modifier
+                    .width(300.dp),
+            )
+        }
+    }
+}
+
+const val dividerSize = 3
 
 @Composable
 fun VerticalDivider() {

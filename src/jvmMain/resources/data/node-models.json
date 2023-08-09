@@ -25514,6 +25514,22 @@
                 "id": "condition",
                 "type": "condition",
                 "label": "Условие"
+            },
+            {
+                "id": "invert_condition",
+                "type": "boolean",
+                "label": "Инвертировать",
+                "extra": {
+                    "type": "compound_extra_data",
+                    "extras": [
+                        {
+                            "type": "invert-condition"
+                        },
+                        {
+                            "type": "connection_disabled"
+                        }
+                    ]
+                }
             }
         ],
         "output": [
@@ -45672,6 +45688,22 @@
                 "id": "branch_condition",
                 "type": "condition",
                 "label": "Условие"
+            },
+            {
+                "id": "invert_condition",
+                "type": "boolean",
+                "label": "Инвертировать",
+                "extra": {
+                    "type": "compound_extra_data",
+                    "extras": [
+                        {
+                            "type": "invert-condition"
+                        },
+                        {
+                            "type": "connection_disabled"
+                        }
+                    ]
+                }
             }
         ],
         "output": [
