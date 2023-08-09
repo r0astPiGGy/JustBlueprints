@@ -7,7 +7,6 @@ import kotlinx.serialization.Serializable
 sealed interface Variable {
     val id: String
     val name: String
-    val value: Any?
 
     fun toVariableConstant() : VariableConstant
 }

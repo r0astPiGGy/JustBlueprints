@@ -24,7 +24,6 @@ import androidx.compose.ui.Modifier
 import com.rodev.jbpkmp.domain.model.variable.GlobalVariable
 import com.rodev.jbpkmp.domain.model.variable.LocalVariable
 import com.rodev.jbpkmp.presentation.localization.Vocabulary
-import com.rodev.jbpkmp.presentation.localization.defaultValue
 import com.rodev.jbpkmp.presentation.localization.variableName
 import java.util.UUID
 
@@ -32,20 +31,16 @@ sealed interface VariableState : Selectable {
 
     val id: String
     var name: String
-    var value: Any?
 
 }
 
 class LocalVariableState(
     override val id: String = UUID.randomUUID().toString(),
-    name: String,
-    value: Any? = null
+    name: String
 ) : VariableState {
 
     override var selected: Boolean by mutableStateOf(false)
     override var name by mutableStateOf(name)
-
-    override var value by mutableStateOf(value)
 
     override fun onDelete(selectionActionVisitor: SelectionActionVisitor) {
         selectionActionVisitor.deleteLocalVariable(this)
@@ -67,19 +62,6 @@ class LocalVariableState(
                 textColor = MaterialTheme.colors.onBackground
             )
         )
-
-        OutlinedTextField(
-            value = value.toString(),
-            onValueChange = { value = it },
-            label = { Text(localization.defaultValue()) },
-            modifier = Modifier.fillMaxWidth(),
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                unfocusedBorderColor = MaterialTheme.colors.onBackground,
-                unfocusedLabelColor = MaterialTheme.colors.onBackground,
-                placeholderColor = MaterialTheme.colors.onBackground,
-                textColor = MaterialTheme.colors.onBackground
-            )
-        )
     }
 
 }
@@ -87,14 +69,11 @@ class LocalVariableState(
 class GlobalVariableState(
     override val id: String = UUID.randomUUID().toString(),
     name: String,
-    value: Any? = null,
     type: GlobalVariable.Type
 ) : VariableState {
 
     override var selected: Boolean by mutableStateOf(false)
     override var name by mutableStateOf(name)
-
-    override var value by mutableStateOf(value)
     var type by mutableStateOf(type)
 
     override fun onDelete(selectionActionVisitor: SelectionActionVisitor) {
@@ -109,19 +88,6 @@ class GlobalVariableState(
             value = name,
             onValueChange = { name = it },
             label = { Text(localization.variableName()) },
-            modifier = Modifier.fillMaxWidth(),
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                unfocusedBorderColor = MaterialTheme.colors.onBackground,
-                unfocusedLabelColor = MaterialTheme.colors.onBackground,
-                placeholderColor = MaterialTheme.colors.onBackground,
-                textColor = MaterialTheme.colors.onBackground
-            )
-        )
-
-        OutlinedTextField(
-            value = value.toString(),
-            onValueChange = { value = it },
-            label = { Text(localization.defaultValue()) },
             modifier = Modifier.fillMaxWidth(),
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 unfocusedBorderColor = MaterialTheme.colors.onBackground,
@@ -174,16 +140,14 @@ class GlobalVariableState(
 fun LocalVariableState.toLocalVariable(): LocalVariable {
     return LocalVariable(
         id = id,
-        name = name,
-        value = value?.toString()
+        name = name
     )
 }
 
 fun LocalVariable.toState(): LocalVariableState {
     return LocalVariableState(
         id = id,
-        name = name,
-        value = value
+        name = name
     )
 }
 
@@ -191,8 +155,7 @@ fun GlobalVariableState.toGlobalVariable(): GlobalVariable {
     return GlobalVariable(
         type = type,
         id = id,
-        name = name,
-        value = value?.toString()
+        name = name
     )
 }
 
@@ -200,7 +163,6 @@ fun GlobalVariable.toState(): GlobalVariableState {
     return GlobalVariableState(
         id = id,
         name = name,
-        value = value,
         type = type
     )
 }

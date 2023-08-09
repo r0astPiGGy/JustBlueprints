@@ -33,15 +33,14 @@ import com.rodev.jbpkmp.presentation.localization.value
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun CreateVariableDialog(onDismissRequest: (String?, Any?) -> Unit) {
+fun CreateVariableDialog(onDismissRequest: () -> Unit, onSelect: (variableName: String) -> Unit) {
     val localization = Vocabulary.localization
 
     var variableName by remember { mutableStateOf("") }
-    var variableValue by remember { mutableStateOf("") }
     val isError = variableName.isEmpty() && variableName.isBlank()
 
     AlertDialog(
-        onDismissRequest = { onDismissRequest(null, null) },
+        onDismissRequest = onDismissRequest,
         buttons = {
             Column(
                 modifier = Modifier
@@ -74,14 +73,6 @@ fun CreateVariableDialog(onDismissRequest: (String?, Any?) -> Unit) {
 
                 Spacer(Modifier.height(15.dp))
 
-                OutlinedTextField(
-                    value = variableValue,
-                    onValueChange = { variableValue = it },
-                    placeholder = { Text(localization.value()) }
-                )
-
-                Spacer(Modifier.height(25.dp))
-
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier.fillMaxWidth()
@@ -89,7 +80,7 @@ fun CreateVariableDialog(onDismissRequest: (String?, Any?) -> Unit) {
                     val buttonWidth = 100.dp
 
                     OutlinedButton(
-                        onClick = { onDismissRequest(null, null) },
+                        onClick = onDismissRequest,
                         modifier = Modifier.width(buttonWidth),
                         colors = ButtonDefaults.outlinedButtonColors(
                             backgroundColor = MaterialTheme.colors.surface
@@ -101,7 +92,8 @@ fun CreateVariableDialog(onDismissRequest: (String?, Any?) -> Unit) {
                     Button(
                         onClick = {
                             if (!isError) {
-                                onDismissRequest(variableName, variableValue)
+                                onDismissRequest()
+                                onSelect(variableName)
                             }
                         },
                         modifier = Modifier.width(buttonWidth)

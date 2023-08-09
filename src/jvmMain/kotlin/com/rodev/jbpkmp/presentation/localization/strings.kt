@@ -42,6 +42,40 @@ val chooseDirectory = Translatable(
     )
 )
 
+// UploadScreen
+val uploadSuccess = Translatable(
+    "Код был загружен на сервер",
+    hashMapOf(
+        ENGLISH to "The code was uploaded to the server"
+    )
+)
+val uploadHint = Translatable(
+    "Он будет удалён через 3 минуты, успейте использовать команду",
+    hashMapOf(
+        ENGLISH to "It will be deleted in 3 minutes, have time to use the command"
+    )
+)
+
+// ErrorScreen
+val uploadError = Translatable(
+    "При загрузке кода произошла ошибка",
+    hashMapOf(
+        ENGLISH to "An error occurred during code upload"
+    )
+)
+val compileError = Translatable(
+    "При компиляции кода произошла ошибка",
+    hashMapOf(
+        ENGLISH to "An error occurred during code compile"
+    )
+)
+val saveError = Translatable(
+    "При сохранении произошла ошибка",
+    hashMapOf(
+        ENGLISH to "An error occurred during save process"
+    )
+)
+
 // SettingsScreen
 val language = Translatable(
     "Язык",
@@ -101,12 +135,6 @@ val variableName = Translatable(
         ENGLISH to "Variable name"
     )
 )
-val defaultValue = Translatable(
-    "Дефолтное значение",
-    hashMapOf(
-        ENGLISH to "Default value"
-    )
-)
 val description = Translatable(
     "Описание",
     hashMapOf(
@@ -116,13 +144,31 @@ val description = Translatable(
 val additionally = Translatable(
     "Дополнительно",
     hashMapOf(
-        ENGLISH to "Additionally"
+        ENGLISH to "Additional info"
     )
 )
 val worksWith = Translatable(
     "Работает с:",
     hashMapOf(
         ENGLISH to "Works with:"
+    )
+)
+val projectSave = Translatable(
+    "Сохранение проекта...",
+    hashMapOf(
+        ENGLISH to "Saving project..."
+    )
+)
+val projectCompile = Translatable(
+    "Компиляция блюпринта...",
+    hashMapOf(
+        ENGLISH to "Compiling blueprint..."
+    )
+)
+val codeUpload = Translatable(
+    "Загрузка кода...",
+    hashMapOf(
+        ENGLISH to "Uploading..."
     )
 )
 
@@ -143,6 +189,18 @@ val errorMessage = Translatable(
     "Название не может быть пустым",
     hashMapOf(
         ENGLISH to "Name cannot be empty"
+    )
+)
+val ok = Translatable(
+    "Окей",
+    hashMapOf(
+        ENGLISH to "Okay"
+    )
+)
+val copyButton = Translatable(
+    "Скопировать",
+    hashMapOf(
+        ENGLISH to "Copy"
     )
 )
 val name = Translatable(

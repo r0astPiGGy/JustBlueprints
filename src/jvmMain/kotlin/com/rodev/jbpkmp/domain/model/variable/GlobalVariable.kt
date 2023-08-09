@@ -7,7 +7,6 @@ import kotlinx.serialization.Serializable
 data class GlobalVariable(
     override val id: String,
     override val name: String,
-    override val value: String? = null,
     val type: Type
 ) : Variable {
 

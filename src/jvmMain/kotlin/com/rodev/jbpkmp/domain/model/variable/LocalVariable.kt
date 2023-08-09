@@ -6,8 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class LocalVariable(
     override val id: String,
-    override val name: String,
-    override val value: String?
+    override val name: String
 ) : Variable {
     override fun toVariableConstant() = VariableConstant(name, VariableConstant.Scope.LOCAL)
 }

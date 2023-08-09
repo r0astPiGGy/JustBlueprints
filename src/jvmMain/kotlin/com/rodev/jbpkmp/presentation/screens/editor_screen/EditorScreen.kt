@@ -31,10 +31,8 @@ import androidx.compose.ui.unit.sp
 import com.rodev.jbpkmp.ViewPortPreview
 import com.rodev.jbpkmp.domain.remote.UploadResult
 import com.rodev.jbpkmp.presentation.components.Sheet
+import com.rodev.jbpkmp.presentation.localization.*
 import com.rodev.jbpkmp.presentation.localization.Vocabulary.localization
-import com.rodev.jbpkmp.presentation.localization.openLastProject
-import com.rodev.jbpkmp.presentation.localization.save
-import com.rodev.jbpkmp.presentation.localization.useDarkTheme
 import com.rodev.jbpkmp.presentation.navigation.NavController
 import com.rodev.jbpkmp.presentation.screens.editor_screen.components.Details
 import com.rodev.jbpkmp.presentation.screens.editor_screen.components.DraggableContext
@@ -82,6 +80,10 @@ fun EditorScreen(navController: NavController, projectPath: String) {
                     )
                 },
                 centerContent = {
+                    // TODO
+//                    viewModel.currentGraph?.let {
+//                        Text(text = viewModel.project.name + it.name)
+//                    }
                     Text(text = viewModel.project.name)
                 },
                 endContent = {
@@ -166,17 +168,6 @@ fun EditorScreen(navController: NavController, projectPath: String) {
                                 viewModel = currentGraph.viewModel
                             )
                         }
-                    } else {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = "Project is loading",
-                                fontSize = 30.sp,
-                            )
-                        }
                     }
                 }
             }
@@ -258,11 +249,11 @@ fun SuccessUploadScreen(
         ) {
             Column {
                 Text(
-                    text = "Код был загружен на сервер",
+                    text = localization.uploadSuccess(),
                     fontSize = MaterialTheme.typography.h3.fontSize
                 )
                 Text(
-                    text = "Он будет удалён через 3 минуты, успейте использовать команду"
+                    text = localization.uploadHint()
                 )
             }
 
@@ -279,7 +270,7 @@ fun SuccessUploadScreen(
                     .width(150.dp)
                     .align(Alignment.End)
             ) {
-                Text(text = "Скопировать")
+                Text(text = localization.copyButton())
             }
         }
     }
@@ -292,9 +283,9 @@ fun ErrorScreen(
     onDismiss: () -> Unit
 ) {
     val title = when (error.stage) {
-        LoadingState.UPLOAD -> "При загрузке кода произошла ошибка"
-        LoadingState.SAVE -> "При сохранении произошла ошибка"
-        LoadingState.COMPILE -> "При компиляции произошла ошибка"
+        LoadingState.UPLOAD -> localization.uploadError()
+        LoadingState.SAVE -> localization.saveError()
+        LoadingState.COMPILE -> localization.compileError()
     }
 
     Surface(
@@ -364,7 +355,7 @@ fun ErrorScreen(
                     .width(150.dp)
                     .align(Alignment.End)
             ) {
-                Text(text = "Ок")
+                Text(text = localization.ok())
             }
         }
     }
@@ -385,9 +376,9 @@ fun ActionBar(
 
         if (result is ScreenResult.Loading) {
             val message = when (result.state) {
-                LoadingState.SAVE -> "Сохранение проекта..."
-                LoadingState.COMPILE -> "Компиляция блюпринта..."
-                LoadingState.UPLOAD -> "Загрузка кода на сервер..."
+                LoadingState.SAVE -> localization.projectSave()
+                LoadingState.COMPILE -> localization.projectCompile()
+                LoadingState.UPLOAD -> localization.codeUpload()
             }
 
             Text(text = message)
