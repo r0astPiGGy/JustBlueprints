@@ -22,6 +22,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.rodev.jbpkmp.domain.model.variable.GlobalVariable
+import com.rodev.jbpkmp.domain.model.variable.Variable
 import com.rodev.jbpkmp.presentation.localization.Vocabulary
 import com.rodev.jbpkmp.presentation.localization.globalVariables
 import com.rodev.jbpkmp.presentation.localization.localVariables
@@ -82,8 +83,8 @@ fun VariableView(
     variable: VariableState
 ) {
     Surface(
-        border = if (variable.selected) BorderStroke(3.dp, Color.Yellow) else null,
-        shape = RoundedCornerShape(size = 10.dp)
+        border = if (variable.selected) BorderStroke(2.dp, Color.White) else null,
+        shape = RoundedCornerShape(size = 6.dp)
     ) {
         Column(
             modifier = Modifier
@@ -96,12 +97,17 @@ fun VariableView(
                         )
                     }
                 }
-                .padding(10.dp),
+                .fillMaxWidth()
+                .padding(6.dp),
         ) {
             DragTarget(
-                dataToDrop = variable
+                dataToDrop = variable,
+                modifier = Modifier
+                    .fillMaxWidth()
             ) {
-                Text(variable.name)
+                Text(
+                    variable.name
+                )
             }
         }
     }
@@ -133,7 +139,7 @@ private fun GlobalVariables(
                     GlobalVariableState(
                         name = it,
                         // TODO
-                        type = GlobalVariable.Type.GAME
+                        type = Variable.Type.Game
                     )
                 ).let(viewModel::onEvent)
             }
@@ -189,7 +195,8 @@ fun CollapsibleList(
 
         AnimatedVisibility(visible) {
             LazyColumn(
-                modifier = Modifier.padding(start = 15.dp),
+                modifier = Modifier.padding(start = 15.dp, end = 15.dp),
+                verticalArrangement = Arrangement.spacedBy(5.dp),
                 content = content
             )
         }

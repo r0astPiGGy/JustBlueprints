@@ -20,6 +20,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -32,14 +35,7 @@ import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.compositionLocalOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -72,8 +68,10 @@ fun BlueprintContextMenu(
         expanded = expanded
     ) {
         val contextMenuModel = remember { contextMenuModelProvider() }
-        val treeNodes = remember { contextMenuModel.contextMenuItemProvider() }
         val focusRequester = remember { FocusRequester() }
+        val contextMenuState = remember {
+            ContextMenuState(contextMenuModel.contextMenuItemProvider())
+        }
 
         LaunchedEffect(Unit) {
             focusRequester.requestFocus()
@@ -111,47 +109,74 @@ fun BlueprintContextMenu(
                 ) {
                     // Updates visibility of tree nodes when input changes
                     LaunchedEffect(queryInput) {
-                        val predicate: TreeQuery = { name ->
-                            name.lowercase().contains(queryInput.lowercase())
-                        }
-
-                        treeNodes.forEach { treeNode ->
-                            treeNode.updateVisibility {
-                                predicate(it.name)
-                            }
-                        }
+                        contextMenuState.onInputChange(queryInput)
                     }
 
-                    val scrollState = rememberScrollState()
+                    val scrollState = rememberLazyListState()
 
                     CompositionLocalProvider(
                         LocalOnTreeNodeClick provides onTreeNodeClick
                     ) {
-                        Column(
+                        LazyColumn(
+                            state = scrollState,
                             modifier = Modifier
                                 .fillMaxSize()
-                                .padding(end = 12.dp)
-                                .verticalScroll(state = scrollState),
+                                .padding(end = 12.dp),
                         ) {
-                            treeNodes.forEach {
+                            items(
+                                contextMenuState.nodes,
+                                key = ContextTreeNode::name
+                            ) {
                                 TreeNode(it)
                             }
                         }
                     }
 
-                    VerticalScrollbar(
-                        modifier = Modifier
-                            .align(Alignment.CenterEnd)
-                            .fillMaxHeight(),
-                        adapter = rememberScrollbarAdapter(
-                            scrollState = scrollState
-                        )
-                    )
+                    // TODO FIX неправильно отображается в связке с LazyColumn
+//                    VerticalScrollbar(
+//                        modifier = Modifier
+//                            .align(Alignment.CenterEnd)
+//                            .fillMaxHeight(),
+//                        adapter = rememberScrollbarAdapter(
+//                            scrollState = scrollState
+//                        )
+//                    )
                 }
             }
         }
     }
 }
+
+private class ContextMenuState(
+    val nodes: List<ContextTreeNode>
+) {
+
+    private var firstExpand = true
+
+    fun onInputChange(input: String) {
+        val predicate: TreeQuery = { name ->
+            name.lowercase().contains(input.lowercase())
+        }
+
+        nodes.forEach { treeNode ->
+            treeNode.updateVisibility(
+                onEachRoot = {
+                    if (it && !firstExpand) {
+                        this.expanded = true
+                    }
+                }
+            ) {
+                predicate(it.name)
+            }
+        }
+
+        if (firstExpand) {
+            firstExpand = false
+        }
+    }
+
+}
+
 
 typealias TreeQuery = (String) -> Boolean
 
@@ -214,9 +239,8 @@ fun TreeNodeRoot(
 ) {
     if (!nodeRoot.visible) return
 
-    var visible by remember { mutableStateOf(false) }
     val rotation by animateFloatAsState(
-        targetValue = if (visible) 0F else -90F
+        targetValue = if (nodeRoot.expanded) 0F else -90F
     )
 
     Column {
@@ -226,7 +250,7 @@ fun TreeNodeRoot(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(5.dp))
-                .clickable { visible = !visible }
+                .clickable { nodeRoot.expanded = !nodeRoot.expanded }
         ) {
             Icon(
                 imageVector = Icons.Default.ArrowDropDown,
@@ -237,7 +261,7 @@ fun TreeNodeRoot(
             Text(nodeRoot.name)
         }
 
-        AnimatedVisibility(visible) {
+        AnimatedVisibility(nodeRoot.expanded) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()

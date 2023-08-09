@@ -23,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.rodev.jbpkmp.domain.model.variable.GlobalVariable
 import com.rodev.jbpkmp.domain.model.variable.LocalVariable
+import com.rodev.jbpkmp.domain.model.variable.Variable
 import com.rodev.jbpkmp.presentation.localization.Vocabulary
 import com.rodev.jbpkmp.presentation.localization.variableName
 import java.util.UUID
@@ -31,6 +32,7 @@ sealed interface VariableState : Selectable {
 
     val id: String
     var name: String
+    val type: Variable.Type
 
 }
 
@@ -39,6 +41,7 @@ class LocalVariableState(
     name: String
 ) : VariableState {
 
+    override val type: Variable.Type = Variable.Type.Local
     override var selected: Boolean by mutableStateOf(false)
     override var name by mutableStateOf(name)
 
@@ -69,12 +72,12 @@ class LocalVariableState(
 class GlobalVariableState(
     override val id: String = UUID.randomUUID().toString(),
     name: String,
-    type: GlobalVariable.Type
+    type: Variable.Type
 ) : VariableState {
 
     override var selected: Boolean by mutableStateOf(false)
     override var name by mutableStateOf(name)
-    var type by mutableStateOf(type)
+    override var type by mutableStateOf(type)
 
     override fun onDelete(selectionActionVisitor: SelectionActionVisitor) {
         selectionActionVisitor.deleteGlobalVariable(this)
@@ -122,7 +125,7 @@ class GlobalVariableState(
                 onDismissRequest = { expanded = false },
                 modifier = Modifier
             ) {
-                GlobalVariable.Type.values().forEach {
+                listOf(Variable.Type.Game, Variable.Type.Save).forEach {
                     DropdownMenuItem(
                         onClick = {
                             type = it

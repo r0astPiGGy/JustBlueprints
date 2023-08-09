@@ -14,12 +14,7 @@ import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -49,6 +44,7 @@ fun VariableNode(
     onTap: () -> Unit = {}
 ) {
     val pinRowState = nodeState.outputPins.first()
+    val subHeaderUpdatable by rememberUpdatedState(subHeader)
 
     Surface(
         color = Color.Transparent,
@@ -137,7 +133,7 @@ fun VariableNode(
                                 maxLines = 1,
                             )
                             Text(
-                                text = subHeader,
+                                text = subHeaderUpdatable,
                                 overflow = TextOverflow.Ellipsis,
                                 maxLines = 1,
                                 fontSize = 13.sp,

@@ -19,8 +19,10 @@ sealed class ContextTreeNode {
 
     class Root(
         val child: List<ContextTreeNode> = emptyList(),
-        override val name: String
-    ) : ContextTreeNode()
+        override val name: String,
+    ) : ContextTreeNode() {
+        var expanded by mutableStateOf(false)
+    }
 
     class Leaf(
         override val name: String,
@@ -41,7 +43,10 @@ sealed class ContextTreeNode {
 
 typealias IconProvider = () -> ImageBitmap?
 
-fun ContextTreeNode.updateVisibility(predicate: (ContextTreeNode.Leaf) -> Boolean): Boolean {
+fun ContextTreeNode.updateVisibility(
+    onEachRoot: ContextTreeNode.Root.(matchesPredicate: Boolean) -> Unit = {},
+    predicate: (ContextTreeNode.Leaf) -> Boolean
+): Boolean {
     when (this) {
         is ContextTreeNode.Leaf -> {
             val result = predicate(this)
@@ -52,12 +57,13 @@ fun ContextTreeNode.updateVisibility(predicate: (ContextTreeNode.Leaf) -> Boolea
         is ContextTreeNode.Root -> {
             var result = false
             child.forEach {
-                val iterationResult = it.updateVisibility(predicate)
+                val iterationResult = it.updateVisibility(onEachRoot, predicate)
 
                 if (iterationResult) {
                     result = true
                 }
             }
+            onEachRoot(result)
 
             mutableVisibility = result
 

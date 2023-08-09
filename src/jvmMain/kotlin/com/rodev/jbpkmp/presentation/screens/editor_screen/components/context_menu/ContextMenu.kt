@@ -23,7 +23,6 @@ import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.rememberCursorPositionProvider
 import java.awt.event.KeyEvent
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun ContextMenu(
     expanded: Boolean,

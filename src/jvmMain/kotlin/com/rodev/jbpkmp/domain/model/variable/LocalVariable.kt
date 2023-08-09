@@ -8,5 +8,8 @@ data class LocalVariable(
     override val id: String,
     override val name: String
 ) : Variable {
+
+    override val type: Variable.Type = Variable.Type.Local
+
     override fun toVariableConstant() = VariableConstant(name, VariableConstant.Scope.LOCAL)
 }

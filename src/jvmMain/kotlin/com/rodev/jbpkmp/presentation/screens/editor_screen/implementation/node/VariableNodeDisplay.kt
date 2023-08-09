@@ -23,11 +23,7 @@ class VariableNodeDisplay(
     private var selected: Boolean by mutableStateOf(false)
 
     private val subHeader by derivedStateOf {
-        return@derivedStateOf if (variableState is GlobalVariableState) {
-            variableState.type.typeName
-        } else {
-            "Локальная переменная"
-        }
+        variableState.type
     }
 
     @Composable
@@ -37,7 +33,7 @@ class VariableNodeDisplay(
         VariableNode(
             nodeState = nodeState,
             header = variableState.name,
-            subHeader = subHeader,
+            subHeader = subHeader.typeName,
             selected,
             onTap = { onSelect(nodeState) }
         )
