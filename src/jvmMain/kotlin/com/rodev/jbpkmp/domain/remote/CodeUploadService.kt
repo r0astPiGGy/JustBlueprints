@@ -1,6 +1,6 @@
 package com.rodev.jbpkmp.domain.remote
 
-interface TempStorageService {
+interface CodeUploadService {
 
     suspend fun upload(data: String): ApiResult<UploadResult>
 

@@ -280,7 +280,7 @@ class BlueprintCompilerHelper(
 
                 throw BlueprintCompileException.WrongArgument(
                     expected = ValueType.Variable,
-                    actual = (connection as PinModelAdapter).getValueType(),
+                    actual = (connection as? PinModelAdapter)?.getValueType(),
                     nodeId = owner.node.uniqueId,
                     pinId = pin.uniqueId
                 )

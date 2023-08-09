@@ -20,6 +20,8 @@ tasks.withType<KotlinCompile>().all {
     kotlinOptions.freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
 }
 
+val ktorVersion = "2.3.3"
+
 kotlin {
     jvm {
         jvmToolchain(17)
@@ -29,6 +31,10 @@ kotlin {
         val jvmMain by getting {
             dependencies {
                 implementation(compose.desktop.currentOs)
+                implementation("io.ktor:ktor-client-core:$ktorVersion")
+                implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
+                implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
+                implementation("io.ktor:ktor-client-cio:$ktorVersion")
                 implementation(project(":node-ui"))
                 implementation(project(":action-generator"))
                 implementation(project(":common"))

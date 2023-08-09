@@ -9,16 +9,15 @@ import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.input.key.key
 import com.rodev.jbpkmp.data.GlobalDataSource
-import com.rodev.jbpkmp.data.TempStorageServiceImpl
+import com.rodev.jbpkmp.data.CodeUploadServiceImpl
 import com.rodev.jbpkmp.domain.compiler.BlueprintCompiler
-import com.rodev.jbpkmp.domain.compiler.exception.BlueprintCompileException
 import com.rodev.jbpkmp.domain.model.Blueprint
 import com.rodev.jbpkmp.domain.model.Project
 import com.rodev.jbpkmp.domain.model.graph.EventGraph
 import com.rodev.jbpkmp.domain.model.loadBlueprint
 import com.rodev.jbpkmp.domain.model.saveBlueprint
 import com.rodev.jbpkmp.domain.remote.ApiResult
-import com.rodev.jbpkmp.domain.remote.TempStorageService
+import com.rodev.jbpkmp.domain.remote.CodeUploadService
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.CreateVariableGraphEvent
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.DefaultPinTypeComparator
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.ViewPortViewModel
@@ -35,7 +34,7 @@ class EditorScreenViewModel(
 ) : SelectionHandler, VariableStateProvider {
 
     private val json = Json { prettyPrint = true }
-    private val tempStorageService: TempStorageService = TempStorageServiceImpl()
+    private val codeUploadService: CodeUploadService = CodeUploadServiceImpl()
     val project: Project
 
     var currentGraph by mutableStateOf<GraphState?>(null)
@@ -276,7 +275,7 @@ class EditorScreenViewModel(
 
         state.result = ScreenResult.Loading(state = LoadingState.UPLOAD)
 
-        when (val apiResult = tempStorageService.upload(data)) {
+        when (val apiResult = codeUploadService.upload(data)) {
             is ApiResult.Failure -> {
                 state.result = ScreenResult.Error(
                     stage = LoadingState.UPLOAD,
