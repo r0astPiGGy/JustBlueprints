@@ -31,6 +31,7 @@ kotlin {
         val jvmMain by getting {
             dependencies {
                 implementation(compose.desktop.currentOs)
+                implementation("org.slf4j:slf4j-api:1.7.25")
                 implementation("io.ktor:ktor-client-core:$ktorVersion")
                 implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
                 implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
@@ -52,6 +53,9 @@ compose.desktop {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "JustBlueprints"
             packageVersion = "1.0.0"
+            buildTypes.release.proguard {
+                configurationFiles.from(project.file("proguard-rules.pro"))
+            }
         }
     }
 }
