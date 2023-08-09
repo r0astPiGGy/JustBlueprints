@@ -31,11 +31,6 @@ kotlin {
         val jvmMain by getting {
             dependencies {
                 implementation(compose.desktop.currentOs)
-                implementation("org.slf4j:slf4j-api:1.7.25")
-                implementation("io.ktor:ktor-client-core:$ktorVersion")
-                implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
-                implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
-                implementation("io.ktor:ktor-client-cio:$ktorVersion")
                 implementation(project(":node-ui"))
                 implementation(project(":action-generator"))
                 implementation(project(":common"))
@@ -61,7 +56,11 @@ compose.desktop {
 }
 
 dependencies {
-    commonMainImplementation("org.jetbrains.compose.material:material-icons-extended-desktop:1.4.3")
+    commonMainImplementation("org.slf4j:slf4j-api:1.7.25")
+    commonMainImplementation("io.ktor:ktor-client-core:$ktorVersion")
+    commonMainImplementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
     commonMainImplementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
+    commonMainImplementation("io.ktor:ktor-client-cio:$ktorVersion")
+    commonMainImplementation("org.jetbrains.compose.material:material-icons-extended-desktop:1.4.3")
     commonMainImplementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
 }

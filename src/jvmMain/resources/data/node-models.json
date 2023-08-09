@@ -39123,15 +39123,6 @@
                 "extra": {
                     "type": "exec-next"
                 }
-            },
-            {
-                "id": "event_message",
-                "type": "text",
-                "label": "Сообщение события",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_message"
-                }
             }
         ],
         "extra": {
@@ -39160,15 +39151,6 @@
                 "label": " ",
                 "extra": {
                     "type": "exec-next"
-                }
-            },
-            {
-                "id": "event_message",
-                "type": "text",
-                "label": "Сообщение события",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_message"
                 }
             }
         ],
@@ -39228,15 +39210,6 @@
                 "extra": {
                     "type": "exec-next"
                 }
-            },
-            {
-                "id": "event_chat_message",
-                "type": "text",
-                "label": "Сообщение чата",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_chat_message"
-                }
             }
         ],
         "extra": {
@@ -39265,42 +39238,6 @@
                 "label": " ",
                 "extra": {
                     "type": "exec-next"
-                }
-            },
-            {
-                "id": "event_block_location",
-                "type": "location",
-                "label": "Местоположение блока события",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_block_location"
-                }
-            },
-            {
-                "id": "event_block_face",
-                "type": "text",
-                "label": "Сторона блока события",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_block_face"
-                }
-            },
-            {
-                "id": "event_interaction",
-                "type": "text",
-                "label": "Тип взаимодействия события",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_interaction"
-                }
-            },
-            {
-                "id": "event_equipment_slot",
-                "type": "text",
-                "label": "Тип задействованного слота",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_equipment_slot"
                 }
             }
         ],
@@ -39331,42 +39268,6 @@
                 "extra": {
                     "type": "exec-next"
                 }
-            },
-            {
-                "id": "event_block_location",
-                "type": "location",
-                "label": "Местоположение блока события",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_block_location"
-                }
-            },
-            {
-                "id": "event_block_face",
-                "type": "text",
-                "label": "Сторона блока события",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_block_face"
-                }
-            },
-            {
-                "id": "event_interaction",
-                "type": "text",
-                "label": "Тип взаимодействия события",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_interaction"
-                }
-            },
-            {
-                "id": "event_equipment_slot",
-                "type": "text",
-                "label": "Тип задействованного слота",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_equipment_slot"
-                }
             }
         ],
         "extra": {
@@ -39395,42 +39296,6 @@
                 "label": " ",
                 "extra": {
                     "type": "exec-next"
-                }
-            },
-            {
-                "id": "event_block_location",
-                "type": "location",
-                "label": "Местоположение блока события",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_block_location"
-                }
-            },
-            {
-                "id": "event_block_face",
-                "type": "text",
-                "label": "Сторона блока события",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_block_face"
-                }
-            },
-            {
-                "id": "event_interaction",
-                "type": "text",
-                "label": "Тип взаимодействия события",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_interaction"
-                }
-            },
-            {
-                "id": "event_equipment_slot",
-                "type": "text",
-                "label": "Тип задействованного слота",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_equipment_slot"
                 }
             }
         ],
@@ -39461,24 +39326,6 @@
                 "extra": {
                     "type": "exec-next"
                 }
-            },
-            {
-                "id": "event_block_location",
-                "type": "location",
-                "label": "Местоположение блока события",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_block_location"
-                }
-            },
-            {
-                "id": "event_block_face",
-                "type": "text",
-                "label": "Сторона блока события",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_block_face"
-                }
             }
         ],
         "extra": {
@@ -39507,24 +39354,6 @@
                 "label": " ",
                 "extra": {
                     "type": "exec-next"
-                }
-            },
-            {
-                "id": "event_block_location",
-                "type": "location",
-                "label": "Местоположение блока события",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_block_location"
-                }
-            },
-            {
-                "id": "event_block_face",
-                "type": "text",
-                "label": "Сторона блока события",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_block_face"
                 }
             }
         ],
@@ -39555,24 +39384,6 @@
                 "extra": {
                     "type": "exec-next"
                 }
-            },
-            {
-                "id": "event_block_location",
-                "type": "location",
-                "label": "Местоположение блока события",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_block_location"
-                }
-            },
-            {
-                "id": "event_block_face",
-                "type": "text",
-                "label": "Сторона блока события",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_block_face"
-                }
             }
         ],
         "extra": {
@@ -39601,24 +39412,6 @@
                 "label": " ",
                 "extra": {
                     "type": "exec-next"
-                }
-            },
-            {
-                "id": "event_block_location",
-                "type": "location",
-                "label": "Местоположение блока события",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_block_location"
-                }
-            },
-            {
-                "id": "event_block_face",
-                "type": "text",
-                "label": "Сторона блока события",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_block_face"
                 }
             }
         ],
@@ -39706,15 +39499,6 @@
                 "label": " ",
                 "extra": {
                     "type": "exec-next"
-                }
-            },
-            {
-                "id": "event_experience",
-                "type": "number",
-                "label": "Количество опыта события",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_experience"
                 }
             }
         ],
@@ -39890,51 +39674,6 @@
                 "extra": {
                     "type": "exec-next"
                 }
-            },
-            {
-                "id": "event_slot",
-                "type": "number",
-                "label": "Слот события",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_slot"
-                }
-            },
-            {
-                "id": "event_hotbar_slot",
-                "type": "number",
-                "label": "Слот хот-бара в событии",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_hotbar_slot"
-                }
-            },
-            {
-                "id": "event_slot_type",
-                "type": "text",
-                "label": "Тип слота при клике",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_slot_type"
-                }
-            },
-            {
-                "id": "event_inventory_click_type",
-                "type": "text",
-                "label": "Тип клика по инвентарю",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_inventory_click_type"
-                }
-            },
-            {
-                "id": "event_inventory_action",
-                "type": "text",
-                "label": "Действие в инвентаре при клике",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_inventory_action"
-                }
             }
         ],
         "extra": {
@@ -39963,33 +39702,6 @@
                 "label": " ",
                 "extra": {
                     "type": "exec-next"
-                }
-            },
-            {
-                "id": "event_added_items",
-                "type": "dictionary",
-                "label": "Распределённые предметы",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_added_items"
-                }
-            },
-            {
-                "id": "event_drag_type",
-                "type": "text",
-                "label": "Тип перетягивания по инвентарю",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_drag_type"
-                }
-            },
-            {
-                "id": "event_slots_involved",
-                "type": "list",
-                "label": "Задействованные слоты",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_slots_involved"
                 }
             }
         ],
@@ -40020,51 +39732,6 @@
                 "extra": {
                     "type": "exec-next"
                 }
-            },
-            {
-                "id": "event_slot",
-                "type": "number",
-                "label": "Слот события",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_slot"
-                }
-            },
-            {
-                "id": "event_hotbar_slot",
-                "type": "number",
-                "label": "Слот хот-бара в событии",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_hotbar_slot"
-                }
-            },
-            {
-                "id": "event_slot_type",
-                "type": "text",
-                "label": "Тип слота при клике",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_slot_type"
-                }
-            },
-            {
-                "id": "event_inventory_click_type",
-                "type": "text",
-                "label": "Тип клика по инвентарю",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_inventory_click_type"
-                }
-            },
-            {
-                "id": "event_inventory_action",
-                "type": "text",
-                "label": "Действие в инвентаре при клике",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_inventory_action"
-                }
             }
         ],
         "extra": {
@@ -40094,24 +39761,6 @@
                 "extra": {
                     "type": "exec-next"
                 }
-            },
-            {
-                "id": "event_item",
-                "type": "item",
-                "label": "Предмет события",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_item"
-                }
-            },
-            {
-                "id": "event_slot",
-                "type": "number",
-                "label": "Слот события",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_slot"
-                }
             }
         ],
         "extra": {
@@ -40140,15 +39789,6 @@
                 "label": " ",
                 "extra": {
                     "type": "exec-next"
-                }
-            },
-            {
-                "id": "event_close_inventory_cause",
-                "type": "text",
-                "label": "Причина закрытия инвентаря",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_close_inventory_cause"
                 }
             }
         ],
@@ -40208,24 +39848,6 @@
                 "extra": {
                     "type": "exec-next"
                 }
-            },
-            {
-                "id": "event_slot",
-                "type": "number",
-                "label": "Слот события",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_slot"
-                }
-            },
-            {
-                "id": "event_hotbar_slot",
-                "type": "number",
-                "label": "Слот хот-бара в событии",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_hotbar_slot"
-                }
             }
         ],
         "extra": {
@@ -40254,33 +39876,6 @@
                 "label": " ",
                 "extra": {
                     "type": "exec-next"
-                }
-            },
-            {
-                "id": "event_power",
-                "type": "number",
-                "label": "Процент силы выполнения",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_power"
-                }
-            },
-            {
-                "id": "event_item",
-                "type": "item",
-                "label": "Предмет события",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_item"
-                }
-            },
-            {
-                "id": "event_projectile_item",
-                "type": "item",
-                "label": "Предмет снаряда события",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_projectile_item"
                 }
             }
         ],
@@ -40340,15 +39935,6 @@
                 "extra": {
                     "type": "exec-next"
                 }
-            },
-            {
-                "id": "event_item",
-                "type": "item",
-                "label": "Предмет события",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_item"
-                }
             }
         ],
         "extra": {
@@ -40377,15 +39963,6 @@
                 "label": " ",
                 "extra": {
                     "type": "exec-next"
-                }
-            },
-            {
-                "id": "event_item",
-                "type": "item",
-                "label": "Предмет события",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_item"
                 }
             }
         ],
@@ -40416,15 +39993,6 @@
                 "extra": {
                     "type": "exec-next"
                 }
-            },
-            {
-                "id": "event_item",
-                "type": "item",
-                "label": "Предмет события",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_item"
-                }
             }
         ],
         "extra": {
@@ -40453,15 +40021,6 @@
                 "label": " ",
                 "extra": {
                     "type": "exec-next"
-                }
-            },
-            {
-                "id": "event_item",
-                "type": "item",
-                "label": "Предмет события",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_item"
                 }
             }
         ],
@@ -40492,15 +40051,6 @@
                 "extra": {
                     "type": "exec-next"
                 }
-            },
-            {
-                "id": "event_item",
-                "type": "item",
-                "label": "Предмет события",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_item"
-                }
             }
         ],
         "extra": {
@@ -40530,33 +40080,6 @@
                 "extra": {
                     "type": "exec-next"
                 }
-            },
-            {
-                "id": "event_item",
-                "type": "item",
-                "label": "Предмет события",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_item"
-                }
-            },
-            {
-                "id": "event_fish_state",
-                "type": "text",
-                "label": "Причина события рыбалки",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_fish_state"
-                }
-            },
-            {
-                "id": "event_experience",
-                "type": "number",
-                "label": "Количество опыта события",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_experience"
-                }
             }
         ],
         "extra": {
@@ -40585,15 +40108,6 @@
                 "label": " ",
                 "extra": {
                     "type": "exec-next"
-                }
-            },
-            {
-                "id": "event_new_location",
-                "type": "location",
-                "label": "Новая локация игрока",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_new_location"
                 }
             }
         ],
@@ -40710,15 +40224,6 @@
                 "label": " ",
                 "extra": {
                     "type": "exec-next"
-                }
-            },
-            {
-                "id": "event_teleport_cause",
-                "type": "text",
-                "label": "Причина телепортации",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_teleport_cause"
                 }
             }
         ],
@@ -40923,15 +40428,6 @@
                 "extra": {
                     "type": "exec-next"
                 }
-            },
-            {
-                "id": "event_power",
-                "type": "number",
-                "label": "Процент силы выполнения",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_power"
-                }
             }
         ],
         "extra": {
@@ -40989,24 +40485,6 @@
                 "label": " ",
                 "extra": {
                     "type": "exec-next"
-                }
-            },
-            {
-                "id": "event_damage",
-                "type": "number",
-                "label": "Нанесённый урон",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_damage"
-                }
-            },
-            {
-                "id": "event_damage_cause",
-                "type": "text",
-                "label": "Причина полученного урона",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_damage_cause"
                 }
             }
         ],
@@ -41124,24 +40602,6 @@
                 "extra": {
                     "type": "exec-next"
                 }
-            },
-            {
-                "id": "event_heal_amount",
-                "type": "number",
-                "label": "Количество восстановленного здоровья",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_heal_amount"
-                }
-            },
-            {
-                "id": "event_heal_cause",
-                "type": "text",
-                "label": "Причина исцеления",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_heal_cause"
-                }
             }
         ],
         "extra": {
@@ -41170,15 +40630,6 @@
                 "label": " ",
                 "extra": {
                     "type": "exec-next"
-                }
-            },
-            {
-                "id": "event_food_level",
-                "type": "number",
-                "label": "Восполненный голод события",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_food_level"
                 }
             }
         ],
@@ -41266,24 +40717,6 @@
                 "label": " ",
                 "extra": {
                     "type": "exec-next"
-                }
-            },
-            {
-                "id": "event_message",
-                "type": "text",
-                "label": "Сообщение события",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_message"
-                }
-            },
-            {
-                "id": "event_experience",
-                "type": "number",
-                "label": "Количество опыта события",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_experience"
                 }
             }
         ],
@@ -41546,24 +40979,6 @@
                 "extra": {
                     "type": "exec-next"
                 }
-            },
-            {
-                "id": "event_damage",
-                "type": "number",
-                "label": "Нанесённый урон",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_damage"
-                }
-            },
-            {
-                "id": "event_damage_cause",
-                "type": "text",
-                "label": "Причина полученного урона",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_damage_cause"
-                }
             }
         ],
         "extra": {
@@ -41593,24 +41008,6 @@
                 "extra": {
                     "type": "exec-next"
                 }
-            },
-            {
-                "id": "event_heal_amount",
-                "type": "number",
-                "label": "Количество восстановленного здоровья",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_heal_amount"
-                }
-            },
-            {
-                "id": "event_heal_cause",
-                "type": "text",
-                "label": "Причина исцеления",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_heal_cause"
-                }
             }
         ],
         "extra": {
@@ -41639,15 +41036,6 @@
                 "label": " ",
                 "extra": {
                     "type": "exec-next"
-                }
-            },
-            {
-                "id": "event_experience",
-                "type": "number",
-                "label": "Количество опыта события",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_experience"
                 }
             }
         ],
@@ -41736,15 +41124,6 @@
                 "extra": {
                     "type": "exec-next"
                 }
-            },
-            {
-                "id": "event_hanging_break_cause",
-                "type": "text",
-                "label": "Причина удаление висящей сущности",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_hanging_break_cause"
-                }
             }
         ],
         "extra": {
@@ -41832,24 +41211,6 @@
                 "extra": {
                     "type": "exec-next"
                 }
-            },
-            {
-                "id": "event_block_location",
-                "type": "location",
-                "label": "Местоположение блока события",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_block_location"
-                }
-            },
-            {
-                "id": "event_block_face",
-                "type": "text",
-                "label": "Сторона блока события",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_block_face"
-                }
             }
         ],
         "extra": {
@@ -41878,15 +41239,6 @@
                 "label": " ",
                 "extra": {
                     "type": "exec-next"
-                }
-            },
-            {
-                "id": "event_item",
-                "type": "item",
-                "label": "Предмет события",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_item"
                 }
             }
         ],
@@ -41917,15 +41269,6 @@
                 "extra": {
                     "type": "exec-next"
                 }
-            },
-            {
-                "id": "event_item",
-                "type": "item",
-                "label": "Предмет события",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_item"
-                }
             }
         ],
         "extra": {
@@ -41954,15 +41297,6 @@
                 "label": " ",
                 "extra": {
                     "type": "exec-next"
-                }
-            },
-            {
-                "id": "event_item",
-                "type": "item",
-                "label": "Предмет события",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_item"
                 }
             }
         ],
@@ -41993,24 +41327,6 @@
                 "extra": {
                     "type": "exec-next"
                 }
-            },
-            {
-                "id": "event_damage",
-                "type": "number",
-                "label": "Нанесённый урон",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_damage"
-                }
-            },
-            {
-                "id": "event_damage_cause",
-                "type": "text",
-                "label": "Причина полученного урона",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_damage_cause"
-                }
             }
         ],
         "extra": {
@@ -42039,15 +41355,6 @@
                 "label": " ",
                 "extra": {
                     "type": "exec-next"
-                }
-            },
-            {
-                "id": "event_block_location",
-                "type": "location",
-                "label": "Местоположение блока события",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_block_location"
                 }
             }
         ],
@@ -42194,24 +41501,6 @@
                 "extra": {
                     "type": "exec-next"
                 }
-            },
-            {
-                "id": "event_time_skip_reason",
-                "type": "text",
-                "label": "Причина пропуска времени",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_time_skip_reason"
-                }
-            },
-            {
-                "id": "event_time_skip_amount",
-                "type": "number",
-                "label": "Количество тиков пропуска времени",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_time_skip_amount"
-                }
             }
         ],
         "extra": {
@@ -42270,15 +41559,6 @@
                 "extra": {
                     "type": "exec-next"
                 }
-            },
-            {
-                "id": "event_block_location",
-                "type": "location",
-                "label": "Местоположение блока события",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_block_location"
-                }
             }
         ],
         "extra": {
@@ -42307,15 +41587,6 @@
                 "label": " ",
                 "extra": {
                     "type": "exec-next"
-                }
-            },
-            {
-                "id": "event_block_location",
-                "type": "location",
-                "label": "Местоположение блока события",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_block_location"
                 }
             }
         ],
@@ -42346,15 +41617,6 @@
                 "extra": {
                     "type": "exec-next"
                 }
-            },
-            {
-                "id": "event_block_location",
-                "type": "location",
-                "label": "Местоположение блока события",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_block_location"
-                }
             }
         ],
         "extra": {
@@ -42383,15 +41645,6 @@
                 "label": " ",
                 "extra": {
                     "type": "exec-next"
-                }
-            },
-            {
-                "id": "event_block_location",
-                "type": "location",
-                "label": "Местоположение блока события",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_block_location"
                 }
             }
         ],
@@ -42450,24 +41703,6 @@
                 "label": " ",
                 "extra": {
                     "type": "exec-next"
-                }
-            },
-            {
-                "id": "event_block_location",
-                "type": "location",
-                "label": "Местоположение блока события",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_block_location"
-                }
-            },
-            {
-                "id": "event_blocks_involved",
-                "type": "list",
-                "label": "Задействованные блоки события",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_blocks_involved"
                 }
             }
         ],
@@ -42556,33 +41791,6 @@
                 "extra": {
                     "type": "exec-next"
                 }
-            },
-            {
-                "id": "event_block_location",
-                "type": "location",
-                "label": "Местоположение блока события",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_block_location"
-                }
-            },
-            {
-                "id": "event_block_face",
-                "type": "text",
-                "label": "Сторона блока события",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_block_face"
-                }
-            },
-            {
-                "id": "event_blocks_involved",
-                "type": "list",
-                "label": "Задействованные блоки события",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_blocks_involved"
-                }
             }
         ],
         "extra": {
@@ -42611,33 +41819,6 @@
                 "label": " ",
                 "extra": {
                     "type": "exec-next"
-                }
-            },
-            {
-                "id": "event_block_location",
-                "type": "location",
-                "label": "Местоположение блока события",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_block_location"
-                }
-            },
-            {
-                "id": "event_block_face",
-                "type": "text",
-                "label": "Сторона блока события",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_block_face"
-                }
-            },
-            {
-                "id": "event_blocks_involved",
-                "type": "list",
-                "label": "Задействованные блоки события",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_blocks_involved"
                 }
             }
         ],
@@ -42697,15 +41878,6 @@
                 "extra": {
                     "type": "exec-next"
                 }
-            },
-            {
-                "id": "event_block_location",
-                "type": "location",
-                "label": "Местоположение блока события",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_block_location"
-                }
             }
         ],
         "extra": {
@@ -42735,15 +41907,6 @@
                 "extra": {
                     "type": "exec-next"
                 }
-            },
-            {
-                "id": "event_block_location",
-                "type": "location",
-                "label": "Местоположение блока события",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_block_location"
-                }
             }
         ],
         "extra": {
@@ -42772,15 +41935,6 @@
                 "label": " ",
                 "extra": {
                     "type": "exec-next"
-                }
-            },
-            {
-                "id": "event_block_location",
-                "type": "location",
-                "label": "Местоположение блока события",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_block_location"
                 }
             }
         ],
@@ -42869,15 +42023,6 @@
                 "extra": {
                     "type": "exec-next"
                 }
-            },
-            {
-                "id": "event_block_location",
-                "type": "location",
-                "label": "Местоположение блока события",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_block_location"
-                }
             }
         ],
         "extra": {
@@ -42907,15 +42052,6 @@
                 "extra": {
                     "type": "exec-next"
                 }
-            },
-            {
-                "id": "event_block_location",
-                "type": "location",
-                "label": "Местоположение блока события",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_block_location"
-                }
             }
         ],
         "extra": {
@@ -42944,15 +42080,6 @@
                 "label": " ",
                 "extra": {
                     "type": "exec-next"
-                }
-            },
-            {
-                "id": "event_block_location",
-                "type": "location",
-                "label": "Местоположение блока события",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_block_location"
                 }
             }
         ],
@@ -43099,15 +42226,6 @@
                 "extra": {
                     "type": "exec-next"
                 }
-            },
-            {
-                "id": "event_item",
-                "type": "item",
-                "label": "Предмет события",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_item"
-                }
             }
         ],
         "extra": {
@@ -43223,15 +42341,6 @@
                 "label": " ",
                 "extra": {
                     "type": "exec-next"
-                }
-            },
-            {
-                "id": "event_block_location",
-                "type": "location",
-                "label": "Местоположение блока события",
-                "extra": {
-                    "type": "game_value",
-                    "id": "event_block_location"
                 }
             }
         ],

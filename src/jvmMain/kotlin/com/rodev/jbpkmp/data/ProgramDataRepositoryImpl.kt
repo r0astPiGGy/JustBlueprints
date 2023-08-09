@@ -8,8 +8,8 @@ import java.io.File
 
 class ProgramDataRepositoryImpl : ProgramDataRepository {
 
-    private val dirPath = "${System.getProperty("user.home")}/JustBlueprints"
-    private val cachePath = "$dirPath/ProgramData.json"
+    private val dirPath = "${System.getProperty("user.home")}${File.separator}JustBlueprints"
+    private val cachePath = "$dirPath${File.separator}ProgramData.json"
 
     override fun save(data: ProgramData) {
         val json = Json { prettyPrint = true }

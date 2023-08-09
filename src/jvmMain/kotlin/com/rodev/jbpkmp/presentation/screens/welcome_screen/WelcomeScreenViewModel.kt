@@ -28,7 +28,19 @@ class WelcomeScreenViewModel(
         when (event) {
             is WelcomeScreenEvent.LoadAndOpenProject -> {
                 val projectJson = File(event.path).readText()
-                val project = Json.decodeFromString<Project>(projectJson)
+                val project = try {
+                    Json.decodeFromString<Project>(projectJson)
+                } catch (e: Exception) {
+                    // TODO TODO REFACTOR
+                    updateState {
+                        it.copy(
+                            loadProjectResult = LoadProjectResult.Failure(
+                                "It is not a valid project."
+                            )
+                        )
+                    }
+                    return
+                }
 
                 val recentProject = RecentProject(
                     name = project.name,
@@ -36,17 +48,11 @@ class WelcomeScreenViewModel(
                     lastOpeningDate = Clock.System.todayIn(TimeZone.currentSystemDefault())
                 )
 
-                repository.update {
-                    recentProjects.add(recentProject)
-                }
-
-                getRecentProjects()
-
                 openProject(recentProject)
             }
 
             is WelcomeScreenEvent.CreateAndOpenProject -> {
-                val directory = "${event.directory}/${event.name}"
+                val directory = "${event.directory}${File.separator}${event.name}"
 
                 val project = Project(
                     name = event.name,
@@ -58,14 +64,7 @@ class WelcomeScreenViewModel(
                     path = directory,
                     lastOpeningDate = Clock.System.todayIn(TimeZone.currentSystemDefault())
                 )
-
                 project.save()
-
-                repository.update {
-                    recentProjects.add(recentProject)
-                }
-
-                getRecentProjects()
 
                 openProject(recentProject)
             }
@@ -94,8 +93,16 @@ class WelcomeScreenViewModel(
         }
 
         repository.update {
+            recentProjects.let {
+                it.remove(project)
+                it.add(project.copy(
+                    lastOpeningDate = Clock.System.todayIn(TimeZone.currentSystemDefault())
+                ))
+            }
             settings.lastOpenProjectPath = project.path
         }
+
+        getRecentProjects()
     }
 
     fun resetState() {
@@ -116,7 +123,7 @@ class WelcomeScreenViewModel(
         updateState {
             it.copy(
                 // Sort
-                recentProjects = data.recentProjects.reversed()
+                recentProjects = data.recentProjects.sortedBy(RecentProject::lastOpeningDate).reversed()
             )
         }
     }

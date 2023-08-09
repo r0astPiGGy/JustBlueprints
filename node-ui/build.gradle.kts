@@ -30,18 +30,6 @@ kotlin {
     }
 }
 
-compose.desktop {
-    application {
-        mainClass = "MainKt"
-        nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "node-ui"
-            packageVersion = "1.0.0"
-        }
-    }
-}
-
-
 dependencies {
     commonMainImplementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
     commonMainImplementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")

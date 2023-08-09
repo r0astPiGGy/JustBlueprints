@@ -31,13 +31,13 @@ class Handlers {
         var position = 0
 
         val result = values.toMutableList()
+        val iterator = result.listIterator()
 
-        for (i in result.indices) {
-            val handler = result[i]
-
+        while (iterator.hasNext()) {
+            val handler = iterator.next()
             if (handler.length == 0 && !(handler is CodeFunction || handler is CodeProcess)) {
                 // Concurrent Modification Exception
-                result.removeAt(i)
+                iterator.remove()
                 continue
             }
 

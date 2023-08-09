@@ -28,7 +28,7 @@ val chooseFile = Translatable(
     )
 )
 val noRecentProjects = Translatable(
-    "",
+    "Нет недавних проектов",
     hashMapOf(
         ENGLISH to "No recent projects"
     )

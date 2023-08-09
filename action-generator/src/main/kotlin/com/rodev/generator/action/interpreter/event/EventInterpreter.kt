@@ -44,11 +44,12 @@ class EventInterpreter(
             return mutableListOf(
                 Pins.execPin("exec").copy(extra = ExecNextExtraData),
             ).also {
-                it.addAll(
-                    with(eventDataMapper) {
-                        this@output.gameValues.toPinModels()
-                    }
-                )
+                // TODO add contextual event game values (currently buggy)
+//                it.addAll(
+//                    with(eventDataMapper) {
+//                        this@output.gameValues.toPinModels()
+//                    }
+//                )
             }
         }
 

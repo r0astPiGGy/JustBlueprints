@@ -3,16 +3,7 @@ package com.rodev.jbpkmp.presentation.screens.welcome_screen
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -185,11 +176,23 @@ private fun ProjectsPanel(
         selectedProject = project
     }
 
-    if (state.recentProjects.isNotEmpty()) {
+    Box(
+        modifier = modifier
+            .fillMaxHeight()
+            .background(MaterialTheme.colors.background)
+    ) {
+        if (state.recentProjects.isEmpty()) {
+            Text(
+                text = Vocabulary.localization.noRecentProjects(),
+                color = MaterialTheme.colors.onBackground,
+                modifier = Modifier
+                    .padding(horizontal = 10.dp)
+                    .align(Alignment.Center)
+            )
+        }
         LazyColumn(
             modifier = modifier
                 .fillMaxHeight()
-                .background(MaterialTheme.colors.background)
         ) {
             items(state.recentProjects) { project ->
                 val selected = selectedProject == project
@@ -216,20 +219,6 @@ private fun ProjectsPanel(
                     }
                 )
             }
-        }
-    } else {
-        Column(
-            modifier = Modifier
-                .fillMaxHeight()
-                .background(MaterialTheme.colors.background),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = Vocabulary.localization.noRecentProjects(),
-                modifier = Modifier.padding(horizontal = 10.dp),
-                color = MaterialTheme.colors.onBackground
-            )
         }
     }
 }

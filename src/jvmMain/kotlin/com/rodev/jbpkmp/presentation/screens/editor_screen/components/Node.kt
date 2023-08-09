@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
@@ -24,6 +23,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.*
 import androidx.compose.ui.unit.*
 import com.rodev.generator.action.entity.PinType
+import com.rodev.generator.action.entity.Pins
 import com.rodev.jbpkmp.data.GlobalDataSource
 import com.rodev.jbpkmp.domain.model.NodeEntity
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.node.*
@@ -47,7 +47,6 @@ val backgroundColor = Color(60, 58, 54, alpha = 230)
 val pinColor = Color(11, 218, 81)
 val pinOutline = Color(0, 0, 0)
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun InputPinRow(
     nodeState: NodeState,
@@ -55,10 +54,11 @@ fun InputPinRow(
     pinRowState: PinRowState
 ) {
     var rowOffset by remember { mutableStateOf(Offset.Zero) }
+    var boxOffset by remember { mutableStateOf(Offset.Zero) }
     val updatableBodyOffset by rememberUpdatedState(absoluteBodyOffset)
     val absoluteRowOffset by remember {
         derivedStateOf {
-            rowOffset + updatableBodyOffset
+            boxOffset + rowOffset + updatableBodyOffset
         }
     }
 
@@ -66,68 +66,78 @@ fun InputPinRow(
 
     val interactionSource = remember { MutableInteractionSource() }
 
-    Row(
+    Box(
         modifier = Modifier
+            .height(IntrinsicSize.Max)
             .ignorePadding(pinPadding)
             .fillMaxWidth()
             .onGloballyPositioned {
-                lastRowMeasurement = it
-                rowOffset = it.positionInParent()
+                boxOffset = it.positionInParent()
             }
-            .pinDragModifier(nodeState, pinRowState.pinState) {
-                absoluteRowOffset
-            }
-            .hoverable(interactionSource)
-            .pointerHoverIcon(PointerIcon.Crosshair),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Start
     ) {
-        if (nodeState.snapshotRequested) {
-            // todo: filter if snapshot is outside the window
-            nodeState.addSnapshot(
-                PinRowSnapshot.lazy(
-                    pinRowState = pinRowState,
-                    nodeState = nodeState
-                ) {
-                    val rowMeasurement = lastRowMeasurement!!
-                    val positionInParent = rowMeasurement.positionInParent()
-                    val bounds = rowMeasurement.boundsInParent()
-
-                    val topBound = Offset(
-                        x = updatableBodyOffset.x + positionInParent.x,
-                        y = updatableBodyOffset.y + positionInParent.y
-                    )
-
-                    PinRowSnapshot(
-                        nodeState,
-                        pinRowState,
-                        topBound,
-                        topBound.let {
-                            Offset(it.x + bounds.width, it.y + bounds.height)
-                        }
-                    )
-                }
-            )
-        }
-        PinComposableRevamped(
-            pinRowState.pinState,
-            absoluteRowOffset,
-            interactionSource
-        )
-        Column(
+        Row(
             modifier = Modifier
-                .padding(
-                    start = boundSpacingWithPin.dp,
-                    end = boundSpacing.dp
-                )
-                .width(IntrinsicSize.Max)
+                .fillMaxWidth()
+                .onGloballyPositioned {
+                    lastRowMeasurement = it
+                    rowOffset = it.positionInParent()
+                },
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Start
         ) {
-            Text(
-                text = pinRowState.pinState.pinDisplay.name,
-                color = MaterialTheme.colors.onBackground
+            if (nodeState.snapshotRequested) {
+                // todo: filter if snapshot is outside the window
+                nodeState.addSnapshot(
+                    PinRowSnapshot.lazy(
+                        pinRowState = pinRowState,
+                        nodeState = nodeState
+                    ) {
+                        val rowMeasurement = lastRowMeasurement!!
+                        val bounds = rowMeasurement.boundsInParent()
+
+                        val topBound = absoluteRowOffset
+
+                        PinRowSnapshot(
+                            nodeState,
+                            pinRowState,
+                            topBound,
+                            topBound.let {
+                                Offset(it.x + bounds.width, it.y + bounds.height)
+                            }
+                        )
+                    }
+                )
+            }
+            PinComposable(
+                pinRowState.pinState,
+                absoluteRowOffset,
+                interactionSource
             )
-            pinRowState.pinState.defaultValueComposable.DefaultValueView(pinRowState.pinState)
+            Column(
+                modifier = Modifier
+                    .padding(
+                        start = boundSpacingWithPin.dp,
+                        end = boundSpacing.dp
+                    )
+                    .width(IntrinsicSize.Max)
+            ) {
+                Text(
+                    text = pinRowState.pinState.pinDisplay.name,
+                    color = MaterialTheme.colors.onBackground
+                )
+                pinRowState.pinState.defaultValueComposable.DefaultValueView(pinRowState.pinState)
+            }
         }
+        Box(
+            modifier = Modifier
+                .fillMaxHeight()
+                .width(boundSpacing.dp)
+                .pinDragModifier(nodeState, pinRowState.pinState) {
+                    absoluteRowOffset
+                }
+                .hoverable(interactionSource)
+                .pointerHoverIcon(PointerIcon.Crosshair)
+        )
     }
 
 }
@@ -136,21 +146,28 @@ private val PinState.type: PinType?
     get() = pinDisplay.type as? PinType
 
 private fun PinState.isExec(): Boolean {
-    return type?.id == "exec"
+    return type?.id == Pins.Type.EXECUTION
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun OutputPinRow(
     nodeState: NodeState,
     absoluteBodyOffset: Offset,
     pinRowState: PinRowState
 ) {
+    // TODO Offsets = RowState candidate
     var rowOffset by remember { mutableStateOf(Offset.Zero) }
+    var boxOffset by remember { mutableStateOf(Offset.Zero) }
+    var interactionBoxOffset by remember { mutableStateOf(Offset.Zero) }
     val updatableBodyOffset by rememberUpdatedState(absoluteBodyOffset)
     val absoluteRowOffset by remember {
         derivedStateOf {
-            rowOffset + updatableBodyOffset
+            boxOffset + rowOffset + updatableBodyOffset
+        }
+    }
+    val absoluteInteractionBoxOffset by remember {
+        derivedStateOf {
+            absoluteRowOffset + interactionBoxOffset
         }
     }
 
@@ -158,71 +175,85 @@ fun OutputPinRow(
 
     val interactionSource = remember { MutableInteractionSource() }
 
-    Row(
+    Box(
         modifier = Modifier
+            .height(IntrinsicSize.Max)
             .ignorePadding(pinPadding)
             .fillMaxWidth()
             .onGloballyPositioned {
-                lastRowMeasurement = it
-                rowOffset = it.positionInParent()
+                boxOffset = it.positionInParent()
             }
-            .pinDragModifier(nodeState, pinRowState.pinState) {
-                absoluteRowOffset
-            }
-            .hoverable(interactionSource)
-            .pointerHoverIcon(PointerIcon.Crosshair),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.End
     ) {
-        if (nodeState.snapshotRequested) {
-            // todo: filter if snapshot is outside the window
-            nodeState.addSnapshot(
-                PinRowSnapshot.lazy(
-                    pinRowState = pinRowState,
-                    nodeState = nodeState
-                ) {
-                    val rowMeasurement = lastRowMeasurement!!
-                    val positionInParent = rowMeasurement.positionInParent()
-                    val bounds = rowMeasurement.boundsInParent()
-
-                    val topBound = Offset(
-                        x = updatableBodyOffset.x + positionInParent.x,
-                        y = updatableBodyOffset.y + positionInParent.y
-                    )
-
-                    PinRowSnapshot(
-                        nodeState,
-                        pinRowState,
-                        topBound,
-                        topBound.let {
-                            Offset(it.x + bounds.width, it.y + bounds.height)
-                        }
-                    )
-                }
-            )
-        }
-
-        Column(
+        Row(
             modifier = Modifier
-                .padding(
-                    start = boundSpacing.dp,
-                    end = boundSpacingWithPin.dp
-                )
-                .width(IntrinsicSize.Min)
+                .fillMaxWidth()
+                .onGloballyPositioned {
+                    lastRowMeasurement = it
+                    rowOffset = it.positionInParent()
+                },
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.End
         ) {
-            Text(
-                text = pinRowState.pinState.pinDisplay.name,
-                color = MaterialTheme.colors.onBackground,
-                modifier = Modifier.fillMaxWidth()
-            )
-            pinRowState.pinState.defaultValueComposable.DefaultValueView(pinRowState.pinState)
+            if (nodeState.snapshotRequested) {
+                // todo: filter if snapshot is outside the window
+                nodeState.addSnapshot(
+                    PinRowSnapshot.lazy(
+                        pinRowState = pinRowState,
+                        nodeState = nodeState
+                    ) {
+                        val rowMeasurement = lastRowMeasurement!!
+                        val bounds = rowMeasurement.boundsInParent()
+
+                        val topBound = absoluteRowOffset
+
+                        PinRowSnapshot(
+                            nodeState,
+                            pinRowState,
+                            topBound,
+                            topBound.let {
+                                Offset(it.x + bounds.width, it.y + bounds.height)
+                            }
+                        )
+                    }
+                )
+            }
+
+            Column(
+                modifier = Modifier
+                    .padding(
+                        start = boundSpacing.dp,
+                        end = boundSpacingWithPin.dp
+                    )
+                    .width(IntrinsicSize.Min)
+            ) {
+                Text(
+                    text = pinRowState.pinState.pinDisplay.name,
+                    color = MaterialTheme.colors.onBackground,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                pinRowState.pinState.defaultValueComposable.DefaultValueView(pinRowState.pinState)
+            }
+            PinComposable(pinRowState.pinState, absoluteRowOffset, interactionSource)
         }
-        PinComposableRevamped(pinRowState.pinState, absoluteRowOffset, interactionSource)
+        Box(
+            modifier = Modifier
+                .fillMaxHeight()
+                .width(boundSpacing.dp)
+                .onGloballyPositioned {
+                    interactionBoxOffset = it.positionInParent()
+                }
+                .pinDragModifier(nodeState, pinRowState.pinState) {
+                    absoluteInteractionBoxOffset
+                }
+                .hoverable(interactionSource)
+                .pointerHoverIcon(PointerIcon.Crosshair)
+                .align(Alignment.TopEnd)
+        )
     }
 }
 
 @Composable
-fun PinComposableRevamped(
+fun PinComposable(
     pinState: PinState,
     rowOffset: Offset,
     interactionSource: MutableInteractionSource
@@ -259,6 +290,7 @@ fun PinComposableRevamped(
             .clip(shape)
             .indication(interactionSource, PinHoverIndication)
     ) {
+        // TODO add outline
         drawRect(color = Color(pinState.pinDisplay.color))
     }
 }
@@ -364,7 +396,6 @@ private fun DisabledConnectionRow(
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 @Preview
 fun StyledNode(
