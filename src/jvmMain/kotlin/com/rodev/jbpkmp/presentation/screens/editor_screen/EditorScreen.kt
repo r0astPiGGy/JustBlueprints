@@ -29,7 +29,9 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.rodev.jbpkmp.ViewPortPreview
+import com.rodev.jbpkmp.data.ProgramDataRepositoryImpl
 import com.rodev.jbpkmp.domain.remote.UploadResult
+import com.rodev.jbpkmp.domain.repository.update
 import com.rodev.jbpkmp.presentation.components.Sheet
 import com.rodev.jbpkmp.presentation.localization.*
 import com.rodev.jbpkmp.presentation.localization.Vocabulary.localization
@@ -70,7 +72,12 @@ fun EditorScreen(navController: NavController, projectPath: String) {
                     // Back button
                     MaterialIconButton(
                         imageVector = Icons.Default.ArrowBack,
-                        onClick = { navController.navigateBack() }
+                        onClick = {
+                            ProgramDataRepositoryImpl().update {
+                                settings.lastOpenProjectPath = null
+                            }
+                            navController.navigateBack()
+                        }
                     )
 
                     // Settings button
@@ -188,7 +195,7 @@ fun EditorScreen(navController: NavController, projectPath: String) {
         Sheet(showSettingsScreen) {
             SettingsScreen(
                 onDismissRequest = { showSettingsScreen = false },
-                modifier = Modifier.padding(75.dp)
+                modifier = Modifier.fillMaxSize(0.7f)
             )
         }
     }

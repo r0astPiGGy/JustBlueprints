@@ -21,5 +21,5 @@ data class Settings(
     var languageCode: String = "ru",
     var useDarkTheme: Boolean = true,
     var openLastProject: Boolean = false,
-    var lastOpenProjectPath: String = ""
+    var lastOpenProjectPath: String? = null
 )

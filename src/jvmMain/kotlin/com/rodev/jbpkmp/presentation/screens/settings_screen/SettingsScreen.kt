@@ -44,6 +44,7 @@ import com.rodev.jbpkmp.presentation.localization.openLastProject
 import com.rodev.jbpkmp.presentation.localization.save
 import com.rodev.jbpkmp.presentation.localization.supportedLocalesNow
 import com.rodev.jbpkmp.presentation.localization.useDarkTheme
+import java.util.*
 
 @Composable
 fun SettingsScreen(
@@ -57,6 +58,19 @@ fun SettingsScreen(
 
     var useDarkTheme by remember { mutableStateOf(settings.useDarkTheme) }
     var openLastProject by remember { mutableStateOf(settings.openLastProject) }
+    var selectedLocale by remember { mutableStateOf(Locale(settings.languageCode)) }
+
+    val localeSetter = LocalMutableLocale.current
+    val darkThemeSetter = LocalMutableTheme.current
+
+    val onDismissRequestWrapper = remember {
+        {
+            // Reset values
+            localeSetter(Locale(settings.languageCode))
+            darkThemeSetter(settings.useDarkTheme)
+            onDismissRequest()
+        }
+    }
 
     Surface(
         shape = RoundedCornerShape(10.dp),
@@ -79,7 +93,7 @@ fun SettingsScreen(
                 )
 
                 IconButton(
-                    onClick = onDismissRequest
+                    onClick = onDismissRequestWrapper
                 ) {
                     Icon(
                         imageVector = Icons.Default.Close,
@@ -118,11 +132,10 @@ fun SettingsScreen(
                     modifier = Modifier.width(width)
                 ) {
                     supportedLocalesNow.forEach {
-                        val localeSetter = LocalMutableLocale.current
-
                         DropdownMenuItem(
                             onClick = {
                                 localeSetter(it)
+                                selectedLocale = it
                                 dropdownExpanded = false
                             }
                         ) {
@@ -139,8 +152,6 @@ fun SettingsScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                val themeSetter = LocalMutableTheme.current
-
                 Text(
                     text = localization.useDarkTheme(),
                     style = MaterialTheme.typography.h3
@@ -150,7 +161,7 @@ fun SettingsScreen(
                     checked = useDarkTheme,
                     onCheckedChange = {
                         useDarkTheme = it
-                        themeSetter(it)
+                        darkThemeSetter(it)
                     },
                     colors = CheckboxDefaults.colors(checkedColor = MaterialTheme.colors.primary)
                 )
@@ -179,11 +190,16 @@ fun SettingsScreen(
 
             Divider(Modifier.fillMaxWidth())
 
-            Row {
+            Spacer(Modifier.weight(1f))
+
+            Row(
+                horizontalArrangement = Arrangement.End,
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 val buttonWidth = 150.dp
 
                 OutlinedButton(
-                    onClick = onDismissRequest,
+                    onClick = onDismissRequestWrapper,
                     modifier = Modifier.width(buttonWidth)
                 ) {
                     Text(localization.cancel())
@@ -194,7 +210,7 @@ fun SettingsScreen(
                 Button(
                     onClick = {
                         SettingsScreenEvent.SaveSettings(
-                            language = localization.locale.language,
+                            language = selectedLocale.language,
                             useDarkTheme = useDarkTheme,
                             openLastProject = openLastProject
                         ).let(viewModel::onEvent)

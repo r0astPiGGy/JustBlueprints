@@ -47,10 +47,12 @@ fun WelcomeScreen(navController: NavController) {
     val settings = programData.load().settings
     val viewModel = remember { WelcomeScreenViewModel(programData) }
 
-    if (settings.openLastProject && settings.lastOpenProjectPath.isNotEmpty()) {
-        navController.navigate(Screen.EditorScreen.name, argumentBundleOf {
-            putString("projectPath", settings.lastOpenProjectPath)
-        })
+    if (settings.openLastProject) {
+        settings.lastOpenProjectPath?.let {
+            navController.navigate(Screen.EditorScreen.name, argumentBundleOf {
+                putString("projectPath", it)
+            })
+        }
     }
 
     Row {
