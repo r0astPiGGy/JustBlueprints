@@ -51,6 +51,10 @@ compose.desktop {
             buildTypes.release.proguard {
                 configurationFiles.from(project.file("proguard-rules.pro"))
             }
+
+            macOS { iconFile.set(project.file("logo.icns")) }
+            windows { iconFile.set(project.file("logo.ico")) }
+            linux { iconFile.set(project.file("logo.png")) }
         }
     }
 }

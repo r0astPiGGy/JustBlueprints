@@ -30,7 +30,6 @@ import com.rodev.jbpkmp.presentation.localization.authors
 import com.rodev.jbpkmp.presentation.localization.chooseFile
 import com.rodev.jbpkmp.presentation.localization.createNewProject
 import com.rodev.jbpkmp.presentation.localization.noRecentProjects
-import com.rodev.jbpkmp.presentation.localization.openLastProject
 import com.rodev.jbpkmp.presentation.localization.openProject
 import com.rodev.jbpkmp.presentation.navigation.NavController
 import com.rodev.jbpkmp.presentation.navigation.Screen
@@ -108,7 +107,7 @@ private fun WelcomePanel(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
-            painterResource("images/logo.png"),
+            painterResource("logo.png"),
             contentDescription = null,
             modifier = Modifier
                 .size(150.dp)
