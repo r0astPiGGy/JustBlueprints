@@ -29,8 +29,18 @@ jobs:
       uses: gradle/gradle-build-action@bd5760595778326ba7f1441bcf7e88b49de61a25 # v2.6.0
       with:
         arguments: packageReleaseDeb
+    - name: Create Release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: 'Test' # ${{ github.ref }}
+        release_name: 'Release Test' #${{ github.ref }}
+        draft: false
+        prerelease: false
     - name: Deploy Release
       uses: AButler/upload-release-assets@v2.0
       with:
-          files: '*.deb'
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+        files: '*.deb'
+        release-tag: ${{ steps.create_release.outputs.tag_name }} 
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
