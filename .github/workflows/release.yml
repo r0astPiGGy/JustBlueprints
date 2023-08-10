@@ -5,7 +5,7 @@
 # This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-gradle
 
-name: Java CI with Gradle
+name: Release
 
 on:
   push:
@@ -23,15 +23,15 @@ jobs:
         include:
           - os: "windows-latest"
             task: "buildWindowsRelease"
-            artifact: "windows"
+            artifact: "justblueprints-windows"
             output: "justblueprints-windows.msi"
           - os: "ubuntu-latest"
             task: "buildLinuxRelease"
-            artifact: "linux"
+            artifact: "justblueprints-linux"
             output: "justblueprints-linux.deb"
           - os: "macos-latest"
             task: "buildMacosRelease"
-            artifact: "macos"
+            artifact: "justblueprints-macos"
             output: "justblueprints-macos.dmg"
     runs-on: ${{ matrix.os }}
     steps:
@@ -61,6 +61,6 @@ jobs:
       if: startsWith(github.ref, 'refs/tags/')
       with:
         files: |
-         *.msi
-         *.deb
-         *.dmg
+         justblueprints-macos
+         justblueprints-linux
+         justblueprints-windows
