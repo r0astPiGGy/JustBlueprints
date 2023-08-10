@@ -18,9 +18,22 @@ permissions:
 
 jobs:
   build:
-
-    runs-on: windows-latest
-
+    strategy:
+      matrix:
+        include:
+          - os: "windows-latest"
+            task: "packageReleaseMsi"
+            artifact: "windows"
+            output: "*.msi"
+          - os: "ubuntu-latest"
+            task: "packageReleaseDeb"
+            artifact: "linux"
+            output: "*.deb"
+          - os: "macos-latest"
+            task: "packageReleaseDmg"
+            artifact: "macos"
+            output: "*.dmg"
+    runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v3
     - name: Set up JDK 17
@@ -31,10 +44,22 @@ jobs:
     - name: Build Release
       uses: gradle/gradle-build-action@bd5760595778326ba7f1441bcf7e88b49de61a25 # v2.6.0
       with:
-        arguments: packageReleaseMsi
+        arguments: ${{ matrix.task }}
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ matrix.artifact }}
+        path: ${{ matrix.output }}
+  release:
+    runs-on: windows-latest
+    needs: build
+    steps:
+    - uses: actions/download-artifact@v3
     - name: Release
       uses: softprops/action-gh-release@v1
-      #if: startsWith(github.ref, 'refs/tags/')
+      if: startsWith(github.ref, 'refs/tags/')
       with:
         files: |
          *.msi
+         *.deb
+         *.dmg
