@@ -17031,7 +17031,7 @@
         "input": [
             {
                 "id": "list",
-                "type": "list",
+                "type": "variable",
                 "label": "Список для проверки"
             },
             {
@@ -17083,7 +17083,7 @@
         "input": [
             {
                 "id": "list",
-                "type": "list",
+                "type": "variable",
                 "label": "Список для проверки"
             },
             {
@@ -17240,7 +17240,7 @@
         "input": [
             {
                 "id": "map",
-                "type": "dictionary",
+                "type": "variable",
                 "label": "Словарь для проверки"
             },
             {
@@ -17266,7 +17266,7 @@
         "input": [
             {
                 "id": "map",
-                "type": "dictionary",
+                "type": "variable",
                 "label": "Словарь для проверки"
             },
             {
@@ -24942,7 +24942,7 @@
             },
             {
                 "id": "list",
-                "type": "list",
+                "type": "variable",
                 "label": "Список, по которому необходимо проходиться"
             }
         ],
@@ -25000,7 +25000,7 @@
             },
             {
                 "id": "map",
-                "type": "dictionary",
+                "type": "variable",
                 "label": "Словарь, по которому необходимо проходиться"
             }
         ],
@@ -25674,6 +25674,22 @@
                 "id": "condition",
                 "type": "condition",
                 "label": "Условие"
+            },
+            {
+                "id": "invert_condition",
+                "type": "boolean",
+                "label": "Инвертировать",
+                "extra": {
+                    "type": "compound_extra_data",
+                    "extras": [
+                        {
+                            "type": "invert-condition"
+                        },
+                        {
+                            "type": "connection_disabled"
+                        }
+                    ]
+                }
             }
         ],
         "output": [
@@ -25955,6 +25971,22 @@
                 "id": "condition",
                 "type": "condition",
                 "label": "Условие"
+            },
+            {
+                "id": "invert_condition",
+                "type": "boolean",
+                "label": "Инвертировать",
+                "extra": {
+                    "type": "compound_extra_data",
+                    "extras": [
+                        {
+                            "type": "invert-condition"
+                        },
+                        {
+                            "type": "connection_disabled"
+                        }
+                    ]
+                }
             }
         ],
         "output": [
@@ -26157,6 +26189,22 @@
                 "id": "condition",
                 "type": "condition",
                 "label": "Условие"
+            },
+            {
+                "id": "invert_condition",
+                "type": "boolean",
+                "label": "Инвертировать",
+                "extra": {
+                    "type": "compound_extra_data",
+                    "extras": [
+                        {
+                            "type": "invert-condition"
+                        },
+                        {
+                            "type": "connection_disabled"
+                        }
+                    ]
+                }
             }
         ],
         "output": [
@@ -26413,12 +26461,12 @@
             },
             {
                 "id": "list_1",
-                "type": "list",
+                "type": "variable",
                 "label": "Первый список"
             },
             {
                 "id": "list_2",
-                "type": "list",
+                "type": "variable",
                 "label": "Второй список"
             }
         ],
@@ -26586,7 +26634,7 @@
             },
             {
                 "id": "list",
-                "type": "list",
+                "type": "variable",
                 "label": "Список"
             },
             {
@@ -26659,7 +26707,7 @@
             },
             {
                 "id": "list",
-                "type": "list",
+                "type": "variable",
                 "label": "Список"
             }
         ],
@@ -26701,7 +26749,7 @@
             },
             {
                 "id": "list",
-                "type": "list",
+                "type": "variable",
                 "label": "Список"
             }
         ],
@@ -26743,7 +26791,7 @@
             },
             {
                 "id": "list",
-                "type": "list",
+                "type": "variable",
                 "label": "Список"
             },
             {
@@ -26790,7 +26838,7 @@
             },
             {
                 "id": "list",
-                "type": "list",
+                "type": "variable",
                 "label": "Список"
             },
             {
@@ -26842,7 +26890,7 @@
             },
             {
                 "id": "list",
-                "type": "list",
+                "type": "variable",
                 "label": "Список"
             }
         ],
@@ -26926,7 +26974,7 @@
             },
             {
                 "id": "list",
-                "type": "list",
+                "type": "variable",
                 "label": "Список"
             },
             {
@@ -26978,7 +27026,7 @@
             },
             {
                 "id": "list",
-                "type": "list",
+                "type": "variable",
                 "label": "Список"
             },
             {
@@ -27025,7 +27073,7 @@
             },
             {
                 "id": "list",
-                "type": "list",
+                "type": "variable",
                 "label": "Список"
             }
         ],
@@ -27067,7 +27115,7 @@
             },
             {
                 "id": "list",
-                "type": "list",
+                "type": "variable",
                 "label": "Список"
             },
             {
@@ -27119,7 +27167,7 @@
             },
             {
                 "id": "list",
-                "type": "list",
+                "type": "variable",
                 "label": "Список"
             },
             {
@@ -27187,7 +27235,7 @@
             },
             {
                 "id": "list",
-                "type": "list",
+                "type": "variable",
                 "label": "Список"
             },
             {
@@ -29537,7 +29585,7 @@
             },
             {
                 "id": "enchantments",
-                "type": "dictionary",
+                "type": "variable",
                 "label": "Зачарования и их уровни"
             }
         ],
@@ -31372,12 +31420,12 @@
             },
             {
                 "id": "map",
-                "type": "dictionary",
+                "type": "variable",
                 "label": "Первый словарь"
             },
             {
                 "id": "other_map",
-                "type": "dictionary",
+                "type": "variable",
                 "label": "Второй словарь"
             }
         ],
@@ -31456,12 +31504,12 @@
             },
             {
                 "id": "keys",
-                "type": "list",
+                "type": "variable",
                 "label": "Список ключей"
             },
             {
                 "id": "values",
-                "type": "list",
+                "type": "variable",
                 "label": "Список значений"
             }
         ],
@@ -31503,7 +31551,7 @@
             },
             {
                 "id": "map",
-                "type": "dictionary",
+                "type": "variable",
                 "label": "Словарь для получения значения"
             }
         ],
@@ -31545,7 +31593,7 @@
             },
             {
                 "id": "map",
-                "type": "dictionary",
+                "type": "variable",
                 "label": "Словарь"
             },
             {
@@ -31622,7 +31670,7 @@
             },
             {
                 "id": "map",
-                "type": "dictionary",
+                "type": "variable",
                 "label": "Словарь"
             }
         ],
@@ -31664,7 +31712,7 @@
             },
             {
                 "id": "map",
-                "type": "dictionary",
+                "type": "variable",
                 "label": "Словарь для изменения"
             },
             {
@@ -31716,7 +31764,7 @@
             },
             {
                 "id": "map",
-                "type": "dictionary",
+                "type": "variable",
                 "label": "Словарь для получения значения"
             }
         ],
@@ -31763,7 +31811,7 @@
             },
             {
                 "id": "map",
-                "type": "dictionary",
+                "type": "variable",
                 "label": "Словарь для изменения"
             },
             {
@@ -31815,7 +31863,7 @@
             },
             {
                 "id": "map",
-                "type": "dictionary",
+                "type": "variable",
                 "label": "Словарь для изменения"
             },
             {
@@ -31867,7 +31915,7 @@
             },
             {
                 "id": "map",
-                "type": "dictionary",
+                "type": "variable",
                 "label": "Словарь для сортировки"
             },
             {
@@ -36235,7 +36283,7 @@
             },
             {
                 "id": "list",
-                "type": "list",
+                "type": "variable",
                 "label": "Список для объединения"
             },
             {
@@ -39087,7 +39135,7 @@
             },
             {
                 "id": "entities",
-                "type": "list",
+                "type": "variable",
                 "label": "Имена или UUID сущностей для столкновения (по умолчанию - все игроки и сущности)"
             }
         ],
@@ -44839,6 +44887,19 @@
                 "extra": {
                     "type": "exec-container"
                 }
+            }
+        ]
+    },
+    {
+        "id": "native_array_factory",
+        "type": "factory",
+        "input": [
+        ],
+        "output": [
+            {
+                "id": "output",
+                "type": "array",
+                "label": " "
             }
         ]
     },

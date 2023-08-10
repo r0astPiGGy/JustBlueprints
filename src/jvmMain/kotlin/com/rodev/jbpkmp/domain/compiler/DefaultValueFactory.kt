@@ -14,6 +14,7 @@ object DefaultValueFactory : ValueFactory {
             Nodes.Factory.TEXT -> createText(node)
             Nodes.Factory.NUMBER -> createNumber(node)
             Nodes.Factory.SOUND -> createSound(node)
+            else -> throw IllegalStateException("Factory is unknown: $factory")
         }
     }
 

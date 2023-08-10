@@ -49,9 +49,14 @@ class PinStateFactory(
     }
 
     fun createInputPinState(nodeModel: NodeModel, pin: Pin): PinState {
-        val pinValue = pin.getValue()
         val pinTypeId = pin.getId()
         val pinModel = nodeModel.findPinModelById(pinTypeId, ConnectionType.INPUT)
+
+        return createInputPinState(pin, pinModel)
+    }
+
+    fun createInputPinState(pin: Pin, pinModel: PinModel): PinState {
+        val pinValue = pin.getValue()
 
         return PinState(
             id = pin.uniqueId,

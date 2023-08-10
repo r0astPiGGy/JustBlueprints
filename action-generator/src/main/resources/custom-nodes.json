@@ -64,6 +64,24 @@
     }
   },
   {
+    "id": "native_array_factory",
+    "type" : "factory",
+    "name" : "Список",
+    "category" : "factory",
+    "input" : [],
+    "output" : [
+      {
+        "id" : "output",
+        "label" : " ",
+        "type" : "array"
+      }
+    ],
+    "iconPath": "images/icons/native/native_array_factory.png",
+    "details": {
+      "description": "Список"
+    }
+  },
+  {
     "id" : "native_item_factory",
     "type" : "factory",
     "name" : "Предмет",

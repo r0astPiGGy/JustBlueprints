@@ -15,7 +15,8 @@ object Nodes {
         LOCATION("native_location_factory", ValueType.Location),
         TEXT("native_text_factory", ValueType.Text),
         NUMBER("native_number_factory", ValueType.Number),
-        SOUND("native_sound_factory", ValueType.Sound)
+        SOUND("native_sound_factory", ValueType.Sound),
+        ARRAY("native_array_factory", ValueType.Array)
 
         ;
 

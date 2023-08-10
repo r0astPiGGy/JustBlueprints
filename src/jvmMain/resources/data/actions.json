@@ -4370,7 +4370,7 @@
         "id": "if_variable_list_contains_value",
         "name": "Список содержит значение",
         "input": [
-            "list",
+            "variable",
             "any",
             "enum"
         ],
@@ -4384,7 +4384,7 @@
         "id": "if_variable_list_value_equals",
         "name": "Значение элемента списка равно",
         "input": [
-            "list",
+            "variable",
             "number",
             "any"
         ],
@@ -4425,7 +4425,7 @@
         "id": "if_variable_map_has_key",
         "name": "Словарь имеет ключ",
         "input": [
-            "dictionary",
+            "variable",
             "any"
         ],
         "output": [
@@ -4438,7 +4438,7 @@
         "id": "if_variable_map_value_equals",
         "name": "Значение элемента словаря равно",
         "input": [
-            "dictionary",
+            "variable",
             "any"
         ],
         "output": [
@@ -6447,8 +6447,7 @@
         "name": "Проход по списку",
         "input": [
             "exec",
-            "variable",
-            "list"
+            "variable"
         ],
         "output": [
             "exec"
@@ -6461,8 +6460,7 @@
         "name": "Проход по словарю",
         "input": [
             "exec",
-            "variable",
-            "dictionary"
+            "variable"
         ],
         "output": [
             "exec"
@@ -6628,7 +6626,8 @@
         "name": "Выбрать сущность по условию",
         "input": [
             "exec",
-            "condition"
+            "condition",
+            "boolean"
         ],
         "output": [
             "exec"
@@ -6716,7 +6715,8 @@
         "name": "Выбрать игрока по условию",
         "input": [
             "exec",
-            "condition"
+            "condition",
+            "boolean"
         ],
         "output": [
             "exec"
@@ -6790,7 +6790,8 @@
         "name": "Отфильтровать выборку по условию",
         "input": [
             "exec",
-            "condition"
+            "condition",
+            "boolean"
         ],
         "output": [
             "exec"
@@ -6849,8 +6850,7 @@
         "name": "Объединить два списка",
         "input": [
             "exec",
-            "variable",
-            "list"
+            "variable"
         ],
         "output": [
             "exec"
@@ -6905,7 +6905,6 @@
         "input": [
             "exec",
             "variable",
-            "list",
             "any",
             "enum"
         ],
@@ -6920,8 +6919,7 @@
         "name": "Получить размер списка",
         "input": [
             "exec",
-            "variable",
-            "list"
+            "variable"
         ],
         "output": [
             "exec"
@@ -6934,8 +6932,7 @@
         "name": "Получить случайное значение списка",
         "input": [
             "exec",
-            "variable",
-            "list"
+            "variable"
         ],
         "output": [
             "exec"
@@ -6949,7 +6946,6 @@
         "input": [
             "exec",
             "variable",
-            "list",
             "number"
         ],
         "output": [
@@ -6964,7 +6960,6 @@
         "input": [
             "exec",
             "variable",
-            "list",
             "number",
             "any"
         ],
@@ -6979,8 +6974,7 @@
         "name": "Рандомизировать список",
         "input": [
             "exec",
-            "variable",
-            "list"
+            "variable"
         ],
         "output": [
             "exec"
@@ -7007,7 +7001,6 @@
         "input": [
             "exec",
             "variable",
-            "list",
             "any"
         ],
         "output": [
@@ -7022,7 +7015,6 @@
         "input": [
             "exec",
             "variable",
-            "list",
             "number"
         ],
         "output": [
@@ -7036,8 +7028,7 @@
         "name": "Перевернуть список",
         "input": [
             "exec",
-            "variable",
-            "list"
+            "variable"
         ],
         "output": [
             "exec"
@@ -7051,7 +7042,6 @@
         "input": [
             "exec",
             "variable",
-            "list",
             "number",
             "any"
         ],
@@ -7067,7 +7057,6 @@
         "input": [
             "exec",
             "variable",
-            "list",
             "enum"
         ],
         "output": [
@@ -7082,7 +7071,6 @@
         "input": [
             "exec",
             "variable",
-            "list",
             "number"
         ],
         "output": [
@@ -7677,8 +7665,7 @@
         "input": [
             "exec",
             "variable",
-            "item",
-            "dictionary"
+            "item"
         ],
         "output": [
             "exec"
@@ -8065,8 +8052,7 @@
         "name": "Объединить словари",
         "input": [
             "exec",
-            "variable",
-            "dictionary"
+            "variable"
         ],
         "output": [
             "exec"
@@ -8092,8 +8078,7 @@
         "name": "Создать словарь",
         "input": [
             "exec",
-            "variable",
-            "list"
+            "variable"
         ],
         "output": [
             "exec"
@@ -8106,8 +8091,7 @@
         "name": "Получить список ключей словаря",
         "input": [
             "exec",
-            "variable",
-            "dictionary"
+            "variable"
         ],
         "output": [
             "exec"
@@ -8121,7 +8105,6 @@
         "input": [
             "exec",
             "variable",
-            "dictionary",
             "any",
             "enum"
         ],
@@ -8136,8 +8119,7 @@
         "name": "Получить размер словаря",
         "input": [
             "exec",
-            "variable",
-            "dictionary"
+            "variable"
         ],
         "output": [
             "exec"
@@ -8151,7 +8133,6 @@
         "input": [
             "exec",
             "variable",
-            "dictionary",
             "any"
         ],
         "output": [
@@ -8165,8 +8146,7 @@
         "name": "Получить список значений словаря",
         "input": [
             "exec",
-            "variable",
-            "dictionary"
+            "variable"
         ],
         "output": [
             "exec"
@@ -8180,7 +8160,6 @@
         "input": [
             "exec",
             "variable",
-            "dictionary",
             "any"
         ],
         "output": [
@@ -8195,7 +8174,6 @@
         "input": [
             "exec",
             "variable",
-            "dictionary",
             "any"
         ],
         "output": [
@@ -8210,7 +8188,6 @@
         "input": [
             "exec",
             "variable",
-            "dictionary",
             "enum"
         ],
         "output": [
@@ -9358,7 +9335,6 @@
         "input": [
             "exec",
             "variable",
-            "list",
             "text",
             "number"
         ],
@@ -10054,8 +10030,7 @@
             "number",
             "enum",
             "boolean",
-            "variable",
-            "list"
+            "variable"
         ],
         "output": [
             "exec"
@@ -12664,6 +12639,17 @@
         ],
         "iconPath": "images/icons/native/native_branch.png",
         "category": "control"
+    },
+    {
+        "id": "native_array_factory",
+        "name": "Список",
+        "input": [
+        ],
+        "output": [
+            "array"
+        ],
+        "iconPath": "images/icons/native/native_array_factory.png",
+        "category": "factory"
     },
     {
         "id": "native_item_factory",

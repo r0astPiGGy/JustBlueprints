@@ -1,14 +1,12 @@
 package com.rodev.generator.action.interpreter.action
 
-import com.rodev.generator.action.ActionLogger
 import com.rodev.generator.action.LocaleProvider
 import com.rodev.generator.action.entity.PinModel
 import com.rodev.generator.action.entity.extra_data.ExtraData
 import com.rodev.jmcc_extractor.entity.*
 
 class PinInterpreterRegistry private constructor(
-    private val localeProvider: LocaleProvider,
-    private val alternateArgumentTypeProvider: AlternateArgumentTypeProvider = DefaultAlternateArgumentTypeProvider
+    private val localeProvider: LocaleProvider
 ): PinInterpreterRegistryBuilderScope {
 
     private val extraDataProviders = hashMapOf<String, PinExtraDataProvider>()
@@ -29,12 +27,8 @@ class PinInterpreterRegistry private constructor(
         val rawArgument = rawActionData.getArgumentById(id)
         var type = argument.type.toString()
 
-        if (rawArgument != null) {
-            val alternateType = alternateArgumentTypeProvider.getAlternateTypeFor(argument, rawArgument)
-            if (alternateType != type) {
-                ActionLogger.log("Found alternate type for argument $id in action ${actionData.id}: $type != $alternateType")
-                type = alternateType
-            }
+        if (type == "list") {
+            type = "array"
         }
 
         val extraData = findExtraDataProvider(type).provideExtraData(actionData, argument, rawArgument)
@@ -64,26 +58,6 @@ class PinInterpreterRegistry private constructor(
         
     }
     
-}
-
-interface AlternateArgumentTypeProvider {
-
-    fun getAlternateTypeFor(argument: Argument, rawArgument: RawArgument): String
-
-}
-
-object DefaultAlternateArgumentTypeProvider : AlternateArgumentTypeProvider {
-
-    override fun getAlternateTypeFor(argument: Argument, rawArgument: RawArgument): String {
-        val alternateType = rawArgument.type
-
-        if (argument.type == "boolean" && alternateType == "enum") return "boolean"
-
-        if (alternateType == "block") return "item"
-
-        return alternateType
-    }
-
 }
 
 interface PinInterpreterRegistryBuilderScope {

@@ -176,6 +176,15 @@ class BlueprintCompilerHelper(
                 adaptAll(adapter)
                 isInverted = inverted
             }
+        } else if (inverted) {
+            CodeContainingAction(
+                id = id,
+                args = args,
+                selection,
+                conditional
+            ).apply {
+                isInverted = true
+            }
         } else {
             CodeBasicAction(
                 id = id,
@@ -188,25 +197,10 @@ class BlueprintCompilerHelper(
         push(codeAction)
     }
 
-    private fun PinModelAdapter.asArgument(): Value {
-        val model = pinModel
-        val value = pin.getValue()
-
-        model.extra.castOrNull<EnumExtraData>()?.let {
-            // Если это енум, то value не может быть нулл
-
-            return EnumConstant(value!!)
-        }
-
-        if (model.type == Pins.Type.BOOLEAN) {
-            return BooleanConstant(value.toString().lowercase() == "true")
-        }
-
+    private fun PinModelAdapter.asArgument(type: ValueType): Value {
         val connection = connectedPins.firstOrNull()
         val connected = connection != null
         val variableConstant = (connection as? VariablePinAdapter)?.owner?.variable?.toVariableConstant()
-
-        val type = getValueType() ?: throw IllegalStateException("Unknown type: ${model.type}")
 
         return when (type) {
             ValueType.Array -> {
@@ -237,13 +231,17 @@ class BlueprintCompilerHelper(
 
                 val output = (connection as PinModelAdapter).asOutput()
 
+                if (output.type == ValueType.GameValue) {
+                    return output
+                }
+
                 requireEqualTypes(output.type, type)
 
                 output
             }
             ValueType.Number -> {
                 if (!connected) {
-                    return NumberConstant(value?.toDoubleOrNull() ?: 0)
+                    return NumberConstant(pin.getValue()?.toDoubleOrNull() ?: 0)
                 }
 
                 if (variableConstant != null) {
@@ -256,13 +254,17 @@ class BlueprintCompilerHelper(
                     return output
                 }
 
+                if (output.type == ValueType.Array) {
+                    return output
+                }
+
                 requireEqualTypes(output.type, type)
 
                 output
             }
             ValueType.Text -> {
                 if (!connected) {
-                    return TextConstant(value.toString())
+                    return TextConstant(pin.getValue().toString())
                 }
 
                 if (variableConstant != null) {
@@ -270,6 +272,14 @@ class BlueprintCompilerHelper(
                 }
 
                 val output = (connection as PinModelAdapter).asOutput()
+
+                if (output.type == ValueType.GameValue) {
+                    return output
+                }
+
+                if (output.type == ValueType.Array) {
+                    return output
+                }
 
                 requireEqualTypes(output.type, type)
 
@@ -308,11 +318,33 @@ class BlueprintCompilerHelper(
                     return output
                 }
 
+                if (output.type == ValueType.Array) {
+                    return output
+                }
+
                 requireEqualTypes(output.type, type)
 
                 output
             }
         }
+    }
+
+    private fun PinModelAdapter.asArgument(): Value {
+        val model = pinModel
+        val value = pin.getValue()
+
+        model.extra.castOrNull<EnumExtraData>()?.let {
+            // Если это енум, то value не может быть нулл
+            return EnumConstant(value!!)
+        }
+
+        if (model.type == Pins.Type.BOOLEAN) {
+            return BooleanConstant(value.toString().lowercase() == "true")
+        }
+
+        val type = getValueType() ?: throw IllegalStateException("Unknown type: ${model.type}")
+
+        return asArgument(type)
     }
 
     @Throws(BlueprintCompileException::class)
@@ -352,6 +384,23 @@ class BlueprintCompilerHelper(
         }
 
         val type = getValueType()
+
+        if (type == ValueType.Array) {
+            val mutableList = mutableListOf<Value>()
+
+            owner.inputPins.map {
+                (it as PinModelAdapter).asArgument(ValueType.Any)
+            }.forEach {
+                if (it is ArrayConstant) {
+                    // Throw exception ?
+                    mutableList.addAll(it.values)
+                } else {
+                    mutableList.add(it)
+                }
+            }
+            return ArrayConstant(mutableList)
+        }
+
         val factory = type?.toFactory()
 
         // TODO Find factory by pin owner type id
@@ -465,8 +514,8 @@ class BlueprintCompilerHelper(
     private fun NodeModelAdapter.interpretPins() {
         val model = nodeModel
 
-        fun findPinByTypeId(typeId: String): PinModel {
-            return model.input.find { it.id == typeId } ?: model.output.find { it.id == typeId }!!
+        fun findPinByTypeId(typeId: String): PinModel? {
+            return model.input.find { it.id == typeId } ?: model.output.find { it.id == typeId }
         }
 
         fun interpret(pins: List<Pin>): List<PinAdapter> {
@@ -474,7 +523,7 @@ class BlueprintCompilerHelper(
                 val typeId = it.getId()
 
                 PinModelAdapter(
-                    pinModel = findPinByTypeId(typeId),
+                    model = findPinByTypeId(typeId),
                     pin = it,
                     owner = this
                 )
@@ -603,7 +652,13 @@ class BlueprintCompilerHelper(
 
     class PinModelAdapter(
         pin: Pin,
-        val pinModel: PinModel,
+        private val model: PinModel?,
         owner: NodeAdapter
-    ) : PinAdapter(pin, owner)
+    ) : PinAdapter(pin, owner) {
+
+        // Critical
+        val pinModel: PinModel
+            get() = model!!
+
+    }
 }

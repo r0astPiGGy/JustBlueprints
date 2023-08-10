@@ -5253,6 +5253,11 @@
         "description": "Если условие истинно, поток выполнения идёт в True, иначе в False"
     },
     {
+        "id": "native_array_factory",
+        "name": "Список",
+        "description": "Список"
+    },
+    {
         "id": "native_item_factory",
         "name": "Предмет",
         "description": "Предмет"

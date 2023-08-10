@@ -13,11 +13,11 @@
     },
     {
         "id": "list",
-        "color": -10742
+        "color": 0
     },
     {
         "id": "any",
-        "color": -10230046
+        "color": -8750465
     },
     {
         "id": "enum",
@@ -38,6 +38,10 @@
     {
         "id": "dictionary",
         "color": -24822
+    },
+    {
+        "id": "array",
+        "color": -10742
     },
     {
         "id": "variable",

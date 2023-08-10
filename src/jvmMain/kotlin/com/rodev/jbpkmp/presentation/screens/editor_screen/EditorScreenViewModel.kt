@@ -11,20 +11,14 @@ import androidx.compose.ui.input.key.key
 import com.rodev.jbpkmp.data.GlobalDataSource
 import com.rodev.jbpkmp.data.CodeUploadServiceImpl
 import com.rodev.jbpkmp.domain.compiler.BlueprintCompiler
-import com.rodev.jbpkmp.domain.model.Blueprint
-import com.rodev.jbpkmp.domain.model.Project
+import com.rodev.jbpkmp.domain.model.*
 import com.rodev.jbpkmp.domain.model.graph.EventGraph
-import com.rodev.jbpkmp.domain.model.loadBlueprint
-import com.rodev.jbpkmp.domain.model.saveBlueprint
 import com.rodev.jbpkmp.domain.remote.ApiResult
 import com.rodev.jbpkmp.domain.remote.CodeUploadService
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.CreateVariableGraphEvent
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.DefaultPinTypeComparator
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.ViewPortViewModel
-import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.node.DefaultNodeStateFactory
-import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.node.NodeStateFactoryRegistry
-import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.node.VariableNodeDisplay
-import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.node.VariableNodeStateFactory
+import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.node.*
 import com.rodev.nodeui.components.node.NodeState
 import kotlinx.coroutines.*
 import kotlinx.serialization.json.Json
@@ -64,6 +58,17 @@ class EditorScreenViewModel(
     private fun createNodeStateFactory() = NodeStateFactoryRegistry().apply {
         setDefaultNodeStateFactory(
             DefaultNodeStateFactory(
+                nodeDataSource = GlobalDataSource,
+                nodeTypeDataSource = GlobalDataSource,
+                actionDataSource = GlobalDataSource,
+                pinTypeDataSource = GlobalDataSource,
+                selectorDataSource = GlobalDataSource,
+                selectionHandler = this@EditorScreenViewModel,
+                actionDetailsDataSource = GlobalDataSource
+            )
+        )
+        registerNodeStateFactory(
+            typeId = "native_array_factory", ArrayNodeStateFactory(
                 nodeDataSource = GlobalDataSource,
                 nodeTypeDataSource = GlobalDataSource,
                 actionDataSource = GlobalDataSource,
@@ -274,6 +279,8 @@ class EditorScreenViewModel(
         data ?: return
 
         state.result = ScreenResult.Loading(state = LoadingState.UPLOAD)
+
+        project.writeCompileOutput(data)
 
         when (val apiResult = codeUploadService.upload(data)) {
             is ApiResult.Failure -> {

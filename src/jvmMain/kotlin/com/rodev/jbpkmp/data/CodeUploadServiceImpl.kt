@@ -4,7 +4,6 @@ import com.rodev.jbpkmp.domain.remote.ApiResult
 import com.rodev.jbpkmp.domain.remote.CodeUploadService
 import com.rodev.jbpkmp.domain.remote.UploadResult
 import io.ktor.client.*
-import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -33,7 +32,7 @@ class CodeUploadServiceImpl : CodeUploadService {
 
                 ApiResult.Success(
                     data = UploadResult(
-                        commandToLoad = "/module load force $BASE_URL/api/$id"
+                        commandToLoad = "/module loadUrl force $BASE_URL/api/$id"
                     )
                 )
             } else {

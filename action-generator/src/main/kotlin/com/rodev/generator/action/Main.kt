@@ -225,9 +225,6 @@ private fun createPinInterpreterRegistry(localeProvider: LocaleProvider) = PinIn
     }
 }
 
-@Deprecated("Deprecated", ReplaceWith("this"))
-fun String.anyToDynamic() = this
-
 private fun createNodeInterpreterPipeline(
     pinInterpreterRegistry: PinInterpreterRegistry,
     localeProvider: LocaleProvider,
@@ -287,7 +284,7 @@ private fun createNodeInterpreterPipeline(
         }
         if (rawAction.type == "basic_with_conditional") {
             return@add it.copy(
-                input = it.input.addFirst(predicatePin("condition"))
+                input = it.input.addFirst(predicatePin("condition"), invertConditionPin("invert_condition"))
             )
         }
 

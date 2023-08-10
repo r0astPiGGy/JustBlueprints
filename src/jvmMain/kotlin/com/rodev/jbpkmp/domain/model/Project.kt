@@ -17,6 +17,7 @@ data class Project(
 
         const val infoFile = "project.json"
         const val dataFile = "data.json"
+        const val outputFile = "output.json"
 
         fun loadFromFolder(folderPath: String): Project {
             val folder = File(folderPath)
@@ -64,4 +65,8 @@ fun Project.saveBlueprint(json: Json = Json, blueprint: Blueprint) {
     val dataJson = json.encodeToString(blueprint)
 
     file(Project.dataFile).writeText(dataJson)
+}
+
+fun Project.writeCompileOutput(data: String) {
+    file(Project.outputFile).writeText(data)
 }

@@ -1,7 +1,6 @@
 package com.rodev.jbpkmp.presentation.screens.editor_screen
 
 import androidx.compose.foundation.*
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
@@ -27,23 +26,19 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.rodev.jbpkmp.ViewPortPreview
 import com.rodev.jbpkmp.data.ProgramDataRepositoryImpl
-import com.rodev.jbpkmp.domain.remote.UploadResult
 import com.rodev.jbpkmp.domain.repository.update
 import com.rodev.jbpkmp.presentation.components.Sheet
 import com.rodev.jbpkmp.presentation.localization.*
 import com.rodev.jbpkmp.presentation.localization.Vocabulary.localization
 import com.rodev.jbpkmp.presentation.navigation.NavController
-import com.rodev.jbpkmp.presentation.screens.editor_screen.components.Details
+import com.rodev.jbpkmp.presentation.screens.editor_screen.components.DefaultDetails
 import com.rodev.jbpkmp.presentation.screens.editor_screen.components.DraggableContext
 import com.rodev.jbpkmp.presentation.screens.editor_screen.components.DropTarget
 import com.rodev.jbpkmp.presentation.screens.editor_screen.components.Overview
 import com.rodev.jbpkmp.presentation.screens.editor_screen.components.ToolBar
 import com.rodev.jbpkmp.presentation.screens.settings_screen.SettingsScreen
-import com.rodev.jbpkmp.presentation.screens.settings_screen.SettingsScreenEvent
-import org.jetbrains.skia.paragraph.TextBox
 
 @Composable
 fun EditorScreen(navController: NavController, projectPath: String) {
@@ -135,7 +130,7 @@ fun EditorScreen(navController: NavController, projectPath: String) {
 
                         HorizontalDivider()
 
-                        Details(
+                        DefaultDetails(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .weight(1f),
