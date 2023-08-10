@@ -45,16 +45,11 @@ jobs:
       uses: gradle/gradle-build-action@bd5760595778326ba7f1441bcf7e88b49de61a25 # v2.6.0
       with:
         arguments: ${{ matrix.task }}
-    - name: Find distribution
-      uses: tj-actions/glob@v17
-      id: glob
-      with:
-        files: ${{ matrix.output }}
     - name: Upload Artifact
       uses: actions/upload-artifact@v3
       with:
         name: ${{ matrix.artifact }}
-        path: ${{ steps.glob.outputs.paths }}
+        path: ${{ matrix.output }}
   release:
     runs-on: windows-latest
     needs: build
