@@ -28,11 +28,11 @@ jobs:
           - os: "ubuntu-latest"
             task: "buildLinuxRelease"
             artifact: "linux"
-            output: "justblueprints-windows.deb"
+            output: "justblueprints-linux.deb"
           - os: "macos-latest"
             task: "buildMacosRelease"
             artifact: "macos"
-            output: "justblueprints-windows.dmg"
+            output: "justblueprints-macos.dmg"
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v3
