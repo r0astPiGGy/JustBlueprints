@@ -24,15 +24,15 @@ jobs:
           - os: "windows-latest"
             task: "packageReleaseMsi"
             artifact: "windows"
-            output: "*.msi"
+            output: "**.msi"
           - os: "ubuntu-latest"
             task: "packageReleaseDeb"
             artifact: "linux"
-            output: "*.deb"
+            output: "**.deb"
           - os: "macos-latest"
             task: "packageReleaseDmg"
             artifact: "macos"
-            output: "*.dmg"
+            output: "**.dmg"
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v3
