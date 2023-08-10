@@ -61,6 +61,7 @@ compose.desktop {
 }
 
 tasks.register("buildMacosRelease") {
+    dependsOn("packageReleaseDmg")
     doLast {
         Files.copy(
             findReleaseOutput("dmg"),
@@ -70,6 +71,7 @@ tasks.register("buildMacosRelease") {
 }
 
 tasks.register("buildLinuxRelease") {
+    dependsOn("packageReleaseDeb")
     doLast {
         Files.copy(
             findReleaseOutput("deb"),
@@ -79,6 +81,7 @@ tasks.register("buildLinuxRelease") {
 }
 
 tasks.register("buildWindowsRelease") {
+    dependsOn("packageReleaseMsi")
     doLast {
         Files.copy(
             findReleaseOutput("msi"),
