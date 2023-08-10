@@ -107,7 +107,7 @@ private fun WelcomePanel(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
-            painterResource("logo.png"),
+            painterResource("images/logo.png"),
             contentDescription = null,
             modifier = Modifier
                 .size(150.dp)

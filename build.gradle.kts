@@ -52,9 +52,9 @@ compose.desktop {
                 configurationFiles.from(project.file("proguard-rules.pro"))
             }
 
-            macOS { iconFile.set(project.file("logo.icns")) }
-            windows { iconFile.set(project.file("logo.ico")) }
-            linux { iconFile.set(project.file("logo.png")) }
+            macOS { iconFile.set(project.file("JustBlueprintsLogo-Rounded.icns")) }
+            windows { iconFile.set(project.file("JustBlueprintsLogo-Rounded.ico")) }
+            linux { iconFile.set(project.file("JustBlueprintsLogo-Rounded.png")) }
         }
     }
 }

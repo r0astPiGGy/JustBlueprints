@@ -34,7 +34,7 @@ fun main() {
 
     singleWindowApplication(
         title = appName,
-        icon = BitmapPainter(useResource("logo.png", ::loadImageBitmap)),
+        icon = BitmapPainter(useResource("images/logo.png", ::loadImageBitmap)),
         state = WindowState(placement = WindowPlacement.Maximized)
     ) {
         val navController by rememberNavController(Screen.WelcomeScreen.name)
