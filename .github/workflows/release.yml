@@ -61,6 +61,6 @@ jobs:
       if: startsWith(github.ref, 'refs/tags/')
       with:
         files: |
-         justblueprints-macos
-         justblueprints-linux
-         justblueprints-windows
+         **/*.deb
+         **/*.dmg
+         **/*.msi
