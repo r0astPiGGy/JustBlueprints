@@ -52,7 +52,7 @@ jobs:
         path: ${{ matrix.output }}
 
   release:
-    runs-on: windows-latest
+    runs-on: "ubuntu-latest"
     needs: build
     steps:
     - uses: actions/download-artifact@v3
