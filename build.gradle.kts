@@ -1,4 +1,5 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import org.jetbrains.kotlin.com.google.common.io.Files
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -57,6 +58,52 @@ compose.desktop {
             linux { iconFile.set(project.file("JustBlueprintsLogo-Rounded.png")) }
         }
     }
+}
+
+tasks.register("buildMacosRelease") {
+    doLast {
+        Files.copy(
+            findReleaseOutput("dmg"),
+            File("justblueprints-macos.dmg")
+        )
+    }
+}
+
+tasks.register("buildLinuxRelease") {
+    doLast {
+        Files.copy(
+            findReleaseOutput("deb"),
+            File("justblueprints-linux.deb")
+        )
+    }
+}
+
+tasks.register("buildWindowsRelease") {
+    doLast {
+        Files.copy(
+            findReleaseOutput("msi"),
+            File("justblueprints-windows.msi")
+        )
+    }
+}
+
+fun findReleaseOutput(suffix: String): File {
+    val path = "./build/compose/binaries/main-release/$suffix/".replace("/", File.separator)
+
+    return findReleaseOutput(path) {
+        it.name.endsWith(".$suffix")
+    }
+}
+
+fun findReleaseOutput(path: String, predicate: (File) -> Boolean): File {
+    var file: File? = null
+    File(path).listFiles()?.forEach {
+        if (predicate(it)) {
+            file = it
+            return@forEach
+        }
+    }
+    return requireNotNull(file) { "Output file not found" }
 }
 
 dependencies {

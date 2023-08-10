@@ -22,17 +22,17 @@ jobs:
       matrix:
         include:
           - os: "windows-latest"
-            task: "packageReleaseMsi"
+            task: "buildWindowsRelease"
             artifact: "windows"
-            output: "**.msi"
+            output: "justblueprints-windows.msi"
           - os: "ubuntu-latest"
-            task: "packageReleaseDeb"
+            task: "buildLinuxRelease"
             artifact: "linux"
-            output: "**.deb"
+            output: "justblueprints-windows.deb"
           - os: "macos-latest"
-            task: "packageReleaseDmg"
+            task: "buildMacosRelease"
             artifact: "macos"
-            output: "**.dmg"
+            output: "justblueprints-windows.dmg"
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v3
@@ -50,6 +50,7 @@ jobs:
       with:
         name: ${{ matrix.artifact }}
         path: ${{ matrix.output }}
+
   release:
     runs-on: windows-latest
     needs: build
