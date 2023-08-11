@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "com.rodev"
-version = "1.0-SNAPSHOT"
+version = "1.0.0"
 
 repositories {
     google()
@@ -32,6 +32,7 @@ kotlin {
         val jvmMain by getting {
             dependencies {
                 implementation(compose.desktop.currentOs)
+                implementation("com.darkrockstudios:mpfilepicker:1.2.0")
                 implementation(project(":node-ui"))
                 implementation(project(":action-generator"))
                 implementation(project(":common"))
@@ -48,7 +49,7 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "JustBlueprints"
-            packageVersion = "1.0.0"
+            packageVersion = version.toString()
             buildTypes.release.proguard {
                 configurationFiles.from(project.file("proguard-rules.pro"))
             }

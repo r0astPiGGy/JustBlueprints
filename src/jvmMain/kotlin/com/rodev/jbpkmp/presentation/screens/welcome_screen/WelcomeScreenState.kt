@@ -1,17 +1,26 @@
 package com.rodev.jbpkmp.presentation.screens.welcome_screen
 
-import com.rodev.jbpkmp.domain.model.RecentProject
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 
-data class WelcomeScreenState(
-    val recentProjects: List<RecentProject> = emptyList(),
-    val loadProjectResult: LoadProjectResult? = null
-)
+class WelcomeScreenState {
 
-sealed class LoadProjectResult {
-    object Loading : LoadProjectResult()
+    var result: WelcomeScreenResult? by mutableStateOf(null)
 
-    class Failure(val msg: String) : LoadProjectResult()
+    fun consume() {
+        result = null
+    }
 
-    class Success(val projectPath: String) : LoadProjectResult()
+}
+
+sealed class WelcomeScreenResult {
+    class Failure(val error: Error) : WelcomeScreenResult() {
+        enum class Error {
+            INVALID_PROJECT
+        }
+    }
+
+    class OpenProject(val projectPath: String) : WelcomeScreenResult()
 
 }

@@ -8,7 +8,7 @@ import java.io.File
 
 class ProgramDataRepositoryImpl : ProgramDataRepository {
 
-    private val dirPath = "${System.getProperty("user.home")}${File.separator}JustBlueprints"
+    private val dirPath = justBlueprintsDirectoryPath
     private val cachePath = "$dirPath${File.separator}ProgramData.json"
 
     override fun save(data: ProgramData) {
@@ -30,3 +30,9 @@ class ProgramDataRepositoryImpl : ProgramDataRepository {
         }
     }
 }
+
+val justBlueprintsDirectoryPath: String
+    get() = "${System.getProperty("user.home")}${File.separator}JustBlueprints"
+
+val projectsPath: String
+    get() = "${justBlueprintsDirectoryPath}${File.separator}projects${File.separator}"

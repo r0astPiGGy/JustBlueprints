@@ -33,6 +33,12 @@ val noRecentProjects = Translatable(
         ENGLISH to "No recent projects"
     )
 )
+val invalidProject = Translatable(
+    "Проект недействителен",
+    hashMapOf(
+        ENGLISH to "Invalid project"
+    )
+)
 
 // CreateProjectDialog
 val chooseDirectory = Translatable(

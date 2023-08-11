@@ -262,13 +262,13 @@ class EditorScreenViewModel(
     }
 
     private suspend fun build(blueprint: Blueprint) {
-        state.result = ScreenResult.Loading(state = LoadingState.COMPILE)
+        state.result = EditorScreenResult.Loading(state = LoadingState.COMPILE)
 
         val data = try {
             // TODO handle BlueprintCompileException
             blueprintCompiler.compile(blueprint)
         } catch (e: Exception) {
-            state.result = ScreenResult.Error(
+            state.result = EditorScreenResult.Error(
                 stage = LoadingState.COMPILE,
                 message = e.message,
                 stackTrace = e.stackTraceToString()
@@ -278,27 +278,27 @@ class EditorScreenViewModel(
 
         data ?: return
 
-        state.result = ScreenResult.Loading(state = LoadingState.UPLOAD)
+        state.result = EditorScreenResult.Loading(state = LoadingState.UPLOAD)
 
         project.writeCompileOutput(data)
 
         when (val apiResult = codeUploadService.upload(data)) {
             is ApiResult.Failure -> {
-                state.result = ScreenResult.Error(
+                state.result = EditorScreenResult.Error(
                     stage = LoadingState.UPLOAD,
                     message = apiResult.message,
                     stackTrace = null
                 )
             }
             is ApiResult.Exception -> {
-                state.result = ScreenResult.Error(
+                state.result = EditorScreenResult.Error(
                     stage = LoadingState.UPLOAD,
                     message = apiResult.exception.message,
                     stackTrace = apiResult.exception.stackTraceToString()
                 )
             }
             is ApiResult.Success -> {
-                state.result = ScreenResult.SuccessUpload(
+                state.result = EditorScreenResult.SuccessUpload(
                     uploadCommand = apiResult.data.commandToLoad
                 )
             }

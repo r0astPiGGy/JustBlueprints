@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class ProgramData(
-    val recentProjects: MutableSet<RecentProject> = mutableSetOf(),
+    var recentProjects: MutableSet<RecentProject> = mutableSetOf(),
     var settings: Settings = Settings()
 )
 

@@ -16,13 +16,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.rodev.jbpkmp.presentation.localization.name
+import com.rodev.jbpkmp.presentation.screens.welcome_screen.RecentProjectState
 
 @Composable
 fun RecentProjectItem(
     modifier: Modifier = Modifier,
-    name: String,
-    path: String,
-    selected: Boolean,
+    state: RecentProjectState,
     onDeleteClick: () -> Unit = {}
 ) {
     Row(
@@ -32,7 +32,7 @@ fun RecentProjectItem(
     ) {
         Column {
             Text(
-                text = name,
+                text = state.recentProject.name,
                 style = MaterialTheme.typography.h4,
                 color = MaterialTheme.colors.onBackground,
                 maxLines = 1,
@@ -40,7 +40,7 @@ fun RecentProjectItem(
             )
 
             Text(
-                text = path,
+                text = state.recentProject.path,
                 style = MaterialTheme.typography.h5,
                 color = MaterialTheme.colors.onBackground,
                 maxLines = 1,
@@ -48,7 +48,7 @@ fun RecentProjectItem(
             )
         }
 
-        if (selected) {
+        if (state.selected) {
             IconButton(
                 onClick = onDeleteClick, modifier = Modifier.size(25.dp)
             ) {

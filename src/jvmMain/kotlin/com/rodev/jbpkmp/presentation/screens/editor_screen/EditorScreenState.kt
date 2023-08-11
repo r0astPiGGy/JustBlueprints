@@ -7,10 +7,10 @@ class EditorScreenState(
 ) {
 
     val variables = mutableStateListOf<GlobalVariableState>()
-    var result: ScreenResult? by mutableStateOf(null)
+    var result: EditorScreenResult? by mutableStateOf(null)
 
     val isLoading by derivedStateOf {
-        result is ScreenResult.Loading
+        result is EditorScreenResult.Loading
     }
 
     init {
@@ -22,13 +22,13 @@ class EditorScreenState(
     }
 }
 
-sealed class ScreenResult {
+sealed class EditorScreenResult {
 
-    class SuccessUpload(val uploadCommand: String) : ScreenResult()
+    class SuccessUpload(val uploadCommand: String) : EditorScreenResult()
 
-    class Loading(val state: LoadingState) : ScreenResult()
+    class Loading(val state: LoadingState) : EditorScreenResult()
 
-    class Error(val stage: LoadingState, val message: String?, val stackTrace: String?) : ScreenResult()
+    class Error(val stage: LoadingState, val message: String?, val stackTrace: String?) : EditorScreenResult()
 
 }
 

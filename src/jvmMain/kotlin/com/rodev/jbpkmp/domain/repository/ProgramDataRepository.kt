@@ -7,9 +7,10 @@ interface ProgramDataRepository {
     fun load(): ProgramData
 }
 
-inline fun ProgramDataRepository.update(block: ProgramData.() -> Unit) {
-    with(load()) {
+inline fun ProgramDataRepository.update(block: ProgramData.() -> Unit): ProgramData {
+    return with(load()) {
         block(this)
         save(this)
+        this
     }
 }

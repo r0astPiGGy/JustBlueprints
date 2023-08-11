@@ -1,8 +1,6 @@
 package com.rodev.jbpkmp.presentation.screens.welcome_screen
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import com.rodev.jbpkmp.data.ProgramDataRepositoryImpl
 import com.rodev.jbpkmp.domain.model.Project
 import com.rodev.jbpkmp.domain.model.RecentProject
 import com.rodev.jbpkmp.domain.model.save
@@ -11,34 +9,47 @@ import com.rodev.jbpkmp.domain.repository.update
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.todayIn
-import kotlinx.serialization.json.Json
 import java.io.File
 
 class WelcomeScreenViewModel(
-    private val repository: ProgramDataRepository
+    private val repository: ProgramDataRepository = ProgramDataRepositoryImpl()
 ) {
-    var state by mutableStateOf(WelcomeScreenState())
-        private set
+    val state = WelcomeScreenState()
+    val projectsPanelState = ProjectsPanelState(
+        onProjectOpen = {
+            onEvent(WelcomeScreenEvent.OpenProject(it))
+        },
+        onProjectDelete = {
+            onEvent(WelcomeScreenEvent.RemoveProject(it))
+        }
+    )
 
     init {
+        val settings = repository.load().settings
+        val lastOpenProjectPath = settings.lastOpenProjectPath
+
+        if (settings.openLastProject && lastOpenProjectPath != null) {
+            if (Project.isValid(lastOpenProjectPath)) {
+                state.result = WelcomeScreenResult.OpenProject(lastOpenProjectPath)
+            } else {
+                repository.update {
+                    settings.lastOpenProjectPath = null
+                }
+            }
+        }
+
         getRecentProjects()
     }
 
     fun onEvent(event: WelcomeScreenEvent) {
         when (event) {
             is WelcomeScreenEvent.LoadAndOpenProject -> {
-                val projectJson = File(event.path).readText()
                 val project = try {
-                    Json.decodeFromString<Project>(projectJson)
+                    Project.loadFromFile(event.path)
                 } catch (e: Exception) {
-                    // TODO TODO REFACTOR
-                    updateState {
-                        it.copy(
-                            loadProjectResult = LoadProjectResult.Failure(
-                                "It is not a valid project."
-                            )
-                        )
-                    }
+                    state.result = WelcomeScreenResult.Failure(
+                        WelcomeScreenResult.Failure.Error.INVALID_PROJECT
+                    )
                     return
                 }
 
@@ -84,13 +95,7 @@ class WelcomeScreenViewModel(
     }
 
     private fun openProject(project: RecentProject) {
-        updateState {
-            it.copy(
-                loadProjectResult = LoadProjectResult.Success(
-                    projectPath = project.path
-                )
-            )
-        }
+        state.result = WelcomeScreenResult.OpenProject(project.path)
 
         repository.update {
             recentProjects.let {
@@ -105,26 +110,15 @@ class WelcomeScreenViewModel(
         getRecentProjects()
     }
 
-    fun resetState() {
-        updateState {
-            it.copy(
-                loadProjectResult = null
-            )
-        }
-    }
-
-    private fun updateState(block: (WelcomeScreenState) -> WelcomeScreenState) {
-        state = block(state)
-    }
-
     private fun getRecentProjects() {
-        val data = repository.load()
+        val recentProjects =
+            repository.update {
+                recentProjects.removeIf { !Project.isValid(it.path) }
+            }
+            .recentProjects
+            .sortedBy(RecentProject::lastOpeningDate) // Sort
+            .reversed()
 
-        updateState {
-            it.copy(
-                // Sort
-                recentProjects = data.recentProjects.sortedBy(RecentProject::lastOpeningDate).reversed()
-            )
-        }
+        projectsPanelState.updateProjects(recentProjects)
     }
 }

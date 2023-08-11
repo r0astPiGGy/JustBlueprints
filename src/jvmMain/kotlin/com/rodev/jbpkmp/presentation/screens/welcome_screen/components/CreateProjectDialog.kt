@@ -23,6 +23,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import com.darkrockstudios.libraries.mpfilepicker.DirectoryPicker
+import com.rodev.jbpkmp.data.justBlueprintsDirectoryPath
+import com.rodev.jbpkmp.data.projectsPath
 import com.rodev.jbpkmp.presentation.components.Sheet
 import com.rodev.jbpkmp.presentation.localization.Vocabulary
 import com.rodev.jbpkmp.presentation.localization.cancel
@@ -102,19 +105,16 @@ fun CreateProjectDialog(
         }
     }
 
-    if (isFileDialogOpen && !isError) {
-        FileDialog(
-            title = localization.chooseDirectory(),
-            type = JFileChooser.SAVE_DIALOG,
-            selectionMode = JFileChooser.DIRECTORIES_ONLY
-        ) {
-            if (it != null) {
-                WelcomeScreenEvent.CreateAndOpenProject(projectName, it)
-                    .let(viewModel::onEvent)
+    DirectoryPicker(
+        show = isFileDialogOpen && !isError,
+        initialDirectory = projectsPath
+    ) {
+        if (it != null) {
+            WelcomeScreenEvent.CreateAndOpenProject(projectName, it)
+                .let(viewModel::onEvent)
 
-                onDismissRequest()
-            }
-            isFileDialogOpen = false
+            onDismissRequest()
         }
+        isFileDialogOpen = false
     }
 }

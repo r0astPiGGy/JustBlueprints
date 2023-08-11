@@ -6,6 +6,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.File
+import kotlin.jvm.Throws
 
 @Serializable
 data class Project(
@@ -19,20 +20,42 @@ data class Project(
         const val dataFile = "data.json"
         const val outputFile = "output.json"
 
+        @Throws(RuntimeException::class)
         fun loadFromFolder(folderPath: String): Project {
             val folder = File(folderPath)
 
             require(folder.exists() && folder.isDirectory) {
-                "Required path is not exists"
+                "Required path doesn't exists"
             }
 
             val info = File(folder, infoFile)
 
             require(info.isFile && info.exists()) {
-                "Project info file is not exists"
+                "Project info file doesn't exists"
             }
 
             return Json.decodeFromString<Project>(info.readText())
+        }
+
+        @Throws(RuntimeException::class)
+        fun loadFromFile(file: String): Project {
+            val info = File(file)
+
+            require(info.isFile && info.exists()) {
+                "Project info file doesn't exists"
+            }
+
+            return Json.decodeFromString<Project>(info.readText())
+        }
+
+        fun isValid(folderPath: String): Boolean {
+            val folder = File(folderPath)
+
+            if (!folder.exists() || !folder.isDirectory) return false
+
+            val info = File(folder, infoFile)
+
+            return info.isFile && info.exists()
         }
     }
 }

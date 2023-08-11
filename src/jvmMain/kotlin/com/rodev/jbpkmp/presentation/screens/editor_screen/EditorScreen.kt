@@ -211,14 +211,14 @@ fun ResultDialog(
         onDismissRequest = dismissRequest
     ) {
         when (result) {
-            is ScreenResult.SuccessUpload -> {
+            is EditorScreenResult.SuccessUpload -> {
                 SuccessUploadScreen(
                     modifier = Modifier,
                     uploadCommand = result.uploadCommand,
                     onDismiss = dismissRequest
                 )
             }
-            is ScreenResult.Error -> {
+            is EditorScreenResult.Error -> {
                 ErrorScreen(
                     modifier = Modifier
                         .fillMaxSize(0.5f),
@@ -226,7 +226,7 @@ fun ResultDialog(
                     onDismiss = dismissRequest
                 )
             }
-            is ScreenResult.Loading -> {}
+            is EditorScreenResult.Loading -> {}
         }
 
     }
@@ -281,7 +281,7 @@ fun SuccessUploadScreen(
 @Composable
 fun ErrorScreen(
     modifier: Modifier = Modifier,
-    error: ScreenResult.Error,
+    error: EditorScreenResult.Error,
     onDismiss: () -> Unit
 ) {
     val title = when (error.stage) {
@@ -309,7 +309,8 @@ fun ErrorScreen(
                 )
                 error.message?.let {
                     Text(
-                        text = it
+                        text = it,
+                        maxLines = 1
                     )
                 }
             }
@@ -376,7 +377,7 @@ fun ActionBar(
     ) {
         val result = screenState.result
 
-        if (result is ScreenResult.Loading) {
+        if (result is EditorScreenResult.Loading) {
             val message = when (result.state) {
                 LoadingState.SAVE -> localization.projectSave()
                 LoadingState.COMPILE -> localization.projectCompile()
