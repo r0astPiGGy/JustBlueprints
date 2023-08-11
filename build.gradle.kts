@@ -53,7 +53,7 @@ compose.desktop {
             version = version.toString()
             description = "JustBlueprints - Node-based visual programming application"
             copyright = "https://github.com/r0astPiGGy"
-            vendor = "https://github.com/r0astPiGGy"
+            vendor = "r0astPiGGy"
             licenseFile.set(project.file("LICENSE.txt"))
 
             buildTypes.release.proguard {
