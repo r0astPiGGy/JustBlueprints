@@ -50,15 +50,26 @@ compose.desktop {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "JustBlueprints"
             packageVersion = version.toString()
+            version = version.toString()
+            description = "JustBlueprints - Node-based visual programming application"
+            copyright = "https://github.com/r0astPiGGy"
+            vendor = "https://github.com/r0astPiGGy"
+            licenseFile.set(project.file("LICENSE.txt"))
+
             buildTypes.release.proguard {
                 configurationFiles.from(project.file("proguard-rules.pro"))
             }
 
-            macOS { iconFile.set(project.file("JustBlueprintsLogo-Rounded.icns")) }
-            windows { iconFile.set(project.file("JustBlueprintsLogo-Rounded.ico")) }
-            linux { iconFile.set(project.file("JustBlueprintsLogo-Rounded.png")) }
+            macOS { iconFile.set(icon("JustBlueprintsLogo-Rounded.icns")) }
+            windows { iconFile.set(icon("JustBlueprintsLogo-Rounded.ico")) }
+            linux { iconFile.set(icon("JustBlueprintsLogo-Rounded.png")) }
         }
     }
+}
+
+fun icon(name: String): File {
+    val iconDir = File(projectDir, "icons")
+    return File(iconDir, name)
 }
 
 tasks.register("buildMacosRelease") {

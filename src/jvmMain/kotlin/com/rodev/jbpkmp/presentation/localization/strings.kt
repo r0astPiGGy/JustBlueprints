@@ -56,9 +56,9 @@ val uploadSuccess = Translatable(
     )
 )
 val uploadHint = Translatable(
-    "Он будет удалён через 3 минуты, успейте использовать команду",
+    "Код хранится временно, успейте использовать команду",
     hashMapOf(
-        ENGLISH to "It will be deleted in 3 minutes, have time to use the command"
+        ENGLISH to "The code is stored temporarily, have time to use the command"
     )
 )
 
@@ -175,6 +175,12 @@ val codeUpload = Translatable(
     "Загрузка кода...",
     hashMapOf(
         ENGLISH to "Uploading..."
+    )
+)
+val addPin = Translatable(
+    "Добавить Pin",
+    hashMapOf(
+        ENGLISH to "Add Pin"
     )
 )
 

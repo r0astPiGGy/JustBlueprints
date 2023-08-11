@@ -32,6 +32,8 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.rodev.jbpkmp.data.GlobalDataSource
 import com.rodev.jbpkmp.domain.model.NodeEntity
+import com.rodev.jbpkmp.presentation.localization.Vocabulary
+import com.rodev.jbpkmp.presentation.localization.addPin
 import com.rodev.nodeui.components.node.NodeState
 import kotlin.math.roundToInt
 
@@ -166,7 +168,7 @@ fun ArrayNode(
 
                 Spacer(modifier = Modifier.width(5.dp))
 
-                Text("Add pin")
+                Text(Vocabulary.localization.addPin())
             }
 
             NodeSpacer()

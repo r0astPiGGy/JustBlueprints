@@ -18,6 +18,8 @@ class CodeUploadServiceImpl : CodeUploadService {
     private val httpClient = HttpClient(CIO)
     private val json = Json
 
+    private val fallbackService = FallbackCodeUploadService()
+
     override suspend fun upload(data: String): ApiResult<UploadResult> {
         val uploadUrl = "$BASE_URL/api/upload"
 
@@ -43,9 +45,11 @@ class CodeUploadServiceImpl : CodeUploadService {
                 )
             }
         } catch (e: Throwable) {
-            return ApiResult.Exception(
-                exception = e
-            )
+            return try {
+                fallbackService.upload(data)
+            } catch (ignored: Exception) {
+                ApiResult.Exception(e)
+            }
         }
     }
 

@@ -259,7 +259,7 @@ fun SuccessUploadScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(columnPadding))
+            Spacer(modifier = Modifier.height(30.dp))
 
             val clipboard = LocalClipboardManager.current
 
