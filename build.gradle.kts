@@ -32,7 +32,6 @@ kotlin {
         val jvmMain by getting {
             dependencies {
                 implementation(compose.desktop.currentOs)
-                implementation("com.darkrockstudios:mpfilepicker:1.2.0")
                 implementation(project(":node-ui"))
                 implementation(project(":action-generator"))
                 implementation(project(":common"))
@@ -48,6 +47,7 @@ compose.desktop {
         mainClass = "com.rodev.jbpkmp.MainKt"
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+            modules("java.instrument", "java.management", "jdk.unsupported")
             packageName = "JustBlueprints"
             packageVersion = version.toString()
             version = version.toString()

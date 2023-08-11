@@ -12,10 +12,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.darkrockstudios.libraries.mpfilepicker.FilePicker
 import com.rodev.jbpkmp.presentation.localization.*
 import com.rodev.jbpkmp.presentation.screens.welcome_screen.WelcomeScreenEvent
 import com.rodev.jbpkmp.presentation.screens.welcome_screen.WelcomeScreenViewModel
+import javax.swing.JFileChooser
 
 @Composable
 fun WelcomePanel(
@@ -75,14 +75,16 @@ fun WelcomePanel(
         viewModel = viewModel
     )
 
-    FilePicker(
-        show = isFileDialogOpen,
-        fileExtensions = listOf("json")
-    ) {
-        if (it != null) {
-            WelcomeScreenEvent.LoadAndOpenProject(it.path).let(viewModel::onEvent)
-        }
+    if (isFileDialogOpen) {
+        FileDialog(
+            title = localization.chooseFile(),
+            type = JFileChooser.OPEN_DIALOG
+        ) {
+            if (it != null) {
+                WelcomeScreenEvent.LoadAndOpenProject(it).let(viewModel::onEvent)
+            }
 
-        isFileDialogOpen = false
+            isFileDialogOpen = false
+        }
     }
 }
