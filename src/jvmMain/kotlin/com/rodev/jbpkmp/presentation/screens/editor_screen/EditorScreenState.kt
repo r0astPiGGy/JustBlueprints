@@ -8,18 +8,27 @@ class EditorScreenState(
 
     val variables = mutableStateListOf<GlobalVariableState>()
     var result: EditorScreenResult? by mutableStateOf(null)
+    var showSettingsScreen by mutableStateOf(false)
 
     val isLoading by derivedStateOf {
         result is EditorScreenResult.Loading
     }
+
+    var navigationResult: NavigationResult by mutableStateOf(NavigationResult.Empty)
 
     init {
         this.variables.addAll(variables)
     }
 
     fun reset() {
+        navigationResult = NavigationResult.Empty
         result = null
     }
+}
+
+sealed class NavigationResult {
+    object Empty : NavigationResult()
+    object GoBack : NavigationResult()
 }
 
 sealed class EditorScreenResult {

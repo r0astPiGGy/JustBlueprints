@@ -8,8 +8,7 @@ import com.rodev.generator.action.entity.ActionDetails
 import com.rodev.jbpkmp.domain.model.NodeEntity
 import com.rodev.jbpkmp.presentation.screens.editor_screen.SelectionHandler
 import com.rodev.jbpkmp.presentation.screens.editor_screen.components.ArrayNode
-import com.rodev.jbpkmp.presentation.screens.editor_screen.components.DefaultDetails
-import com.rodev.jbpkmp.presentation.screens.editor_screen.components.StyledNode
+import com.rodev.jbpkmp.presentation.screens.editor_screen.components.DetailsPanel
 import com.rodev.jbpkmp.presentation.screens.editor_screen.createNodeTypeTag
 import com.rodev.nodeui.components.node.NodeDisplay
 import com.rodev.nodeui.components.node.NodeState
@@ -39,7 +38,7 @@ class ArrayNodeDisplay(
     @Composable
     private fun Details() {
         actionDetails?.let {
-            DefaultDetails(it)
+            DetailsPanel(it)
         }
     }
 

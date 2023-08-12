@@ -10,11 +10,14 @@ import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.input.key.key
 import com.rodev.jbpkmp.data.GlobalDataSource
 import com.rodev.jbpkmp.data.CodeUploadServiceImpl
+import com.rodev.jbpkmp.data.ProgramDataRepositoryImpl
 import com.rodev.jbpkmp.domain.compiler.BlueprintCompiler
 import com.rodev.jbpkmp.domain.model.*
 import com.rodev.jbpkmp.domain.model.graph.EventGraph
 import com.rodev.jbpkmp.domain.remote.ApiResult
 import com.rodev.jbpkmp.domain.remote.CodeUploadService
+import com.rodev.jbpkmp.domain.repository.ProgramDataRepository
+import com.rodev.jbpkmp.domain.repository.update
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.CreateVariableGraphEvent
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.DefaultPinTypeComparator
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.ViewPortViewModel
@@ -47,6 +50,7 @@ class EditorScreenViewModel(
 
     private val selectionActionVisitor: SelectionActionVisitor = SelectionActionVisitorImpl()
     private val nodeStateFactory = createNodeStateFactory()
+    private val repository: ProgramDataRepository = ProgramDataRepositoryImpl()
 
     init {
         project = Project.loadFromFolder(projectPath)
@@ -218,6 +222,19 @@ class EditorScreenViewModel(
 
             is EditorScreenEvent.OnDragAndDrop -> {
                 handleDragAndDropEvent(event.variable, event.position)
+            }
+
+            EditorScreenEvent.CloseProject -> {
+                repository.update {
+                    settings.lastOpenProjectPath = null
+                }
+                state.navigationResult = NavigationResult.GoBack
+            }
+            EditorScreenEvent.OpenSettingsScreen -> {
+                state.showSettingsScreen = true
+            }
+            EditorScreenEvent.CloseSettingsScreen -> {
+                state.showSettingsScreen = false
             }
         }
     }

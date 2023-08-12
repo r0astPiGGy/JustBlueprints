@@ -12,7 +12,7 @@ import com.rodev.generator.action.entity.extra_data.ExecPairExtraData
 import com.rodev.generator.action.entity.extra_data.ExtraData
 import com.rodev.jbpkmp.domain.model.NodeEntity
 import com.rodev.jbpkmp.presentation.screens.editor_screen.SelectionHandler
-import com.rodev.jbpkmp.presentation.screens.editor_screen.components.DefaultDetails
+import com.rodev.jbpkmp.presentation.screens.editor_screen.components.DetailsPanel
 import com.rodev.jbpkmp.presentation.screens.editor_screen.components.StyledNode
 import com.rodev.jbpkmp.presentation.screens.editor_screen.createNodeTypeTag
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.pin.extra
@@ -44,7 +44,7 @@ class DefaultNodeDisplay(
     @Composable
     private fun Details() {
         actionDetails?.let {
-            DefaultDetails(it)
+            DetailsPanel(it)
         }
     }
 

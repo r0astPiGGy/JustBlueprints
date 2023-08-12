@@ -1,14 +1,6 @@
 package com.rodev.jbpkmp.presentation.screens.settings_screen
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.Checkbox
@@ -25,11 +17,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -44,6 +32,8 @@ import com.rodev.jbpkmp.presentation.localization.openLastProject
 import com.rodev.jbpkmp.presentation.localization.save
 import com.rodev.jbpkmp.presentation.localization.supportedLocalesNow
 import com.rodev.jbpkmp.presentation.localization.useDarkTheme
+import com.rodev.jbpkmp.presentation.screens.settings_screen.components.BooleanProperty
+import com.rodev.jbpkmp.presentation.screens.settings_screen.components.EnumProperty
 import java.util.*
 
 @Composable
@@ -54,8 +44,7 @@ fun SettingsScreen(
     val viewModel = remember { SettingsScreenViewModel(ProgramDataRepositoryImpl()) }
     val localization = Vocabulary.localization
 
-    val settings = viewModel.repository.load().settings
-
+    val settings by remember { derivedStateOf { viewModel.settings } }
     var useDarkTheme by remember { mutableStateOf(settings.useDarkTheme) }
     var openLastProject by remember { mutableStateOf(settings.openLastProject) }
     var selectedLocale by remember { mutableStateOf(Locale(settings.languageCode)) }
@@ -102,91 +91,43 @@ fun SettingsScreen(
                 }
             }
 
-            Text(localization.languageDescription())
-
-            Box {
-                val width = 200.dp
-                var dropdownExpanded by remember { mutableStateOf(false) }
-
-                OutlinedButton(
-                    onClick = { dropdownExpanded = !dropdownExpanded },
-                    modifier = Modifier.width(width)
-                ) {
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(Vocabulary.localization.locale.displayLanguage.replaceFirstChar(Char::titlecase))
-
-                        Icon(
-                            imageVector = Icons.Default.ArrowDropDown,
-                            contentDescription = null
-                        )
-                    }
-                }
-
-                DropdownMenu(
-                    expanded = dropdownExpanded,
-                    onDismissRequest = { dropdownExpanded = false },
-                    modifier = Modifier.width(width)
-                ) {
-                    supportedLocalesNow.forEach {
-                        DropdownMenuItem(
-                            onClick = {
-                                localeSetter(it)
-                                selectedLocale = it
-                                dropdownExpanded = false
-                            }
-                        ) {
-                            Text(it.displayLanguage.replaceFirstChar(Char::titlecase))
+            // Locale
+            EnumProperty(
+                label = localization.languageDescription(),
+                propertyText = selectedLocale.displayLanguage.replaceFirstChar(Char::titlecase),
+            ) { state ->
+                supportedLocalesNow.forEach {
+                    DropdownMenuItem(
+                        onClick = {
+                            localeSetter(it)
+                            selectedLocale = it
+                            state.expanded = false
                         }
+                    ) {
+                        Text(it.displayLanguage.replaceFirstChar(Char::titlecase))
                     }
                 }
             }
 
             Divider(Modifier.fillMaxWidth())
 
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    text = localization.useDarkTheme(),
-                    style = MaterialTheme.typography.h3
-                )
-
-                Checkbox(
-                    checked = useDarkTheme,
-                    onCheckedChange = {
-                        useDarkTheme = it
-                        darkThemeSetter(it)
-                    },
-                    colors = CheckboxDefaults.colors(checkedColor = MaterialTheme.colors.primary)
-                )
-            }
+            // Theme
+            BooleanProperty(
+                modifier = Modifier.fillMaxWidth(),
+                value = useDarkTheme,
+                onCheckedChange = { useDarkTheme = it },
+                label = localization.useDarkTheme()
+            )
 
             Divider(Modifier.fillMaxWidth())
 
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    text = localization.openLastProject(),
-                    style = MaterialTheme.typography.h3
-                )
-
-                Checkbox(
-                    checked = openLastProject,
-                    onCheckedChange = {
-                        openLastProject = it
-                    },
-                    colors = CheckboxDefaults.colors(checkedColor = MaterialTheme.colors.primary)
-                )
-            }
+            // Open last project
+            BooleanProperty(
+                modifier = Modifier.fillMaxWidth(),
+                value = openLastProject,
+                onCheckedChange = { openLastProject = it },
+                label = localization.openLastProject()
+            )
 
             Divider(Modifier.fillMaxWidth())
 

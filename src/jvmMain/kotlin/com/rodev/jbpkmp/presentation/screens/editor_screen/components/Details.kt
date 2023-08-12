@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.dp
 import com.rodev.jbpkmp.presentation.screens.editor_screen.EditorScreenViewModel
 
 @Composable
-fun DefaultDetails(
+fun DetailsPanel(
     modifier: Modifier = Modifier,
     viewModel: EditorScreenViewModel
 ) {

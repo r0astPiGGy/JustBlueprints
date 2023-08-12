@@ -15,7 +15,7 @@ import com.rodev.jbpkmp.presentation.localization.description
 import com.rodev.jbpkmp.presentation.localization.worksWith
 
 @Composable
-fun DefaultDetails(details: ActionDetails) {
+fun DetailsPanel(details: ActionDetails) {
     val localization = Vocabulary.localization
 
     Text(

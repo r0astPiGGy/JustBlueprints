@@ -21,7 +21,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.rodev.jbpkmp.domain.model.variable.GlobalVariable
 import com.rodev.jbpkmp.domain.model.variable.Variable
 import com.rodev.jbpkmp.presentation.localization.Vocabulary
 import com.rodev.jbpkmp.presentation.localization.globalVariables
@@ -29,7 +28,7 @@ import com.rodev.jbpkmp.presentation.localization.localVariables
 import com.rodev.jbpkmp.presentation.screens.editor_screen.*
 
 @Composable
-fun Overview(
+fun OverviewPanel(
     modifier: Modifier = Modifier,
     viewModel: EditorScreenViewModel
 ) {

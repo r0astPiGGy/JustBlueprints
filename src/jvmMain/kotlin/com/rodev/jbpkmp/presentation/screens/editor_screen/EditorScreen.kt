@@ -2,47 +2,34 @@ package com.rodev.jbpkmp.presentation.screens.editor_screen
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.key.onKeyEvent
-import androidx.compose.ui.platform.LocalClipboardManager
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
-import com.rodev.jbpkmp.ViewPortPreview
-import com.rodev.jbpkmp.data.ProgramDataRepositoryImpl
-import com.rodev.jbpkmp.domain.repository.update
+import com.rodev.jbpkmp.presentation.components.HorizontalDivider
+import com.rodev.jbpkmp.presentation.components.MaterialIconButton
 import com.rodev.jbpkmp.presentation.components.Sheet
+import com.rodev.jbpkmp.presentation.components.VerticalDivider
 import com.rodev.jbpkmp.presentation.localization.*
 import com.rodev.jbpkmp.presentation.localization.Vocabulary.localization
 import com.rodev.jbpkmp.presentation.navigation.NavController
-import com.rodev.jbpkmp.presentation.screens.editor_screen.components.DefaultDetails
-import com.rodev.jbpkmp.presentation.screens.editor_screen.components.DraggableContext
-import com.rodev.jbpkmp.presentation.screens.editor_screen.components.DropTarget
-import com.rodev.jbpkmp.presentation.screens.editor_screen.components.Overview
-import com.rodev.jbpkmp.presentation.screens.editor_screen.components.ToolBar
+import com.rodev.jbpkmp.presentation.screens.editor_screen.components.*
 import com.rodev.jbpkmp.presentation.screens.settings_screen.SettingsScreen
 
 @Composable
 fun EditorScreen(navController: NavController, projectPath: String) {
     val viewModel = remember { EditorScreenViewModel(projectPath) }
+    val state = remember { viewModel.state }
 
     // Auto-save
     DisposableEffect(Unit) {
@@ -51,58 +38,27 @@ fun EditorScreen(navController: NavController, projectPath: String) {
         }
     }
 
+    LaunchedEffect(state.navigationResult) {
+        when (state.navigationResult) {
+            NavigationResult.GoBack -> {
+                navController.navigateBack()
+                state.reset()
+            }
+            NavigationResult.Empty -> {}
+        }
+    }
+
     Surface(
         modifier = Modifier
             .onKeyEvent(viewModel::handleKeyEvent)
     ) {
-        var showSettingsScreen by remember { mutableStateOf(false) }
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
         ) {
-            ToolBar(
+            TopBarPanel(
                 modifier = Modifier.fillMaxWidth(),
-                startContent = {
-                    // Back button
-                    MaterialIconButton(
-                        imageVector = Icons.Default.ArrowBack,
-                        onClick = {
-                            ProgramDataRepositoryImpl().update {
-                                settings.lastOpenProjectPath = null
-                            }
-                            navController.navigateBack()
-                        }
-                    )
-
-                    // Settings button
-                    MaterialIconButton(
-                        imageVector = Icons.Default.Settings,
-                        onClick = { showSettingsScreen = true }
-                    )
-                },
-                centerContent = {
-                    // TODO
-//                    viewModel.currentGraph?.let {
-//                        Text(text = viewModel.project.name + it.name)
-//                    }
-                    Text(text = viewModel.project.name)
-                },
-                endContent = {
-                    // Build button
-                    MaterialIconButton(
-                        imageVector = Icons.Default.Build,
-                        enabled = !viewModel.state.isLoading,
-                        onClick = { viewModel.onEvent(EditorScreenEvent.BuildProject) }
-                    )
-
-                    // Save button
-                    MaterialIconButton(
-                        imageVector = Icons.Default.Save,
-                        enabled = !viewModel.state.isLoading,
-                        onClick = { viewModel.onEvent(EditorScreenEvent.SaveProject) }
-                    )
-                }
+                viewModel
             )
 
             HorizontalDivider()
@@ -116,60 +72,14 @@ fun EditorScreen(navController: NavController, projectPath: String) {
                 ) {
                     VerticalDivider()
 
-                    Column(
-                        modifier = Modifier
-                            .requiredWidth(300.dp)
-                    ) {
-
-                        Overview(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .weight(1f),
-                            viewModel = viewModel
-                        )
-
-                        HorizontalDivider()
-
-                        DefaultDetails(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .weight(1f),
-                            viewModel = viewModel
-                        )
-                    }
+                    RightPanel(viewModel)
 
                     VerticalDivider()
 
                     val currentGraph = viewModel.currentGraph
 
                     if (currentGraph != null) {
-                        DropTarget<VariableState>(
-                            modifier = Modifier
-                        ) { isInBound, data, position ->
-                            data?.let {
-                                if (isInBound) {
-                                    viewModel.onEvent(
-                                        EditorScreenEvent.OnDragAndDrop(
-                                            data,
-                                            position
-                                        )
-                                    )
-                                }
-                            }
-
-                            ViewPortPreview(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .then(
-                                        if (isInBound) {
-                                            Modifier.border(4.dp, color = Color.Blue)
-                                        } else {
-                                            Modifier
-                                        }
-                                    ),
-                                viewModel = currentGraph.viewModel
-                            )
-                        }
+                        ViewPortPanel(viewModel, currentGraph)
                     }
                 }
             }
@@ -181,15 +91,15 @@ fun EditorScreen(navController: NavController, projectPath: String) {
                     .fillMaxWidth()
                     .height(40.dp)
                     .background(MaterialTheme.colors.background),
-                screenState = viewModel.state
+                screenState = state
             )
         }
 
-        ResultDialog(screenState = viewModel.state)
+        ResultScreen(screenState = state)
 
-        Sheet(showSettingsScreen) {
+        Sheet(state.showSettingsScreen) {
             SettingsScreen(
-                onDismissRequest = { showSettingsScreen = false },
+                onDismissRequest = { viewModel.onEvent(EditorScreenEvent.CloseSettingsScreen) },
                 modifier = Modifier.fillMaxSize(0.7f)
             )
         }
@@ -197,170 +107,101 @@ fun EditorScreen(navController: NavController, projectPath: String) {
 }
 
 @Composable
-fun ResultDialog(
-    screenState: EditorScreenState
+fun TopBarPanel(
+    modifier: Modifier = Modifier,
+    viewModel: EditorScreenViewModel,
 ) {
-    if (screenState.isLoading) return
-    val result = screenState.result ?: return
-    val dismissRequest = remember {
-        { screenState.reset() }
-    }
+    ToolBar(
+        modifier = modifier,
+        startContent = {
+            // Back button
+            MaterialIconButton(
+                imageVector = Icons.Default.ArrowBack,
+                onClick = { viewModel.onEvent(EditorScreenEvent.CloseProject) }
+            )
 
-    Sheet(
-        true,
-        onDismissRequest = dismissRequest
-    ) {
-        when (result) {
-            is EditorScreenResult.SuccessUpload -> {
-                SuccessUploadScreen(
-                    modifier = Modifier,
-                    uploadCommand = result.uploadCommand,
-                    onDismiss = dismissRequest
-                )
-            }
-            is EditorScreenResult.Error -> {
-                ErrorScreen(
-                    modifier = Modifier
-                        .fillMaxSize(0.5f),
-                    error = result,
-                    onDismiss = dismissRequest
-                )
-            }
-            is EditorScreenResult.Loading -> {}
+            // Settings button
+            MaterialIconButton(
+                imageVector = Icons.Default.Settings,
+                onClick = { viewModel.onEvent(EditorScreenEvent.OpenSettingsScreen) }
+            )
+        },
+        centerContent = {
+            Text(text = viewModel.project.name)
+        },
+        endContent = {
+            // Build button
+            MaterialIconButton(
+                imageVector = Icons.Default.Build,
+                enabled = !viewModel.state.isLoading,
+                onClick = { viewModel.onEvent(EditorScreenEvent.BuildProject) }
+            )
+
+            // Save button
+            MaterialIconButton(
+                imageVector = Icons.Default.Save,
+                enabled = !viewModel.state.isLoading,
+                onClick = { viewModel.onEvent(EditorScreenEvent.SaveProject) }
+            )
         }
-
-    }
+    )
 }
 
 @Composable
-fun SuccessUploadScreen(
-    modifier: Modifier = Modifier,
-    uploadCommand: String,
-    onDismiss: () -> Unit
-) {
-    Surface(
-        shape = RoundedCornerShape(10.dp),
-        modifier = modifier
+fun RightPanel(viewModel: EditorScreenViewModel) {
+    Column(
+        modifier = Modifier
+            .requiredWidth(300.dp)
     ) {
-        val columnPadding = 15.dp
-
-        Column(
+        OverviewPanel(
             modifier = Modifier
-                .padding(columnPadding),
-            verticalArrangement = Arrangement.SpaceBetween
-        ) {
-            Column {
-                Text(
-                    text = localization.uploadSuccess(),
-                    fontSize = MaterialTheme.typography.h3.fontSize
-                )
-                Text(
-                    text = localization.uploadHint()
-                )
-            }
+                .fillMaxWidth()
+                .weight(1f),
+            viewModel = viewModel
+        )
 
-            Spacer(modifier = Modifier.height(30.dp))
+        HorizontalDivider()
 
-            val clipboard = LocalClipboardManager.current
-
-            Button(
-                onClick = {
-                    clipboard.setText(AnnotatedString(uploadCommand))
-                    onDismiss()
-                },
-                modifier = Modifier
-                    .width(150.dp)
-                    .align(Alignment.End)
-            ) {
-                Text(text = localization.copyButton())
-            }
-        }
+        DetailsPanel(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
+            viewModel = viewModel
+        )
     }
 }
 
 @Composable
-fun ErrorScreen(
-    modifier: Modifier = Modifier,
-    error: EditorScreenResult.Error,
-    onDismiss: () -> Unit
+fun ViewPortPanel(
+    viewModel: EditorScreenViewModel,
+    currentGraph: GraphState
 ) {
-    val title = when (error.stage) {
-        LoadingState.UPLOAD -> localization.uploadError()
-        LoadingState.SAVE -> localization.saveError()
-        LoadingState.COMPILE -> localization.compileError()
-    }
+    DropTarget<VariableState>(
+        modifier = Modifier
+    ) { isInBound, data, position ->
+        data?.let {
+            if (isInBound) {
+                viewModel.onEvent(
+                    EditorScreenEvent.OnDragAndDrop(
+                        data,
+                        position
+                    )
+                )
+            }
+        }
 
-    Surface(
-        shape = RoundedCornerShape(10.dp),
-        modifier = modifier
-    ) {
-        val columnPadding = 15.dp
-
-        Column(
+        BlueprintViewPort(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(columnPadding),
-            verticalArrangement = Arrangement.SpaceBetween
-        ) {
-            Column {
-                Text(
-                    text = title,
-                    fontSize = MaterialTheme.typography.h3.fontSize
-                )
-                error.message?.let {
-                    Text(
-                        text = it,
-                        maxLines = 1
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(columnPadding))
-
-            // Stacktrace text
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-            ) {
-                val stateVertical = rememberScrollState(0)
-                val stateHorizontal = rememberScrollState(0)
-
-                SelectionContainer {
-                    Text(
-                        text = error.stackTrace ?: "No stacktrace provided",
-                        color = MaterialTheme.colors.error,
-                        fontFamily = FontFamily.Monospace,
-                        modifier = Modifier
-                            .verticalScroll(stateVertical)
-                            .padding(end = 12.dp, bottom = 12.dp)
-                            .horizontalScroll(stateHorizontal)
-                    )
-                }
-                VerticalScrollbar(
-                    modifier = Modifier.align(Alignment.CenterEnd)
-                        .fillMaxHeight(),
-                    adapter = rememberScrollbarAdapter(stateVertical)
-                )
-                HorizontalScrollbar(
-                    modifier = Modifier.align(Alignment.BottomStart)
-                        .fillMaxWidth()
-                        .padding(end = 12.dp),
-                    adapter = rememberScrollbarAdapter(stateHorizontal)
-                )
-            }
-
-            Spacer(modifier = Modifier.height(columnPadding))
-
-            Button(
-                onClick = onDismiss,
-                modifier = Modifier
-                    .width(150.dp)
-                    .align(Alignment.End)
-            ) {
-                Text(text = localization.ok())
-            }
-        }
+                .then(
+                    if (isInBound) {
+                        Modifier.border(4.dp, color = Color.Blue)
+                    } else {
+                        Modifier
+                    }
+                ),
+            viewModel = currentGraph.viewModel
+        )
     }
 }
 
@@ -393,48 +234,5 @@ fun ActionBar(
                     .width(300.dp),
             )
         }
-    }
-}
-
-const val dividerSize = 3
-
-@Composable
-fun VerticalDivider() {
-    Divider(
-        modifier = Modifier
-            .fillMaxHeight()
-            .width(dividerSize.dp),
-        color = Color.Black
-    )
-}
-
-@Composable
-fun HorizontalDivider() {
-    Divider(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(dividerSize.dp),
-        color = Color.Black
-    )
-}
-
-@Composable
-fun MaterialIconButton(
-    modifier: Modifier = Modifier,
-    enabled: Boolean = true,
-    imageVector: ImageVector,
-    onClick: () -> Unit = {},
-) {
-    IconButton(
-        enabled = enabled,
-        onClick = onClick,
-        modifier = modifier
-            .alpha(if (enabled) 1f else 0.5f)
-    ) {
-        Icon(
-            imageVector = imageVector,
-            contentDescription = null,
-            tint = MaterialTheme.colors.primary
-        )
     }
 }
