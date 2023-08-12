@@ -2,11 +2,9 @@ package com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.node
 
 import com.rodev.generator.action.entity.NodeModel
 import com.rodev.generator.action.entity.PinModel
+import com.rodev.generator.action.entity.Pins
 import com.rodev.generator.action.entity.SelectorType
-import com.rodev.generator.action.entity.extra_data.CompoundExtraData
 import com.rodev.generator.action.entity.extra_data.EnumExtraData
-import com.rodev.generator.action.entity.extra_data.ExtraData
-import com.rodev.jbpkmp.domain.model.PinEntity
 import com.rodev.jbpkmp.domain.repository.DefaultValueComposableRegistry
 import com.rodev.jbpkmp.domain.repository.PinTypeDataSource
 import com.rodev.jbpkmp.domain.repository.SelectorDataSource
@@ -38,14 +36,13 @@ class PinStateFactory(
     private fun createPinDisplay(pinModel: PinModel): PinDisplay {
         val pinType = pinTypeDataSource[pinModel.type]!!
 
-        val pinEntity = PinEntity(
-            id = pinModel.id,
+        return DefaultPinDisplay(
+            typeId = pinModel.id,
             color = pinType.color,
             name = pinModel.label,
-            type = pinType
+            type = pinType,
+            extraData = pinModel.extra
         )
-
-        return DefaultPinDisplay(pinEntity, pinModel.extra)
     }
 
     fun createInputPinState(nodeModel: NodeModel, pin: Pin): PinState {
@@ -74,7 +71,7 @@ class PinStateFactory(
         val pinValue = pin.getValue()
         val pinTypeId = pin.getId()
         val pinModel = nodeModel.findPinModelById(pinTypeId, ConnectionType.OUTPUT)
-        val isExec = pinModel.type == "exec"
+        val isExec = pinModel.type == Pins.Type.EXECUTION
 
         return PinState(
             id = pin.uniqueId,

@@ -647,7 +647,7 @@ class BlueprintCompilerHelper(
 
     }
 
-    val PinAdapter.connectedPins: List<PinAdapter>
+    private val PinAdapter.connectedPins: List<PinAdapter>
         get() = connections.mapNotNull(pinsById::get)
 
     class PinModelAdapter(

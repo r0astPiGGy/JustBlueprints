@@ -1,6 +1,6 @@
 package com.rodev.jbpkmp.domain.model.graph
 
-import com.rodev.jbpkmp.domain.model.variable.scope.VariableScope
+import com.rodev.jbpkmp.domain.model.variable.VariableScope
 import com.rodev.nodeui.model.Graph
 import kotlinx.serialization.Serializable
 

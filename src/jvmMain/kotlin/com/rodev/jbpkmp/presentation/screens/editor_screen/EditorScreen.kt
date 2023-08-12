@@ -72,7 +72,11 @@ fun EditorScreen(navController: NavController, projectPath: String) {
                 ) {
                     VerticalDivider()
 
-                    RightPanel(viewModel)
+                    RightPanel(
+                        modifier = Modifier
+                            .requiredWidth(300.dp),
+                        viewModel
+                    )
 
                     VerticalDivider()
 
@@ -97,7 +101,10 @@ fun EditorScreen(navController: NavController, projectPath: String) {
 
         ResultScreen(screenState = state)
 
-        Sheet(state.showSettingsScreen) {
+        Sheet(
+            presented = state.showSettingsScreen,
+            onDismissRequest = { viewModel.onEvent(EditorScreenEvent.CloseSettingsScreen) }
+        ) {
             SettingsScreen(
                 onDismissRequest = { viewModel.onEvent(EditorScreenEvent.CloseSettingsScreen) },
                 modifier = Modifier.fillMaxSize(0.7f)
@@ -148,10 +155,12 @@ fun TopBarPanel(
 }
 
 @Composable
-fun RightPanel(viewModel: EditorScreenViewModel) {
+fun RightPanel(
+    modifier: Modifier = Modifier,
+    viewModel: EditorScreenViewModel
+) {
     Column(
-        modifier = Modifier
-            .requiredWidth(300.dp)
+        modifier = modifier
     ) {
         OverviewPanel(
             modifier = Modifier

@@ -8,10 +8,11 @@ import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontFamily
@@ -25,16 +26,20 @@ import com.rodev.jbpkmp.presentation.screens.editor_screen.*
 fun ResultScreen(
     screenState: EditorScreenState
 ) {
-    if (screenState.isLoading) return
-    val result = screenState.result ?: return
+    val presented by remember { derivedStateOf {
+        screenState.result != null && !screenState.isLoading
+    } }
+
     val dismissRequest = remember {
         { screenState.reset() }
     }
 
     Sheet(
-        true,
+        presented = presented,
         onDismissRequest = dismissRequest
     ) {
+        val result = remember { screenState.result }
+
         when (result) {
             is EditorScreenResult.SuccessUpload -> {
                 SuccessUploadScreen(
@@ -52,8 +57,8 @@ fun ResultScreen(
                 )
             }
             is EditorScreenResult.Loading -> {}
+            null -> {}
         }
-
     }
 }
 
@@ -143,48 +148,65 @@ fun ErrorScreen(
             Spacer(modifier = Modifier.height(columnPadding))
 
             // Stacktrace text
-            Box(
+
+            StackTraceView(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f)
-            ) {
-                val stateVertical = rememberScrollState(0)
-                val stateHorizontal = rememberScrollState(0)
-
-                SelectionContainer {
-                    Text(
-                        text = error.stackTrace ?: "No stacktrace provided",
-                        color = MaterialTheme.colors.error,
-                        fontFamily = FontFamily.Monospace,
-                        modifier = Modifier
-                            .verticalScroll(stateVertical)
-                            .padding(end = 12.dp, bottom = 12.dp)
-                            .horizontalScroll(stateHorizontal)
-                    )
-                }
-                VerticalScrollbar(
-                    modifier = Modifier.align(Alignment.CenterEnd)
-                        .fillMaxHeight(),
-                    adapter = rememberScrollbarAdapter(stateVertical)
-                )
-                HorizontalScrollbar(
-                    modifier = Modifier.align(Alignment.BottomStart)
-                        .fillMaxWidth()
-                        .padding(end = 12.dp),
-                    adapter = rememberScrollbarAdapter(stateHorizontal)
-                )
-            }
+                    .weight(1f),
+                text = error.stackTrace ?: "No stacktrace provided",
+            )
 
             Spacer(modifier = Modifier.height(columnPadding))
+
+            val focusRequester = remember { FocusRequester() }
+            LaunchedEffect(Unit) { focusRequester.requestFocus() }
 
             Button(
                 onClick = onDismiss,
                 modifier = Modifier
                     .width(150.dp)
                     .align(Alignment.End)
+                    .focusRequester(focusRequester)
             ) {
                 Text(text = localization.ok())
             }
         }
     }
 }
+
+@Composable
+private fun StackTraceView(
+    modifier: Modifier = Modifier,
+    text: String
+) {
+    Box(
+        modifier = modifier
+    ) {
+        val stateVertical = rememberScrollState(0)
+        val stateHorizontal = rememberScrollState(0)
+
+        SelectionContainer {
+            Text(
+                text = text,
+                color = MaterialTheme.colors.error,
+                fontFamily = FontFamily.Monospace,
+                modifier = Modifier
+                    .verticalScroll(stateVertical)
+                    .padding(end = 12.dp, bottom = 12.dp)
+                    .horizontalScroll(stateHorizontal)
+            )
+        }
+        VerticalScrollbar(
+            modifier = Modifier.align(Alignment.CenterEnd)
+                .fillMaxHeight(),
+            adapter = rememberScrollbarAdapter(stateVertical)
+        )
+        HorizontalScrollbar(
+            modifier = Modifier.align(Alignment.BottomStart)
+                .fillMaxWidth()
+                .padding(end = 12.dp),
+            adapter = rememberScrollbarAdapter(stateHorizontal)
+        )
+    }
+}
+

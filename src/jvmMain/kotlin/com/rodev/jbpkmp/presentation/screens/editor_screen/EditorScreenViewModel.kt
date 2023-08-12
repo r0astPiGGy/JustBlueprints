@@ -56,7 +56,68 @@ class EditorScreenViewModel(
         project = Project.loadFromFolder(projectPath)
         // load current graph
         load()
-        state.result = null
+    }
+
+    fun onEvent(event: EditorScreenEvent) {
+        when (event) {
+            is EditorScreenEvent.BuildProject -> {
+                buildProject()
+            }
+
+            is EditorScreenEvent.SaveProject -> {
+                currentGraph?.let(::saveGraphModel)
+            }
+
+            is EditorScreenEvent.AddLocalVariable -> {
+                currentGraph?.let {
+                    val variable = event.variable
+
+                    variablesById[variable.id] = variable
+                    it.variables.add(variable)
+                }
+            }
+
+            is EditorScreenEvent.AddGlobalVariable -> {
+                event.variable.let {
+                    variablesById[it.id] = it
+                    state.variables.add(it)
+                }
+            }
+
+            is EditorScreenEvent.OnDragAndDrop -> {
+                handleDragAndDropEvent(event.variable, event.position)
+            }
+
+            EditorScreenEvent.CloseProject -> {
+                repository.update {
+                    settings.lastOpenProjectPath = null
+                }
+                state.navigationResult = NavigationResult.GoBack
+            }
+            EditorScreenEvent.OpenSettingsScreen -> {
+                state.showSettingsScreen = true
+            }
+            EditorScreenEvent.CloseSettingsScreen -> {
+                state.showSettingsScreen = false
+            }
+        }
+    }
+
+    fun onDispose() {
+        resetSelection()
+        onEvent(EditorScreenEvent.SaveProject)
+        buildJob?.cancel()
+        buildJob = null
+    }
+
+    @OptIn(ExperimentalComposeUiApi::class)
+    fun handleKeyEvent(keyEvent: KeyEvent): Boolean {
+        if (keyEvent.key == Key.Delete) {
+            handleDeleteEvent()
+            return true
+        }
+
+        return false
     }
 
     private fun createNodeStateFactory() = NodeStateFactoryRegistry().apply {
@@ -177,66 +238,11 @@ class EditorScreenViewModel(
         selectable = null
     }
 
-    @OptIn(ExperimentalComposeUiApi::class)
-    fun handleKeyEvent(keyEvent: KeyEvent): Boolean {
-        if (keyEvent.key == Key.Delete) {
-            handleDeleteEvent()
-            return true
-        }
-
-        return false
-    }
-
     private fun handleDeleteEvent() {
         val selectable = this.selectable
         resetSelection()
 
         selectable?.onDelete(selectionActionVisitor)
-    }
-
-    fun onEvent(event: EditorScreenEvent) {
-        when (event) {
-            is EditorScreenEvent.BuildProject -> {
-                buildProject()
-            }
-
-            is EditorScreenEvent.SaveProject -> {
-                currentGraph?.let(::saveGraphModel)
-            }
-
-            is EditorScreenEvent.AddLocalVariable -> {
-                currentGraph?.let {
-                    val variable = event.variable
-
-                    variablesById[variable.id] = variable
-                    it.variables.add(variable)
-                }
-            }
-
-            is EditorScreenEvent.AddGlobalVariable -> {
-                event.variable.let {
-                    variablesById[it.id] = it
-                    state.variables.add(it)
-                }
-            }
-
-            is EditorScreenEvent.OnDragAndDrop -> {
-                handleDragAndDropEvent(event.variable, event.position)
-            }
-
-            EditorScreenEvent.CloseProject -> {
-                repository.update {
-                    settings.lastOpenProjectPath = null
-                }
-                state.navigationResult = NavigationResult.GoBack
-            }
-            EditorScreenEvent.OpenSettingsScreen -> {
-                state.showSettingsScreen = true
-            }
-            EditorScreenEvent.CloseSettingsScreen -> {
-                state.showSettingsScreen = false
-            }
-        }
     }
 
     private fun handleDragAndDropEvent(variableState: VariableState, position: Offset) {
@@ -250,17 +256,6 @@ class EditorScreenViewModel(
 
     override fun getVariableStateById(id: String): VariableState? {
         return variablesById[id]
-    }
-
-    fun resetState() {
-        state.reset()
-    }
-
-    fun onDispose() {
-        resetSelection()
-        onEvent(EditorScreenEvent.SaveProject)
-        buildJob?.cancel()
-        buildJob = null
     }
 
     private fun getBlueprint(): Blueprint? {

@@ -23,12 +23,12 @@ class CodeUploadServiceImpl : CodeUploadService {
     override suspend fun upload(data: String): ApiResult<UploadResult> {
         val uploadUrl = "$BASE_URL/api/upload"
 
-        val response = httpClient.post(uploadUrl) {
-            setBody(data)
-            accept(ContentType.Application.Json)
-        }
-
         try {
+            val response = httpClient.post(uploadUrl) {
+                setBody(data)
+                accept(ContentType.Application.Json)
+            }
+
             return if (response.status.value in 200..299) {
                 val id = response.jsonBody<UploadResponse>().id
 

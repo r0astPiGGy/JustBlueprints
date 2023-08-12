@@ -3,7 +3,6 @@ package com.rodev.jbpkmp.presentation.screens.settings_screen
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import com.rodev.jbpkmp.domain.model.Settings
 import com.rodev.jbpkmp.domain.repository.ProgramDataRepository
 import com.rodev.jbpkmp.domain.repository.update
 

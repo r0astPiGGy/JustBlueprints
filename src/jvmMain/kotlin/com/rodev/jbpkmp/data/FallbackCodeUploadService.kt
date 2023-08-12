@@ -52,10 +52,7 @@ class FallbackCodeUploadService : CodeUploadService {
     }
 
     private suspend inline fun <reified T> HttpResponse.jsonBody(): T {
-        return bodyAsText().let {
-            println(it)
-            json.decodeFromString(it)
-        }
+        return json.decodeFromString(bodyAsText())
     }
 
 }
