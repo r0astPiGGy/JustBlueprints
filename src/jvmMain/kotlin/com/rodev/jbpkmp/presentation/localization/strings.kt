@@ -61,6 +61,18 @@ val uploadHint = Translatable(
         ENGLISH to "The code is stored temporarily, have time to use the command"
     )
 )
+val forceProperty = Translatable(
+    "Force",
+    hashMapOf(
+        ENGLISH to "Force"
+    )
+)
+val forcePropertyTooltip = Translatable(
+    "Если выбрано, удаляет предыдущий код при использовании команды на сервере",
+    hashMapOf(
+        ENGLISH to "If selected, deletes the previous code when using the command on the server"
+    )
+)
 
 // ErrorScreen
 val uploadError = Translatable(

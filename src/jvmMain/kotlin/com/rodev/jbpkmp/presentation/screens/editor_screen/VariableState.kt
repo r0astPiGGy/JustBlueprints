@@ -45,8 +45,18 @@ class LocalVariableState(
     override var selected: Boolean by mutableStateOf(false)
     override var name by mutableStateOf(name)
 
-    override fun onDelete(selectionActionVisitor: SelectionActionVisitor) {
-        selectionActionVisitor.deleteLocalVariable(this)
+    private val clipboardEntry = ClipboardEntryImpl()
+
+    override fun onDelete(actionVisitor: SelectionActionVisitor) {
+        actionVisitor.deleteLocalVariable(this)
+    }
+
+    override fun isClipboardEntryOwner(clipboardEntry: ClipboardEntry): Boolean {
+        return this.clipboardEntry == clipboardEntry
+    }
+
+    override fun asClipboardEntry(): ClipboardEntry {
+        return clipboardEntry
     }
 
     @Composable
@@ -67,6 +77,16 @@ class LocalVariableState(
         )
     }
 
+    private inner class ClipboardEntryImpl : ClipboardEntry {
+        override fun onPaste(actionVisitor: ClipboardActionVisitor) {
+            actionVisitor.pasteLocalVariable(
+                this@LocalVariableState
+                    .toLocalVariable()
+                    .copy(id = UUID.randomUUID().toString())
+            )
+        }
+    }
+
 }
 
 class GlobalVariableState(
@@ -79,8 +99,18 @@ class GlobalVariableState(
     override var name by mutableStateOf(name)
     override var type by mutableStateOf(type)
 
-    override fun onDelete(selectionActionVisitor: SelectionActionVisitor) {
-        selectionActionVisitor.deleteGlobalVariable(this)
+    private val clipboardEntry = ClipboardEntryImpl()
+
+    override fun onDelete(actionVisitor: SelectionActionVisitor) {
+        actionVisitor.deleteGlobalVariable(this)
+    }
+
+    override fun isClipboardEntryOwner(clipboardEntry: ClipboardEntry): Boolean {
+        return this.clipboardEntry == clipboardEntry
+    }
+
+    override fun asClipboardEntry(): ClipboardEntry {
+        return clipboardEntry
     }
 
     @Composable
@@ -136,6 +166,16 @@ class GlobalVariableState(
                     }
                 }
             }
+        }
+    }
+
+    private inner class ClipboardEntryImpl : ClipboardEntry {
+        override fun onPaste(actionVisitor: ClipboardActionVisitor) {
+            actionVisitor.pasteGlobalVariable(
+                this@GlobalVariableState
+                    .toGlobalVariable()
+                    .copy(id = UUID.randomUUID().toString())
+            )
         }
     }
 }

@@ -29,12 +29,14 @@ class ActionDataSourceImpl(
 
     override fun <T> getActions(
         rootTransformFunction: (Category, List<T>) -> T,
-        leafTransformFunction: (Action) -> T
+        leafTransformFunction: (Action) -> T,
+        filter: (Action) -> Boolean
     ) = ActionTransformHelper(
         actionsByCategory = actionsByCategory,
         categoriesByPath = categoriesByPath,
         rootTransformFunction,
-        leafTransformFunction
+        leafTransformFunction,
+        filter
     ).transform()
 
     override fun getActionById(id: String): Action {
@@ -46,7 +48,8 @@ private class ActionTransformHelper<T>(
     private val actionsByCategory: Map<String, List<Action>>,
     private val categoriesByPath: Map<String, Category>,
     private val rootTransformFunction: (Category, List<T>) -> T,
-    private val leafTransformFunction: (Action) -> T
+    private val leafTransformFunction: (Action) -> T,
+    private val filter: (Action) -> Boolean
 ) {
     val rootComponent = CategoryWrapperRoot()
 
@@ -59,7 +62,7 @@ private class ActionTransformHelper<T>(
     fun addActionsToCategory(path: String, actions: List<Action>) {
         getCategoryWrapper(path)
             ?.actions
-            ?.addAll(actions.map(leafTransformFunction))
+            ?.addAll(actions.filter(filter).map(leafTransformFunction))
     }
 
     fun getCategoryWrapper(path: String): CategoryWrapper? {

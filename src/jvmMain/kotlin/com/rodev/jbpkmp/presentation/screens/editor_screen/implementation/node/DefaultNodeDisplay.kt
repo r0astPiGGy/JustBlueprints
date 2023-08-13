@@ -16,19 +16,21 @@ import com.rodev.jbpkmp.presentation.screens.editor_screen.components.DetailsPan
 import com.rodev.jbpkmp.presentation.screens.editor_screen.components.StyledNode
 import com.rodev.jbpkmp.presentation.screens.editor_screen.createNodeTypeTag
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.pin.extra
+import com.rodev.jbpkmp.util.generateUniqueId
 import com.rodev.nodeui.components.node.NodeDisplay
 import com.rodev.nodeui.components.node.NodeState
 import com.rodev.nodeui.components.pin.PinState
 import com.rodev.nodeui.components.pin.row.PinRowState
 import com.rodev.nodeui.model.Node
+import java.util.UUID
 
-class DefaultNodeDisplay(
+open class DefaultNodeDisplay(
     private val nodeEntity: NodeEntity,
     private val selectionHandler: SelectionHandler,
     private val actionDetails: ActionDetails?
 ) : NodeDisplay {
 
-    private var selected: Boolean by mutableStateOf(false)
+    var selected: Boolean by mutableStateOf(false)
 
     @Composable
     override fun NodeView(nodeState: NodeState) {
@@ -48,21 +50,44 @@ class DefaultNodeDisplay(
         }
     }
 
-    private fun onSelect(nodeState: NodeState) {
+    fun onSelect(nodeState: NodeState) {
         if (selected) {
             selectionHandler.resetSelection()
             return
         }
         selectionHandler.onSelect(
-            NodeStateSelectableWrapper(selectGetter = { selected },
+            NodeStateSelectableWrapper(
+                selectGetter = { selected },
                 selectSetter = { selected = it },
                 nodeState = nodeState,
-                detailsComposable = { Details() })
+                nodeSupplier = { copyToNode(nodeState) },
+                detailsComposable = { Details() }
+            )
+        )
+    }
+
+    private fun copyToNode(nodeState: NodeState): Node {
+        return Node(
+            x = nodeState.x,
+            y = nodeState.y,
+            uniqueId = generateUniqueId(),
+            inputPins = nodeState.inputPins.map { it.pinState }.map {
+                it.pinDisplay
+                    .toPin(it)
+                    .copy(uniqueId = generateUniqueId())
+            },
+            outputPins = nodeState.outputPins.map { it.pinState }.map {
+                it.pinDisplay
+                    .toPin(it)
+                    .copy(uniqueId = generateUniqueId())
+            },
+            tag = createNodeTypeTag(typeId = nodeEntity.id)
         )
     }
 
     override fun toNode(nodeState: NodeState): Node {
-        return Node(x = nodeState.x,
+        return Node(
+            x = nodeState.x,
             y = nodeState.y,
             uniqueId = nodeState.id,
             inputPins = nodeState.inputPins.map { it.pinState }.map { it.pinDisplay.toPin(it) },

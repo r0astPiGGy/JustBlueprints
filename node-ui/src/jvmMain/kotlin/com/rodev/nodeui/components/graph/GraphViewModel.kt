@@ -61,9 +61,7 @@ open class GraphViewModel(
         when (event) {
             is NodeAddEvent -> {
                 val node = nodeStateFactory.createNodeState(event.node)
-                node.initListeners()
-
-                _nodeStates.add(node)
+                onNodeAdd(node)
             }
 
             NodeClearEvent -> {
@@ -72,6 +70,11 @@ open class GraphViewModel(
 
             else -> {}
         }
+    }
+
+    protected open fun onNodeAdd(node: NodeState) {
+        node.initListeners()
+        _nodeStates.add(node)
     }
 
     fun save(): Graph {

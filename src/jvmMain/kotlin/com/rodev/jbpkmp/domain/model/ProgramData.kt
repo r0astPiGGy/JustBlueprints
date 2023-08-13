@@ -6,7 +6,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class ProgramData(
     var recentProjects: MutableSet<RecentProject> = mutableSetOf(),
-    var settings: Settings = Settings()
+    var settings: Settings = Settings(),
+    var lastOpenProjectPath: String? = null
 )
 
 @Serializable
@@ -21,5 +22,5 @@ data class Settings(
     var languageCode: String = "ru",
     var useDarkTheme: Boolean = true,
     var openLastProject: Boolean = false,
-    var lastOpenProjectPath: String? = null
+    var forceCodeLoad: Boolean = false
 )

@@ -7,7 +7,8 @@ interface ActionDataSource {
 
     fun <T> getActions(
         rootTransformFunction: (Category, List<T>) -> T,
-        leafTransformFunction: (Action) -> T
+        leafTransformFunction: (Action) -> T,
+        filter: (Action) -> Boolean = { true }
     ): List<T>
 
     fun getActionById(id: String): Action

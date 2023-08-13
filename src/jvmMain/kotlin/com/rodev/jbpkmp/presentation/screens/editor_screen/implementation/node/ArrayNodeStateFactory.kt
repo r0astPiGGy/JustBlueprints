@@ -86,16 +86,16 @@ class ArrayNodeStateFactory(
         val action = actionDataSource.getActionById(typeId)
 
         return ArrayNodeDisplay(
-            NodeEntity(
+            nodeEntity = NodeEntity(
                 id = typeId,
                 header = action.name,
                 subHeader = null,
                 headerColor = nodeType.color,
                 iconPath = action.iconPath
             ),
-            selectionHandler,
-            actionDetailsDataSource[node.id],
-            this
+            selectionHandler = selectionHandler,
+            actionDetails = actionDetailsDataSource[node.id],
+            arrayElementPinFactory = this
         )
     }
 }

@@ -6,7 +6,11 @@ interface Selectable {
 
     var selected: Boolean
 
-    fun onDelete(selectionActionVisitor: SelectionActionVisitor)
+    fun onDelete(actionVisitor: SelectionActionVisitor)
+
+    fun isClipboardEntryOwner(clipboardEntry: ClipboardEntry): Boolean
+
+    fun asClipboardEntry(): ClipboardEntry
 
     @Composable
     fun Details()

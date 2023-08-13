@@ -5,24 +5,26 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.input.key.Key
-import androidx.compose.ui.input.key.KeyEvent
-import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.*
 import com.rodev.jbpkmp.data.GlobalDataSource
 import com.rodev.jbpkmp.data.CodeUploadServiceImpl
 import com.rodev.jbpkmp.data.ProgramDataRepositoryImpl
 import com.rodev.jbpkmp.domain.compiler.BlueprintCompiler
 import com.rodev.jbpkmp.domain.model.*
 import com.rodev.jbpkmp.domain.model.graph.EventGraph
+import com.rodev.jbpkmp.domain.model.variable.GlobalVariable
+import com.rodev.jbpkmp.domain.model.variable.LocalVariable
 import com.rodev.jbpkmp.domain.remote.ApiResult
 import com.rodev.jbpkmp.domain.remote.CodeUploadService
 import com.rodev.jbpkmp.domain.repository.ProgramDataRepository
 import com.rodev.jbpkmp.domain.repository.update
+import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.NodeAddAtCursorEvent
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.CreateVariableGraphEvent
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.DefaultPinTypeComparator
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.ViewPortViewModel
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.node.*
 import com.rodev.nodeui.components.node.NodeState
+import com.rodev.nodeui.model.Node
 import kotlinx.coroutines.*
 import kotlinx.serialization.json.Json
 
@@ -37,20 +39,24 @@ class EditorScreenViewModel(
     var currentGraph by mutableStateOf<GraphState?>(null)
         private set
 
-    val state = EditorScreenState()
-
     private var buildJob: Job? = null
 
     private val blueprintCompiler = BlueprintCompiler()
 
+    private val selectionActionVisitor: SelectionActionVisitor = SelectionActionVisitorImpl()
+
     var selectable: Selectable? by mutableStateOf(null)
         private set
-
     private val variablesById = hashMapOf<String, VariableState>()
 
-    private val selectionActionVisitor: SelectionActionVisitor = SelectionActionVisitorImpl()
     private val nodeStateFactory = createNodeStateFactory()
     private val repository: ProgramDataRepository = ProgramDataRepositoryImpl()
+    val state = EditorScreenState(
+        forceCodeLoad = repository.load().settings.forceCodeLoad
+    )
+
+    private val clipboardActionVisitor: ClipboardActionVisitor = ClipboardActionVisitorImpl()
+    private var clipboardEntry: ClipboardEntry? = null
 
     init {
         project = Project.loadFromFolder(projectPath)
@@ -90,7 +96,7 @@ class EditorScreenViewModel(
 
             EditorScreenEvent.CloseProject -> {
                 repository.update {
-                    settings.lastOpenProjectPath = null
+                    lastOpenProjectPath = null
                 }
                 state.navigationResult = NavigationResult.GoBack
             }
@@ -106,18 +112,74 @@ class EditorScreenViewModel(
     fun onDispose() {
         resetSelection()
         onEvent(EditorScreenEvent.SaveProject)
+        repository.update {
+            settings.forceCodeLoad = state.forceCodeLoad
+        }
         buildJob?.cancel()
         buildJob = null
     }
 
     @OptIn(ExperimentalComposeUiApi::class)
     fun handleKeyEvent(keyEvent: KeyEvent): Boolean {
+        if (keyEvent.type != KeyEventType.KeyUp) return false
+
         if (keyEvent.key == Key.Delete) {
-            handleDeleteEvent()
-            return true
+            return handleDeleteEvent()
+        }
+
+        if (keyEvent.key == Key.C && keyEvent.isCtrlPressed) {
+            return handleCopyEvent()
+        }
+
+        if (keyEvent.key == Key.V && keyEvent.isCtrlPressed) {
+            return handlePasteEvent()
         }
 
         return false
+    }
+
+    private fun handleCopyEvent(): Boolean {
+        val selectable = this.selectable ?: return false
+
+        clipboardEntry = selectable.asClipboardEntry()
+
+        return true
+    }
+
+    private fun handlePasteEvent(): Boolean {
+        val clipboardEntry = this.clipboardEntry ?: return false
+
+        clipboardEntry.onPaste(clipboardActionVisitor)
+
+        return true
+    }
+
+    private fun handleDeleteEvent(): Boolean {
+        val selectable = this.selectable
+        resetSelection()
+
+        selectable?.let {
+            if (it.isClipboardEntryOwner(clipboardEntry)) {
+                this.clipboardEntry = null
+            }
+
+            it.onDelete(selectionActionVisitor)
+        }
+
+        return true
+    }
+
+    private fun Selectable.isClipboardEntryOwner(clipboardEntry: ClipboardEntry?): Boolean {
+        clipboardEntry ?: return false
+
+        return isClipboardEntryOwner(clipboardEntry)
+    }
+
+    override fun resetSelection() {
+        selectable?.let {
+            it.selected = false
+        }
+        selectable = null
     }
 
     private fun createNodeStateFactory() = NodeStateFactoryRegistry().apply {
@@ -198,6 +260,28 @@ class EditorScreenViewModel(
         selectable.selected = true
     }
 
+    private fun pasteNode(node: Node) {
+        val graph = currentGraph ?: return
+
+        graph.viewModel.onEvent(NodeAddAtCursorEvent(node))
+    }
+
+    private fun pasteLocalVariable(variable: LocalVariable) {
+        onEvent(
+            EditorScreenEvent.AddLocalVariable(
+                variable.toState()
+            )
+        )
+    }
+
+    private fun pasteGlobalVariable(variable: GlobalVariable) {
+        onEvent(
+            EditorScreenEvent.AddGlobalVariable(
+                variable.toState()
+            )
+        )
+    }
+
     private fun deleteNode(nodeState: NodeState) {
         currentGraph?.viewModel?.deleteNode(nodeState)
     }
@@ -231,20 +315,6 @@ class EditorScreenViewModel(
         }
     }
 
-    override fun resetSelection() {
-        selectable?.let {
-            it.selected = false
-        }
-        selectable = null
-    }
-
-    private fun handleDeleteEvent() {
-        val selectable = this.selectable
-        resetSelection()
-
-        selectable?.onDelete(selectionActionVisitor)
-    }
-
     private fun handleDragAndDropEvent(variableState: VariableState, position: Offset) {
         val currentGraph = currentGraph ?: return
         val targetPosition = currentGraph.viewModel.scrollOffset + position
@@ -274,6 +344,12 @@ class EditorScreenViewModel(
     }
 
     private suspend fun build(blueprint: Blueprint) {
+        state.result = EditorScreenResult.SuccessUpload(
+            uploadCommand = CodeLoadCommand("bebra")
+        )
+
+        if (0 == 0) return
+
         state.result = EditorScreenResult.Loading(state = LoadingState.COMPILE)
 
         val data = try {
@@ -285,10 +361,8 @@ class EditorScreenViewModel(
                 message = e.message,
                 stackTrace = e.stackTraceToString()
             )
-            null
+            return
         }
-
-        data ?: return
 
         state.result = EditorScreenResult.Loading(state = LoadingState.UPLOAD)
 
@@ -311,7 +385,7 @@ class EditorScreenViewModel(
             }
             is ApiResult.Success -> {
                 state.result = EditorScreenResult.SuccessUpload(
-                    uploadCommand = apiResult.data.commandToLoad
+                    uploadCommand = CodeLoadCommand(apiResult.data.link)
                 )
             }
         }
@@ -349,6 +423,20 @@ class EditorScreenViewModel(
 
         override fun deleteGlobalVariable(variable: GlobalVariableState) {
             this@EditorScreenViewModel.deleteGlobalVariable(variable)
+        }
+    }
+
+    private inner class ClipboardActionVisitorImpl : ClipboardActionVisitor {
+        override fun pasteNode(nodeState: Node) {
+            this@EditorScreenViewModel.pasteNode(nodeState)
+        }
+
+        override fun pasteLocalVariable(variable: LocalVariable) {
+            this@EditorScreenViewModel.pasteLocalVariable(variable)
+        }
+
+        override fun pasteGlobalVariable(variable: GlobalVariable) {
+            this@EditorScreenViewModel.pasteGlobalVariable(variable)
         }
 
     }

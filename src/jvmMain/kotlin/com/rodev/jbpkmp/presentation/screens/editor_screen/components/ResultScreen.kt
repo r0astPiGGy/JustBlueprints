@@ -4,23 +4,26 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.material.Button
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
+import com.rodev.jbpkmp.domain.model.CodeLoadCommand
 import com.rodev.jbpkmp.presentation.components.Sheet
 import com.rodev.jbpkmp.presentation.localization.*
 import com.rodev.jbpkmp.presentation.localization.Vocabulary.localization
 import com.rodev.jbpkmp.presentation.screens.editor_screen.*
+import com.rodev.jbpkmp.theme.gray
 
 @Composable
 fun ResultScreen(
@@ -44,7 +47,8 @@ fun ResultScreen(
             is EditorScreenResult.SuccessUpload -> {
                 SuccessUploadScreen(
                     modifier = Modifier,
-                    uploadCommand = result.uploadCommand,
+                    loadCommand = result.uploadCommand,
+                    screenState = screenState,
                     onDismiss = dismissRequest
                 )
             }
@@ -65,7 +69,8 @@ fun ResultScreen(
 @Composable
 fun SuccessUploadScreen(
     modifier: Modifier = Modifier,
-    uploadCommand: String,
+    loadCommand: CodeLoadCommand,
+    screenState: EditorScreenState,
     onDismiss: () -> Unit
 ) {
     Surface(
@@ -93,18 +98,87 @@ fun SuccessUploadScreen(
 
             val clipboard = LocalClipboardManager.current
 
-            Button(
-                onClick = {
-                    clipboard.setText(AnnotatedString(uploadCommand))
-                    onDismiss()
-                },
+            Row(
                 modifier = Modifier
-                    .width(150.dp)
-                    .align(Alignment.End)
+                    .align(Alignment.End),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = localization.copyButton())
+
+                InfoCheckBox(
+                    label = localization.forceProperty(),
+                    checked = screenState.forceCodeLoad,
+                    onCheck = { screenState.forceCodeLoad = it },
+                    tooltipText = localization.forcePropertyTooltip()
+                )
+
+                Spacer(Modifier.width(30.dp))
+
+                Button(
+                    onClick = {
+                        clipboard.setText(
+                            AnnotatedString(loadCommand.toString(screenState.forceCodeLoad))
+                        )
+                        onDismiss()
+                    },
+                    modifier = Modifier
+                        .width(150.dp)
+                ) {
+                    Text(text = localization.copyButton())
+                }
             }
+
         }
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun InfoCheckBox(
+    modifier: Modifier = Modifier,
+    tooltipText: String,
+    label: String,
+    onCheck: (Boolean) -> Unit,
+    checked: Boolean
+) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        TooltipArea(
+            tooltip = {
+                Surface(
+                    modifier = Modifier.shadow(4.dp),
+                    color = MaterialTheme.colors.background,
+                    shape = RoundedCornerShape(4.dp)
+                ) {
+                    Text(
+                        text = tooltipText,
+                        color = MaterialTheme.colors.onBackground,
+                        modifier = Modifier.padding(10.dp)
+                    )
+                }
+            },
+            delayMillis = 100
+        ) {
+            Icon(
+                imageVector = Icons.Default.Info,
+                contentDescription = null,
+                tint = gray
+            )
+        }
+
+        Spacer(Modifier.width(8.dp))
+
+        Text(label)
+
+        Spacer(Modifier.width(10.dp))
+
+        Checkbox(
+            checked = checked,
+            onCheckedChange = onCheck,
+            modifier = Modifier.size(20.dp),
+            colors = CheckboxDefaults.colors(checkedColor = MaterialTheme.colors.primary)
+        )
     }
 }
 

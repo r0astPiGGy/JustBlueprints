@@ -1,9 +1,11 @@
 package com.rodev.jbpkmp.presentation.screens.editor_screen
 
 import androidx.compose.runtime.*
+import com.rodev.jbpkmp.domain.model.CodeLoadCommand
 
 class EditorScreenState(
-    variables: List<GlobalVariableState> = emptyList()
+    variables: List<GlobalVariableState> = emptyList(),
+    forceCodeLoad: Boolean = false
 ) {
 
     val variables = mutableStateListOf<GlobalVariableState>()
@@ -13,6 +15,8 @@ class EditorScreenState(
     val isLoading by derivedStateOf {
         result is EditorScreenResult.Loading
     }
+
+    var forceCodeLoad by mutableStateOf(forceCodeLoad)
 
     var navigationResult: NavigationResult by mutableStateOf(NavigationResult.Empty)
 
@@ -33,7 +37,7 @@ sealed class NavigationResult {
 
 sealed class EditorScreenResult {
 
-    class SuccessUpload(val uploadCommand: String) : EditorScreenResult()
+    class SuccessUpload(val uploadCommand: CodeLoadCommand) : EditorScreenResult()
 
     class Loading(val state: LoadingState) : EditorScreenResult()
 

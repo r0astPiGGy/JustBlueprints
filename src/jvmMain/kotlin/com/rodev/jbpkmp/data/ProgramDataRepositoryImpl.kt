@@ -11,8 +11,12 @@ class ProgramDataRepositoryImpl : ProgramDataRepository {
     private val dirPath = justBlueprintsDirectoryPath
     private val cachePath = "$dirPath${File.separator}ProgramData.json"
 
+    private val json = Json {
+        prettyPrint = true
+        ignoreUnknownKeys = true
+    }
+
     override fun save(data: ProgramData) {
-        val json = Json { prettyPrint = true }
         val jsonData = json.encodeToString(data)
 
         File(dirPath).mkdirs()
@@ -24,7 +28,7 @@ class ProgramDataRepositoryImpl : ProgramDataRepository {
 
     override fun load(): ProgramData {
         return try {
-            Json.decodeFromString(File(cachePath).readText())
+            json.decodeFromString(File(cachePath).readText())
         } catch (e: Exception) {
             ProgramData()
         }

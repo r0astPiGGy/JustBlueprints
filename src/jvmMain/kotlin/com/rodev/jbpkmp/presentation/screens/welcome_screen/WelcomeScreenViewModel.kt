@@ -25,15 +25,16 @@ class WelcomeScreenViewModel(
     )
 
     init {
-        val settings = repository.load().settings
-        val lastOpenProjectPath = settings.lastOpenProjectPath
+        val programData = repository.load()
+        val lastOpenProjectPath = programData.lastOpenProjectPath
+        val openLastProject = programData.settings.openLastProject
 
-        if (settings.openLastProject && lastOpenProjectPath != null) {
+        if (openLastProject && lastOpenProjectPath != null) {
             if (Project.isValid(lastOpenProjectPath)) {
                 state.result = WelcomeScreenResult.OpenProject(lastOpenProjectPath)
             } else {
                 repository.update {
-                    settings.lastOpenProjectPath = null
+                    this.lastOpenProjectPath = null
                 }
             }
         }
@@ -104,7 +105,7 @@ class WelcomeScreenViewModel(
                     lastOpeningDate = Clock.System.todayIn(TimeZone.currentSystemDefault())
                 ))
             }
-            settings.lastOpenProjectPath = project.path
+            lastOpenProjectPath = project.path
         }
 
         getRecentProjects()

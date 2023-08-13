@@ -13,6 +13,7 @@ import com.rodev.jbpkmp.presentation.screens.editor_screen.createVariableNodeTag
 import com.rodev.nodeui.components.node.NodeDisplay
 import com.rodev.nodeui.components.node.NodeState
 import com.rodev.nodeui.model.Node
+import java.util.UUID
 
 class VariableNodeDisplay(
     private val selectionHandler: SelectionHandler,
@@ -49,8 +50,24 @@ class VariableNodeDisplay(
                 selectGetter = { selected },
                 selectSetter = { selected = it },
                 nodeState = nodeState,
+                nodeSupplier = { copyToNode(nodeState) },
                 detailsComposable = { variableState.Details() }
             )
+        )
+    }
+
+    private fun copyToNode(nodeState: NodeState): Node {
+        return Node(
+            x = nodeState.x,
+            y = nodeState.y,
+            uniqueId = UUID.randomUUID().toString(),
+            inputPins = emptyList(),
+            outputPins = nodeState.outputPins.map { it.pinState }.map {
+                it.pinDisplay
+                    .toPin(it)
+                    .copy(uniqueId = UUID.randomUUID().toString())
+            },
+            tag = createVariableNodeTag(variableId)
         )
     }
 

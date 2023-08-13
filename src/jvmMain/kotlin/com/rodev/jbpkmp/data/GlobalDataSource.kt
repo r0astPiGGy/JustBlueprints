@@ -92,8 +92,9 @@ object GlobalDataSource :
     override fun getNodeTypeById(id: String): NodeType? = mutableNodeTypes[id]
     override fun <T> getActions(
         rootTransformFunction: (Category, List<T>) -> T,
-        leafTransformFunction: (Action) -> T
-    ): List<T> = actionDataSource.getActions(rootTransformFunction, leafTransformFunction)
+        leafTransformFunction: (Action) -> T,
+        filter: (Action) -> Boolean
+    ): List<T> = actionDataSource.getActions(rootTransformFunction, leafTransformFunction, filter)
 
     override fun getActionById(id: String): Action = actionDataSource.getActionById(id)
 

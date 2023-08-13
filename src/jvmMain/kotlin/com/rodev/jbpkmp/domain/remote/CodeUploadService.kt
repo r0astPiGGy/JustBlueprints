@@ -7,5 +7,5 @@ interface CodeUploadService {
 }
 
 data class UploadResult(
-    val commandToLoad: String
+    val link: String
 )

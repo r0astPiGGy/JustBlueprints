@@ -20,6 +20,7 @@ import com.rodev.nodeui.components.graph.PinTypeComparator
 import com.rodev.nodeui.components.node.NodeStateFactory
 import com.rodev.nodeui.components.pin.PinState
 import com.rodev.nodeui.components.wire.WireFactory
+import com.rodev.nodeui.model.Node
 import kotlin.random.Random
 
 open class ViewPortViewModel(
@@ -40,6 +41,8 @@ open class ViewPortViewModel(
     var contextMenuModel by mutableStateOf<ContextMenuModel?>(null)
         private set
 
+    var lastCursorPosition = Offset.Zero
+
     private var lastContextMenuInvokePosition: Offset? = null
 
     override fun onEvent(event: GraphEvent) {
@@ -56,6 +59,19 @@ open class ViewPortViewModel(
 
             CloseContextMenuGraphEvent -> {
                 onContextMenuClose()
+            }
+
+            is NodeAddAtCursorEvent -> {
+                val position = lastCursorPosition + scrollOffset
+
+                onEvent(
+                    NodeAddEvent(
+                        event.node.copy(
+                            x = position.x,
+                            y = position.y
+                        )
+                    )
+                )
             }
 
             is ActionSelectedGraphEvent -> {
@@ -114,6 +130,10 @@ open class ViewPortViewModel(
 }
 
 object CloseContextMenuGraphEvent : GraphEvent
+
+data class NodeAddAtCursorEvent(
+    val node: Node
+) : GraphEvent
 
 data class ShowContextMenuGraphEvent(
     val position: Offset
