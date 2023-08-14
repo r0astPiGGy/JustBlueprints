@@ -1,16 +1,13 @@
 package com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.node
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import com.rodev.generator.action.entity.ActionDetails
 import com.rodev.generator.action.entity.extra_data.CompoundExtraData
 import com.rodev.generator.action.entity.extra_data.ConnectionDisabledExtraData
 import com.rodev.generator.action.entity.extra_data.ExecPairExtraData
 import com.rodev.generator.action.entity.extra_data.ExtraData
 import com.rodev.jbpkmp.domain.model.NodeEntity
+import com.rodev.jbpkmp.domain.repository.IconDataSource
 import com.rodev.jbpkmp.presentation.screens.editor_screen.SelectionHandler
 import com.rodev.jbpkmp.presentation.screens.editor_screen.components.DetailsPanel
 import com.rodev.jbpkmp.presentation.screens.editor_screen.components.StyledNode
@@ -22,11 +19,11 @@ import com.rodev.nodeui.components.node.NodeState
 import com.rodev.nodeui.components.pin.PinState
 import com.rodev.nodeui.components.pin.row.PinRowState
 import com.rodev.nodeui.model.Node
-import java.util.UUID
 
 open class DefaultNodeDisplay(
     private val nodeEntity: NodeEntity,
     private val selectionHandler: SelectionHandler,
+    private val iconDataSource: IconDataSource,
     private val actionDetails: ActionDetails?
 ) : NodeDisplay {
 
@@ -34,13 +31,14 @@ open class DefaultNodeDisplay(
 
     @Composable
     override fun NodeView(nodeState: NodeState) {
-        val specificNodePins = rememberSpecificNodePins(nodeState)
-
-        StyledNode(specificNodePins,
+        StyledNode(
+            specificNodePins = rememberSpecificNodePins(nodeState),
             nodeState = nodeState,
             nodeEntity = nodeEntity,
             selected = selected,
-            onTap = { onSelect(nodeState) })
+            onTap = { onSelect(nodeState) },
+            iconDataSource = iconDataSource
+        )
     }
 
     @Composable

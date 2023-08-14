@@ -5,8 +5,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import com.rodev.jbpkmp.data.GlobalDataSource
 import com.rodev.jbpkmp.domain.repository.ActionDataSource
+import com.rodev.jbpkmp.domain.repository.IconDataSource
 import com.rodev.jbpkmp.domain.repository.NodeDataSource
 import com.rodev.jbpkmp.domain.repository.getNodeById
 import com.rodev.jbpkmp.presentation.screens.editor_screen.VariableState
@@ -28,7 +28,8 @@ open class ViewPortViewModel(
     nodeStateFactory: NodeStateFactory,
     wireFactory: WireFactory = WireFactory(),
     private val actionDataSource: ActionDataSource,
-    private val nodeDataSource: NodeDataSource
+    private val nodeDataSource: NodeDataSource,
+    private val iconDataSource: IconDataSource
 ) : GraphViewModel(
     nodeStateFactory = nodeStateFactory,
     pinTypeComparator = pinTypeComparator,
@@ -115,13 +116,13 @@ open class ViewPortViewModel(
     }
 
     open fun provideContextMenuData(): List<ContextTreeNode> {
-        return actionDataSource.getActions<ContextTreeNode>(
+        return actionDataSource.transformActions<ContextTreeNode>(
             rootTransformFunction = { category, child ->
                 ContextTreeNode.Root(child, category.name)
             },
             leafTransformFunction = {
                 ContextTreeNode.Leaf(name = it.name, id = it.id) {
-                    GlobalDataSource.getIconById(it.iconPath)
+                    iconDataSource.getIconById(it.iconPath)
                 }
             }
         )

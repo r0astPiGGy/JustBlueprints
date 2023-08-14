@@ -24,8 +24,8 @@ import androidx.compose.ui.layout.*
 import androidx.compose.ui.unit.*
 import com.rodev.generator.action.entity.PinType
 import com.rodev.generator.action.entity.Pins
-import com.rodev.jbpkmp.data.GlobalDataSource
 import com.rodev.jbpkmp.domain.model.NodeEntity
+import com.rodev.jbpkmp.domain.repository.IconDataSource
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.node.*
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.pin.DefaultPinShape
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.pin.ExecPinShape
@@ -42,10 +42,7 @@ const val boundSpacing = 16
 const val boundSpacingWithPin = boundSpacing - pinPadding
 const val verticalSpacing = 8
 
-val headerColor = Color(151, 30, 202)
 val backgroundColor = Color(60, 58, 54, alpha = 230)
-val pinColor = Color(11, 218, 81)
-val pinOutline = Color(0, 0, 0)
 
 @Composable
 fun InputPinRow(
@@ -399,6 +396,7 @@ private fun DisabledConnectionRow(
 @Composable
 @Preview
 fun StyledNode(
+    iconDataSource: IconDataSource,
     specificNodePins: SpecificNodePins,
     nodeState: NodeState,
     nodeEntity: NodeEntity,
@@ -476,7 +474,7 @@ fun StyledNode(
                     .padding(start = boundSpacing.dp, end = boundSpacing.dp)
                     .fillMaxWidth()
             ) {
-                val image = remember { GlobalDataSource.getIconById(nodeEntity.iconPath) }
+                val image = remember { iconDataSource.getIconById(nodeEntity.iconPath) }
                 if (image != null) {
                     Image(
                         painter = BitmapPainter(image),

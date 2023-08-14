@@ -5,7 +5,9 @@ import com.rodev.generator.action.entity.Category
 
 interface ActionDataSource {
 
-    fun <T> getActions(
+    fun getAllActions(): List<Action>
+
+    fun <T> transformActions(
         rootTransformFunction: (Category, List<T>) -> T,
         leafTransformFunction: (Action) -> T,
         filter: (Action) -> Boolean = { true }

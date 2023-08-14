@@ -2,13 +2,7 @@ package com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.node
 
 import com.rodev.generator.action.entity.extra_data.EventExtraData
 import com.rodev.jbpkmp.domain.model.NodeEntity
-import com.rodev.jbpkmp.domain.repository.ActionDataSource
-import com.rodev.jbpkmp.domain.repository.ActionDetailsDataSource
-import com.rodev.jbpkmp.domain.repository.NodeDataSource
-import com.rodev.jbpkmp.domain.repository.NodeTypeDataSource
-import com.rodev.jbpkmp.domain.repository.PinTypeDataSource
-import com.rodev.jbpkmp.domain.repository.SelectorDataSource
-import com.rodev.jbpkmp.domain.repository.get
+import com.rodev.jbpkmp.domain.repository.*
 import com.rodev.jbpkmp.presentation.screens.editor_screen.SelectionHandler
 import com.rodev.jbpkmp.presentation.screens.editor_screen.getType
 import com.rodev.jbpkmp.util.castTo
@@ -26,6 +20,7 @@ class DefaultNodeStateFactory(
     private val actionDataSource: ActionDataSource,
     private val selectionHandler: SelectionHandler,
     private val actionDetailsDataSource: ActionDetailsDataSource,
+    private val iconDataSource: IconDataSource,
     selectorDataSource: SelectorDataSource,
     pinTypeDataSource: PinTypeDataSource
 ) : NodeStateFactory {
@@ -81,15 +76,16 @@ class DefaultNodeStateFactory(
         }
 
         return DefaultNodeDisplay(
-            NodeEntity(
+            nodeEntity = NodeEntity(
                 id = typeId,
                 header = action.name,
                 subHeader = subHeader,
                 headerColor = nodeType.color,
                 iconPath = action.iconPath
             ),
-            selectionHandler,
-            actionDetailsDataSource[node.id]
+            selectionHandler = selectionHandler,
+            actionDetails = actionDetailsDataSource[node.id],
+            iconDataSource = iconDataSource
         )
     }
 

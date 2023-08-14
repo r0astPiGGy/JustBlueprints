@@ -17,7 +17,6 @@ import com.rodev.jbp.compiler.module.value.GameValue
 import com.rodev.jbp.compiler.module.value.Value
 import com.rodev.jbp.compiler.module.value.ValueType
 import com.rodev.jbp.compiler.module.value.constants.*
-import com.rodev.jbpkmp.data.GlobalDataSource
 import com.rodev.jbpkmp.domain.compiler.Nodes.Factory.Companion.toFactory
 import com.rodev.jbpkmp.domain.compiler.exception.BlueprintCompileException
 import com.rodev.jbpkmp.domain.model.Blueprint
@@ -32,11 +31,9 @@ import com.rodev.nodeui.model.Node
 import com.rodev.nodeui.model.Pin
 
 class BlueprintCompilerHelper(
+    private val nodeDataSource: NodeDataSource,
     blueprint: Blueprint
 ) {
-
-    val nodeDataSource: NodeDataSource = GlobalDataSource
-
     val connections = blueprint.eventGraph.graph.connections
     val graphNodes = blueprint.eventGraph.graph.nodes
     val localVariables = blueprint.eventGraph.localVariables

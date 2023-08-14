@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.rodev.jbpkmp.domain.model.RecentProject
 import com.rodev.jbpkmp.presentation.localization.Vocabulary
 import com.rodev.jbpkmp.presentation.localization.noRecentProjects
 import com.rodev.jbpkmp.presentation.screens.welcome_screen.ProjectsPanelState
@@ -24,7 +25,9 @@ import com.rodev.jbpkmp.presentation.screens.welcome_screen.ProjectsPanelState
 @Composable
 fun ProjectsPanel(
     modifier: Modifier = Modifier,
-    state: ProjectsPanelState
+    state: ProjectsPanelState,
+    onProjectOpen: (RecentProject) -> Unit,
+    onProjectDelete: (RecentProject) -> Unit
 ) {
     val localization = Vocabulary.localization
 
@@ -59,10 +62,17 @@ fun ProjectsPanel(
                                 Color.Transparent
                             }
                         )
-                        .clickable { state.onSelect(projectState) },
+                        .clickable {
+                            if (state.isProjectSelected(projectState)) {
+                                onProjectOpen(projectState.recentProject)
+                            } else {
+                                state.onSelect(projectState)
+                            }
+                        },
                     state = projectState,
                     onDeleteClick = {
                         state.onDelete(projectState)
+                        onProjectDelete(projectState.recentProject)
                     }
                 )
             }

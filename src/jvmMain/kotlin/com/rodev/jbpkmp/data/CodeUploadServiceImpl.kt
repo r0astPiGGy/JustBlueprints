@@ -34,7 +34,7 @@ class CodeUploadServiceImpl : CodeUploadService {
 
                 ApiResult.Success(
                     data = UploadResult(
-                        link = "/module loadUrl force $BASE_URL/api/$id"
+                        link = "$BASE_URL/api/$id"
                     )
                 )
             } else {

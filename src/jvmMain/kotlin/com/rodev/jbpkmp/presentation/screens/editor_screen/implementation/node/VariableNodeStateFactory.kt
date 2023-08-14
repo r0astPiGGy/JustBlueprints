@@ -41,7 +41,6 @@ class VariableNodeStateFactory(
         ).apply {
             outputPins.add(
                 PinRowState(
-//                    pinRowDisplay = DefaultOutputPinRowDisplay,
                     pinState = PinState(
                         id = outputPin.uniqueId,
                         connectionType = ConnectionType.OUTPUT,

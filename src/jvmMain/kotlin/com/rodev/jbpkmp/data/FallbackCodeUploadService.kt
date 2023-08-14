@@ -46,7 +46,7 @@ class FallbackCodeUploadService : CodeUploadService {
 
         return ApiResult.Success(
             data = UploadResult(
-                link = "/module loadUrl force $link"
+                link = link
             )
         )
     }

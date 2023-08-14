@@ -32,19 +32,17 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.node.VariableNodeState
 import com.rodev.nodeui.components.node.NodeState
 import kotlin.math.roundToInt
 
 @Composable
 fun VariableNode(
     nodeState: NodeState,
-    header: String,
-    subHeader: String,
-    selected: Boolean,
+    state: VariableNodeState,
     onTap: () -> Unit = {}
 ) {
     val pinRowState = nodeState.outputPins.first()
-    val subHeaderUpdatable by rememberUpdatedState(subHeader)
 
     Surface(
         color = Color.Transparent,
@@ -95,7 +93,7 @@ fun VariableNode(
                     .drawBehind {
                         val cornerRadius = CornerRadius(5f)
                         drawRoundRect(color = backgroundColor, cornerRadius = cornerRadius)
-                        if (selected) {
+                        if (state.selected) {
                             drawRoundRect(
                                 color = Color.White,
                                 cornerRadius = cornerRadius,
@@ -127,13 +125,13 @@ fun VariableNode(
                                 )
                         ) {
                             Text(
-                                text = header,
+                                text = state.name,
                                 overflow = TextOverflow.Ellipsis,
                                 color = Color.White,
                                 maxLines = 1,
                             )
                             Text(
-                                text = subHeaderUpdatable,
+                                text = state.subHeader.typeName,
                                 overflow = TextOverflow.Ellipsis,
                                 maxLines = 1,
                                 fontSize = 13.sp,

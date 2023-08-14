@@ -31,6 +31,8 @@ kotlin {
     sourceSets {
         val jvmMain by getting {
             dependencies {
+                implementation("io.insert-koin:koin-core:3.4.3")
+                implementation("io.insert-koin:koin-compose:1.0.4")
                 implementation(compose.desktop.currentOs)
                 implementation(project(":node-ui"))
                 implementation(project(":action-generator"))

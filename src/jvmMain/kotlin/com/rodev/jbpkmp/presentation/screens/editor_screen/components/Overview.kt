@@ -26,24 +26,28 @@ import com.rodev.jbpkmp.presentation.localization.Vocabulary
 import com.rodev.jbpkmp.presentation.localization.globalVariables
 import com.rodev.jbpkmp.presentation.localization.localVariables
 import com.rodev.jbpkmp.presentation.screens.editor_screen.*
+import org.koin.compose.koinInject
 
 @Composable
 fun OverviewPanel(
     modifier: Modifier = Modifier,
     viewModel: EditorScreenViewModel
 ) {
+    val selectionHandler = koinInject<SelectionHandler>()
+
     Column(
         modifier = modifier
             .background(MaterialTheme.colors.background)
     ) {
-        LocalVariables(viewModel)
-        GlobalVariables(viewModel)
+        LocalVariables(viewModel, selectionHandler)
+        GlobalVariables(viewModel, selectionHandler)
     }
 }
 
 @Composable
 private fun LocalVariables(
-    viewModel: EditorScreenViewModel
+    viewModel: EditorScreenViewModel,
+    selectionHandler: SelectionHandler
 ) {
     val localization = Vocabulary.localization
     val currentGraph = viewModel.currentGraph
@@ -57,7 +61,7 @@ private fun LocalVariables(
     ) {
         if (currentGraph != null) {
             items(currentGraph.variables, key = { it.id }) {
-                VariableView(viewModel, it)
+                VariableView(selectionHandler, it)
             }
         }
     }
@@ -114,7 +118,8 @@ fun VariableView(
 
 @Composable
 private fun GlobalVariables(
-    viewModel: EditorScreenViewModel
+    viewModel: EditorScreenViewModel,
+    selectionHandler: SelectionHandler
 ) {
     val localization = Vocabulary.localization
     var createVariableDialogPresented by remember { mutableStateOf(false) }
@@ -126,7 +131,7 @@ private fun GlobalVariables(
         }
     ) {
         items(viewModel.state.variables, key = { it.id }) {
-            VariableView(viewModel, it)
+            VariableView(selectionHandler, it)
         }
     }
 

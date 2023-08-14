@@ -1,19 +1,34 @@
 package com.rodev.jbpkmp.data
 
+import androidx.compose.ui.res.useResource
 import com.rodev.generator.action.entity.Action
 import com.rodev.generator.action.entity.Category
 import com.rodev.jbpkmp.domain.repository.ActionDataSource
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.decodeFromStream
 
-class ActionDataSourceImpl(
-    actions: List<Action>,
-    categories: List<Category>
-) : ActionDataSource {
+@OptIn(ExperimentalSerializationApi::class)
+class ActionDataSourceImpl(json: Json) : ActionDataSource {
+
+    private val categories = mutableListOf<Category>()
+    private val actions = mutableListOf<Action>()
 
     private val categoriesByPath: MutableMap<String, Category> = hashMapOf()
     private val actionsByCategory: MutableMap<String, MutableList<Action>> = hashMapOf()
     private val actionsById: MutableMap<String, Action> = hashMapOf()
 
     init {
+        useResource<List<Action>>(
+            "data/actions.json",
+            json::decodeFromStream
+        ).let(actions::addAll)
+
+        useResource<List<Category>>(
+            "data/categories.json",
+            json::decodeFromStream
+        ).let(categories::addAll)
+
         categories.forEach {
             categoriesByPath[it.path] = it
         }
@@ -27,7 +42,11 @@ class ActionDataSourceImpl(
         }
     }
 
-    override fun <T> getActions(
+    override fun getAllActions(): List<Action> {
+        return actions
+    }
+
+    override fun <T> transformActions(
         rootTransformFunction: (Category, List<T>) -> T,
         leafTransformFunction: (Action) -> T,
         filter: (Action) -> Boolean

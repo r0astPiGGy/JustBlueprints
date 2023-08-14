@@ -2,13 +2,16 @@ package com.rodev.jbpkmp.domain.compiler
 
 import com.rodev.jbpkmp.domain.compiler.exception.BlueprintCompileException
 import com.rodev.jbpkmp.domain.model.Blueprint
+import com.rodev.jbpkmp.domain.repository.NodeDataSource
 import kotlin.jvm.Throws
 
-class BlueprintCompiler {
+class BlueprintCompiler(
+    private val nodeDataSource: NodeDataSource
+) {
 
     @Throws(BlueprintCompileException::class)
     suspend fun compile(blueprint: Blueprint): String {
-        return BlueprintCompilerHelper(blueprint).compile()
+        return BlueprintCompilerHelper(nodeDataSource, blueprint).compile()
     }
 
 }

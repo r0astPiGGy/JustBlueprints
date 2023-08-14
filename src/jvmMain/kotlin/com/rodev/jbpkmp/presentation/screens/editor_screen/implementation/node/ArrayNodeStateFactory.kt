@@ -1,22 +1,18 @@
 package com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.node
 
 import com.rodev.generator.action.entity.PinModel
-import com.rodev.generator.action.entity.extra_data.EventExtraData
 import com.rodev.jbpkmp.domain.model.NodeEntity
 import com.rodev.jbpkmp.domain.repository.*
 import com.rodev.jbpkmp.presentation.screens.editor_screen.SelectionHandler
 import com.rodev.jbpkmp.presentation.screens.editor_screen.createPin
 import com.rodev.jbpkmp.presentation.screens.editor_screen.getType
-import com.rodev.jbpkmp.util.castTo
-import com.rodev.jbpkmp.util.contains
 import com.rodev.nodeui.components.node.NodeDisplay
 import com.rodev.nodeui.components.node.NodeState
 import com.rodev.nodeui.components.node.NodeStateFactory
 import com.rodev.nodeui.components.pin.PinState
 import com.rodev.nodeui.components.pin.row.PinRowState
 import com.rodev.nodeui.model.Node
-import com.rodev.nodeui.model.Pin
-import java.util.UUID
+import java.util.*
 
 class ArrayNodeStateFactory(
     private val nodeDataSource: NodeDataSource,
@@ -24,6 +20,7 @@ class ArrayNodeStateFactory(
     private val actionDataSource: ActionDataSource,
     private val selectionHandler: SelectionHandler,
     private val actionDetailsDataSource: ActionDetailsDataSource,
+    private val iconDataSource: IconDataSource,
     selectorDataSource: SelectorDataSource,
     pinTypeDataSource: PinTypeDataSource
 ) : NodeStateFactory, ArrayElementPinFactory {
@@ -95,7 +92,8 @@ class ArrayNodeStateFactory(
             ),
             selectionHandler = selectionHandler,
             actionDetails = actionDetailsDataSource[node.id],
-            arrayElementPinFactory = this
+            arrayElementPinFactory = this,
+            iconDataSource = iconDataSource
         )
     }
 }

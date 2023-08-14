@@ -8,11 +8,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.PlusOne
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,8 +27,8 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import com.rodev.jbpkmp.data.GlobalDataSource
 import com.rodev.jbpkmp.domain.model.NodeEntity
+import com.rodev.jbpkmp.domain.repository.IconDataSource
 import com.rodev.jbpkmp.presentation.localization.Vocabulary
 import com.rodev.jbpkmp.presentation.localization.addPin
 import com.rodev.nodeui.components.node.NodeState
@@ -40,6 +37,7 @@ import kotlin.math.roundToInt
 @Composable
 @Preview
 fun ArrayNode(
+    iconDataSource: IconDataSource,
     nodeState: NodeState,
     nodeEntity: NodeEntity,
     selected: Boolean,
@@ -117,7 +115,7 @@ fun ArrayNode(
                     .padding(start = boundSpacing.dp, end = boundSpacing.dp)
                     .fillMaxWidth()
             ) {
-                val image = remember { GlobalDataSource.getIconById(nodeEntity.iconPath) }
+                val image = remember { iconDataSource.getIconById(nodeEntity.iconPath) }
                 if (image != null) {
                     Image(
                         painter = BitmapPainter(image),

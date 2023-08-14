@@ -1,6 +1,5 @@
 package com.rodev.jbpkmp.presentation.screens.welcome_screen
 
-import com.rodev.jbpkmp.data.ProgramDataRepositoryImpl
 import com.rodev.jbpkmp.domain.model.Project
 import com.rodev.jbpkmp.domain.model.RecentProject
 import com.rodev.jbpkmp.domain.model.save
@@ -12,17 +11,10 @@ import kotlinx.datetime.todayIn
 import java.io.File
 
 class WelcomeScreenViewModel(
-    private val repository: ProgramDataRepository = ProgramDataRepositoryImpl()
+    private val repository: ProgramDataRepository
 ) {
     val state = WelcomeScreenState()
-    val projectsPanelState = ProjectsPanelState(
-        onProjectOpen = {
-            onEvent(WelcomeScreenEvent.OpenProject(it))
-        },
-        onProjectDelete = {
-            onEvent(WelcomeScreenEvent.RemoveProject(it))
-        }
-    )
+    val projectsPanelState = ProjectsPanelState()
 
     init {
         val programData = repository.load()

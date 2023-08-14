@@ -2,20 +2,8 @@ package com.rodev.jbpkmp.presentation.screens.settings_screen
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.Checkbox
-import androidx.compose.material.CheckboxDefaults
-import androidx.compose.material.Divider
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedButton
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -23,7 +11,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.rodev.jbpkmp.LocalMutableLocale
 import com.rodev.jbpkmp.LocalMutableTheme
-import com.rodev.jbpkmp.data.ProgramDataRepositoryImpl
 import com.rodev.jbpkmp.presentation.localization.Vocabulary
 import com.rodev.jbpkmp.presentation.localization.cancel
 import com.rodev.jbpkmp.presentation.localization.language
@@ -34,6 +21,7 @@ import com.rodev.jbpkmp.presentation.localization.supportedLocalesNow
 import com.rodev.jbpkmp.presentation.localization.useDarkTheme
 import com.rodev.jbpkmp.presentation.screens.settings_screen.components.BooleanProperty
 import com.rodev.jbpkmp.presentation.screens.settings_screen.components.EnumProperty
+import org.koin.compose.koinInject
 import java.util.*
 
 @Composable
@@ -41,7 +29,7 @@ fun SettingsScreen(
     modifier: Modifier = Modifier,
     onDismissRequest: () -> Unit
 ) {
-    val viewModel = remember { SettingsScreenViewModel(ProgramDataRepositoryImpl()) }
+    val viewModel = koinInject<SettingsScreenViewModel>()
     val localization = Vocabulary.localization
 
     val settings by remember { derivedStateOf { viewModel.settings } }

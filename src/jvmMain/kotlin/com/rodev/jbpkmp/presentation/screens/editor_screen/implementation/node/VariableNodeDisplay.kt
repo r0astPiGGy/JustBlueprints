@@ -1,11 +1,6 @@
 package com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.node
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import com.rodev.jbpkmp.presentation.screens.editor_screen.GlobalVariableState
+import androidx.compose.runtime.*
 import com.rodev.jbpkmp.presentation.screens.editor_screen.SelectionHandler
 import com.rodev.jbpkmp.presentation.screens.editor_screen.VariableState
 import com.rodev.jbpkmp.presentation.screens.editor_screen.components.VariableNode
@@ -13,19 +8,15 @@ import com.rodev.jbpkmp.presentation.screens.editor_screen.createVariableNodeTag
 import com.rodev.nodeui.components.node.NodeDisplay
 import com.rodev.nodeui.components.node.NodeState
 import com.rodev.nodeui.model.Node
-import java.util.UUID
+import java.util.*
 
 class VariableNodeDisplay(
     private val selectionHandler: SelectionHandler,
-    private val variableState: VariableState,
+    variableState: VariableState,
     val variableId: String
 ) : NodeDisplay {
 
-    private var selected: Boolean by mutableStateOf(false)
-
-    private val subHeader by derivedStateOf {
-        variableState.type
-    }
+    private val state = VariableNodeState(variableState)
 
     @Composable
     override fun NodeView(
@@ -33,25 +24,23 @@ class VariableNodeDisplay(
     ) {
         VariableNode(
             nodeState = nodeState,
-            header = variableState.name,
-            subHeader = subHeader.typeName,
-            selected,
+            state = state,
             onTap = { onSelect(nodeState) }
         )
     }
 
     private fun onSelect(nodeState: NodeState) {
-        if (selected) {
+        if (state.selected) {
             selectionHandler.resetSelection()
             return
         }
         selectionHandler.onSelect(
             NodeStateSelectableWrapper(
-                selectGetter = { selected },
-                selectSetter = { selected = it },
+                selectGetter = { state.selected },
+                selectSetter = { state.selected = it },
                 nodeState = nodeState,
                 nodeSupplier = { copyToNode(nodeState) },
-                detailsComposable = { variableState.Details() }
+                detailsComposable = { state.Details() }
             )
         )
     }
@@ -80,6 +69,24 @@ class VariableNodeDisplay(
             outputPins = nodeState.outputPins.map { it.pinState }.map { it.pinDisplay.toPin(it) },
             tag = createVariableNodeTag(variableId)
         )
+    }
+}
+
+class VariableNodeState(
+    private val variableState: VariableState
+) {
+
+    var selected by mutableStateOf(false)
+    val name by derivedStateOf {
+        variableState.name
+    }
+    val subHeader by derivedStateOf {
+        variableState.type
+    }
+
+    @Composable
+    fun Details() {
+        variableState.Details()
     }
 
 }

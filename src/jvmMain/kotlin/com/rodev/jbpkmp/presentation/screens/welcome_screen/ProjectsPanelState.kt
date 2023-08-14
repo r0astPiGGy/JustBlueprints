@@ -3,24 +3,20 @@ package com.rodev.jbpkmp.presentation.screens.welcome_screen
 import androidx.compose.runtime.mutableStateListOf
 import com.rodev.jbpkmp.domain.model.RecentProject
 
-class ProjectsPanelState(
-    val onProjectOpen: (RecentProject) -> Unit,
-    val onProjectDelete: (RecentProject) -> Unit
-) {
+class ProjectsPanelState {
 
     val projects = mutableStateListOf<RecentProjectState>()
 
     private var selectedProject: RecentProjectState? = null
 
     fun onSelect(recentProjectState: RecentProjectState) {
-        if (selectedProject == recentProjectState) {
-            onProjectOpen(recentProjectState.recentProject)
-            return
-        }
-
         selectedProject?.selected = false
         recentProjectState.selected = true
         selectedProject = recentProjectState
+    }
+
+    fun isProjectSelected(project: RecentProjectState): Boolean {
+        return selectedProject == project
     }
 
     fun updateProjects(recentProjects: List<RecentProject>) {
@@ -29,8 +25,9 @@ class ProjectsPanelState(
     }
 
     fun onDelete(recentProjectState: RecentProjectState) {
-        onProjectDelete(recentProjectState.recentProject)
-        selectedProject = null
+        if (recentProjectState == selectedProject) {
+            selectedProject = null
+        }
     }
 
 }

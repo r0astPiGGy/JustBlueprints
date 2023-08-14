@@ -1,67 +1,72 @@
 package com.rodev.jbpkmp.presentation.screens.editor_screen
 
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.key.*
-import com.rodev.jbpkmp.data.GlobalDataSource
-import com.rodev.jbpkmp.data.CodeUploadServiceImpl
-import com.rodev.jbpkmp.data.ProgramDataRepositoryImpl
-import com.rodev.jbpkmp.domain.compiler.BlueprintCompiler
 import com.rodev.jbpkmp.domain.model.*
 import com.rodev.jbpkmp.domain.model.graph.EventGraph
 import com.rodev.jbpkmp.domain.model.variable.GlobalVariable
 import com.rodev.jbpkmp.domain.model.variable.LocalVariable
-import com.rodev.jbpkmp.domain.remote.ApiResult
-import com.rodev.jbpkmp.domain.remote.CodeUploadService
 import com.rodev.jbpkmp.domain.repository.ProgramDataRepository
 import com.rodev.jbpkmp.domain.repository.update
-import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.NodeAddAtCursorEvent
+import com.rodev.jbpkmp.domain.usecase.upload.BlueprintCompileUseCase
+import com.rodev.jbpkmp.domain.usecase.upload.CodeUploadException
+import com.rodev.jbpkmp.domain.usecase.upload.CodeUploadUseCase
+import com.rodev.jbpkmp.presentation.screens.editor_screen.SelectionHandler.Default.resetSelection
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.CreateVariableGraphEvent
-import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.DefaultPinTypeComparator
-import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.ViewPortViewModel
-import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.node.*
+import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.NodeAddAtCursorEvent
+import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.ViewPortViewModelFactory
+import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.node.VariableNodeDisplay
 import com.rodev.nodeui.components.node.NodeState
 import com.rodev.nodeui.model.Node
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 
 class EditorScreenViewModel(
-    projectPath: String
-) : SelectionHandler, VariableStateProvider {
+    projectPath: String,
+    private val json: Json,
+    private val repository: ProgramDataRepository,
+    private val compile: BlueprintCompileUseCase,
+    private val uploadCode: CodeUploadUseCase,
+    private val selectionDispatcher: SelectionDispatcher,
+    private val viewPortViewModelFactory: ViewPortViewModelFactory,
+    private val dynamicVariableStateProvider: DynamicVariableStateProvider
+) {
 
-    private val json = Json { prettyPrint = true }
-    private val codeUploadService: CodeUploadService = CodeUploadServiceImpl()
-    val project: Project
+    lateinit var project: Project
 
     var currentGraph by mutableStateOf<GraphState?>(null)
         private set
 
     private var buildJob: Job? = null
-
-    private val blueprintCompiler = BlueprintCompiler()
-
     private val selectionActionVisitor: SelectionActionVisitor = SelectionActionVisitorImpl()
-
-    var selectable: Selectable? by mutableStateOf(null)
-        private set
-    private val variablesById = hashMapOf<String, VariableState>()
-
-    private val nodeStateFactory = createNodeStateFactory()
-    private val repository: ProgramDataRepository = ProgramDataRepositoryImpl()
-    val state = EditorScreenState(
-        forceCodeLoad = repository.load().settings.forceCodeLoad
-    )
 
     private val clipboardActionVisitor: ClipboardActionVisitor = ClipboardActionVisitorImpl()
     private var clipboardEntry: ClipboardEntry? = null
 
+    private val selectionHandler = SelectionHandlerImpl()
+    val selectable by derivedStateOf {
+        selectionHandler.selectable
+    }
+
+    private val variableStateProvider = VariableStateProviderImpl()
+
+    val state = EditorScreenState(
+        forceCodeLoad = repository.load().settings.forceCodeLoad
+    )
+
     init {
-        project = Project.loadFromFolder(projectPath)
-        // load current graph
-        load()
+        selectionDispatcher.registerSelectionHandler(selectionHandler)
+        dynamicVariableStateProvider.setVariableStateProvider(variableStateProvider)
+
+        load(projectPath)
     }
 
     fun onEvent(event: EditorScreenEvent) {
@@ -78,14 +83,14 @@ class EditorScreenViewModel(
                 currentGraph?.let {
                     val variable = event.variable
 
-                    variablesById[variable.id] = variable
+                    variableStateProvider.addVariable(variable)
                     it.variables.add(variable)
                 }
             }
 
             is EditorScreenEvent.AddGlobalVariable -> {
                 event.variable.let {
-                    variablesById[it.id] = it
+                    variableStateProvider.addVariable(it)
                     state.variables.add(it)
                 }
             }
@@ -100,13 +105,40 @@ class EditorScreenViewModel(
                 }
                 state.navigationResult = NavigationResult.GoBack
             }
+
             EditorScreenEvent.OpenSettingsScreen -> {
                 state.showSettingsScreen = true
             }
+
             EditorScreenEvent.CloseSettingsScreen -> {
                 state.showSettingsScreen = false
             }
         }
+    }
+
+    private fun load(projectPath: String) {
+        project = Project.loadFromFolder(projectPath)
+
+        val blueprint = project.loadBlueprint()
+        val eventGraph = blueprint.eventGraph
+
+        val localVariables = eventGraph.localVariables.map { it.toState() }
+        val globalVariables = eventGraph.globalVariables.map { it.toState() }
+
+        localVariables.forEach(variableStateProvider::addVariable)
+        globalVariables.forEach(variableStateProvider::addVariable)
+
+        val viewModel = viewPortViewModelFactory.create()
+        viewModel.load(eventGraph.graph)
+
+        currentGraph = GraphState(
+            viewModel = viewModel,
+            variables = localVariables
+        )
+
+        state.variables.addAll(
+            globalVariables
+        )
     }
 
     fun onDispose() {
@@ -117,6 +149,8 @@ class EditorScreenViewModel(
         }
         buildJob?.cancel()
         buildJob = null
+        dynamicVariableStateProvider.unregister()
+        selectionDispatcher.unregisterSelectionHandler(selectionHandler)
     }
 
     @OptIn(ExperimentalComposeUiApi::class)
@@ -175,91 +209,6 @@ class EditorScreenViewModel(
         return isClipboardEntryOwner(clipboardEntry)
     }
 
-    override fun resetSelection() {
-        selectable?.let {
-            it.selected = false
-        }
-        selectable = null
-    }
-
-    private fun createNodeStateFactory() = NodeStateFactoryRegistry().apply {
-        setDefaultNodeStateFactory(
-            DefaultNodeStateFactory(
-                nodeDataSource = GlobalDataSource,
-                nodeTypeDataSource = GlobalDataSource,
-                actionDataSource = GlobalDataSource,
-                pinTypeDataSource = GlobalDataSource,
-                selectorDataSource = GlobalDataSource,
-                selectionHandler = this@EditorScreenViewModel,
-                actionDetailsDataSource = GlobalDataSource
-            )
-        )
-        registerNodeStateFactory(
-            typeId = "native_array_factory", ArrayNodeStateFactory(
-                nodeDataSource = GlobalDataSource,
-                nodeTypeDataSource = GlobalDataSource,
-                actionDataSource = GlobalDataSource,
-                pinTypeDataSource = GlobalDataSource,
-                selectorDataSource = GlobalDataSource,
-                selectionHandler = this@EditorScreenViewModel,
-                actionDetailsDataSource = GlobalDataSource
-            )
-        )
-        registerNodeStateFactory(
-            typeId = VARIABLE_TYPE_TAG, VariableNodeStateFactory(
-                selectionHandler = this@EditorScreenViewModel,
-                variableStateProvider = this@EditorScreenViewModel,
-                pinTypeDataSource = GlobalDataSource
-            )
-        )
-    }
-
-    private fun createViewPortViewModel(): ViewPortViewModel {
-        return ViewPortViewModel(
-            pinTypeComparator = DefaultPinTypeComparator,
-            nodeStateFactory = nodeStateFactory,
-            actionDataSource = GlobalDataSource,
-            nodeDataSource = GlobalDataSource
-        )
-    }
-
-    private fun load() {
-        val blueprint = project.loadBlueprint()
-        val eventGraph = blueprint.eventGraph
-
-        val viewModel = createViewPortViewModel()
-
-        val localVariables = eventGraph.localVariables.map { it.toState() }
-        val globalVariables = eventGraph.globalVariables.map { it.toState() }
-
-        localVariables.forEach {
-            variablesById[it.id] = it
-        }
-
-        globalVariables.forEach {
-            variablesById[it.id] = it
-        }
-
-        viewModel.load(eventGraph.graph)
-
-        currentGraph = GraphState(
-            viewModel = viewModel,
-            variables = localVariables
-        )
-
-        state.variables.addAll(
-            globalVariables
-        )
-    }
-
-    override fun onSelect(selectable: Selectable) {
-        this.selectable?.let {
-            it.selected = false
-        }
-        this.selectable = selectable
-        selectable.selected = true
-    }
-
     private fun pasteNode(node: Node) {
         val graph = currentGraph ?: return
 
@@ -290,7 +239,7 @@ class EditorScreenViewModel(
         currentGraph?.let { graph ->
             graph.removeVariable(variable)
             graph.variables.removeIf { it.id == variable.id }
-            variablesById.remove(variable.id)
+            variableStateProvider.removeVariable(variable)
         }
     }
 
@@ -298,7 +247,7 @@ class EditorScreenViewModel(
         currentGraph?.let { graph ->
             graph.removeVariable(variable)
             state.variables.removeIf { it.id == variable.id }
-            variablesById.remove(variable.id)
+            variableStateProvider.removeVariable(variable)
         }
     }
 
@@ -324,10 +273,6 @@ class EditorScreenViewModel(
         )
     }
 
-    override fun getVariableStateById(id: String): VariableState? {
-        return variablesById[id]
-    }
-
     private fun getBlueprint(): Blueprint? {
         return currentGraph?.let(::getBlueprint)
     }
@@ -344,17 +289,11 @@ class EditorScreenViewModel(
     }
 
     private suspend fun build(blueprint: Blueprint) {
-        state.result = EditorScreenResult.SuccessUpload(
-            uploadCommand = CodeLoadCommand("bebra")
-        )
-
-        if (0 == 0) return
-
         state.result = EditorScreenResult.Loading(state = LoadingState.COMPILE)
 
         val data = try {
-            // TODO handle BlueprintCompileException
-            blueprintCompiler.compile(blueprint)
+            // TODO handle BlueprintCompileException, outline the error node
+            compile(blueprint)
         } catch (e: Exception) {
             state.result = EditorScreenResult.Error(
                 stage = LoadingState.COMPILE,
@@ -368,26 +307,16 @@ class EditorScreenViewModel(
 
         project.writeCompileOutput(data)
 
-        when (val apiResult = codeUploadService.upload(data)) {
-            is ApiResult.Failure -> {
-                state.result = EditorScreenResult.Error(
-                    stage = LoadingState.UPLOAD,
-                    message = apiResult.message,
-                    stackTrace = null
-                )
-            }
-            is ApiResult.Exception -> {
-                state.result = EditorScreenResult.Error(
-                    stage = LoadingState.UPLOAD,
-                    message = apiResult.exception.message,
-                    stackTrace = apiResult.exception.stackTraceToString()
-                )
-            }
-            is ApiResult.Success -> {
-                state.result = EditorScreenResult.SuccessUpload(
-                    uploadCommand = CodeLoadCommand(apiResult.data.link)
-                )
-            }
+        try {
+            state.result = EditorScreenResult.SuccessUpload(
+                uploadCommand = uploadCode(data)
+            )
+        } catch (e: CodeUploadException) {
+            state.result = EditorScreenResult.Error(
+                stage = LoadingState.UPLOAD,
+                message = e.message,
+                stackTrace = e.stackTraceToString()
+            )
         }
     }
 
@@ -437,6 +366,44 @@ class EditorScreenViewModel(
 
         override fun pasteGlobalVariable(variable: GlobalVariable) {
             this@EditorScreenViewModel.pasteGlobalVariable(variable)
+        }
+    }
+
+    private inner class VariableStateProviderImpl : VariableStateProvider {
+
+        private val variablesById = hashMapOf<String, VariableState>()
+
+        override fun getVariableStateById(id: String): VariableState? {
+            return variablesById[id]
+        }
+
+        fun addVariable(variable: VariableState) {
+            variablesById[variable.id] = variable
+        }
+
+        fun removeVariable(variable: VariableState) {
+            variablesById.remove(variable.id)
+        }
+
+    }
+
+    private class SelectionHandlerImpl : SelectionHandler {
+
+        var selectable: Selectable? by mutableStateOf(null)
+
+        override fun onSelect(selectable: Selectable) {
+            this.selectable?.let {
+                it.selected = false
+            }
+            this.selectable = selectable
+            selectable.selected = true
+        }
+
+        override fun resetSelection() {
+            selectable?.let {
+                it.selected = false
+            }
+            selectable = null
         }
 
     }

@@ -17,10 +17,11 @@ import com.rodev.jbpkmp.presentation.navigation.argumentBundleOf
 import com.rodev.jbpkmp.presentation.screens.welcome_screen.components.ProjectsPanel
 import com.rodev.jbpkmp.presentation.screens.welcome_screen.components.WelcomePanel
 import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
 
 @Composable
 fun WelcomeScreen(navController: NavController) {
-    val viewModel = remember { WelcomeScreenViewModel() }
+    val viewModel = koinInject<WelcomeScreenViewModel>()
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
     val localization = Vocabulary.localization
@@ -37,7 +38,9 @@ fun WelcomeScreen(navController: NavController) {
 
             ProjectsPanel(
                 modifier = Modifier.weight(1f),
-                state = viewModel.projectsPanelState
+                state = viewModel.projectsPanelState,
+                onProjectOpen = { viewModel.onEvent(WelcomeScreenEvent.OpenProject(it)) },
+                onProjectDelete = { viewModel.onEvent(WelcomeScreenEvent.RemoveProject(it)) }
             )
         }
         SnackbarHost(

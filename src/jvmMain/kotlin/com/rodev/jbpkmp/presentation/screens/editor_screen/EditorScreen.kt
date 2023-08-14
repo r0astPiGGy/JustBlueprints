@@ -32,10 +32,12 @@ import com.rodev.jbpkmp.presentation.localization.projectSave
 import com.rodev.jbpkmp.presentation.navigation.NavController
 import com.rodev.jbpkmp.presentation.screens.editor_screen.components.*
 import com.rodev.jbpkmp.presentation.screens.settings_screen.SettingsScreen
+import org.koin.compose.koinInject
+import org.koin.core.parameter.parametersOf
 
 @Composable
 fun EditorScreen(navController: NavController, projectPath: String) {
-    val viewModel = remember { EditorScreenViewModel(projectPath) }
+    val viewModel: EditorScreenViewModel = koinInject { parametersOf(projectPath) }
     val state = remember { viewModel.state }
 
     // Auto-save
