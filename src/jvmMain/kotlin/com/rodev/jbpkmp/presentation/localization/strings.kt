@@ -1,5 +1,7 @@
 package com.rodev.jbpkmp.presentation.localization
 
+import com.rodev.jbpkmp.domain.model.variable.Variable
+
 const val appName = "JustBlueprints"
 
 // WelcomeScreen
@@ -87,6 +89,18 @@ val compileError = Translatable(
         ENGLISH to "An error occurred during code compile"
     )
 )
+val loadError = Translatable(
+    "При загрузке проекта произошла ошибка",
+    hashMapOf(
+        ENGLISH to "An error occurred during project loading"
+    )
+)
+val runtimeError = Translatable(
+    "Произошла неизвестная ошибка времени выполнения",
+    hashMapOf(
+        ENGLISH to "An unknown runtime error occurred"
+    )
+)
 val saveError = Translatable(
     "При сохранении произошла ошибка",
     hashMapOf(
@@ -135,10 +149,48 @@ val value = Translatable(
 )
 
 // EditorScreen
+fun Localization.variableType(type: Variable.Type): String {
+    return when(type) {
+        Variable.Type.Local -> localVariable()
+        Variable.Type.Game -> gameVariable()
+        Variable.Type.Save -> savedVariable()
+    }
+}
+
+val localVariable = Translatable(
+    "Локальная переменная",
+    hashMapOf(
+        ENGLISH to "Local variable"
+    )
+)
+val gameVariable = Translatable(
+    "Игровая переменная",
+    hashMapOf(
+        ENGLISH to "Game variable"
+    )
+)
+val savedVariable = Translatable(
+    "Сохраненная переменная",
+    hashMapOf(
+        ENGLISH to "Saved variable"
+    )
+)
 val localVariables = Translatable(
     "Локальные переменные",
     hashMapOf(
         ENGLISH to "Local variables"
+    )
+)
+val functions = Translatable(
+    "Функции",
+    hashMapOf(
+        ENGLISH to "Functions"
+    )
+)
+val processes = Translatable(
+    "Процессы",
+    hashMapOf(
+        ENGLISH to "Processes"
     )
 )
 val globalVariables = Translatable(
@@ -187,6 +239,12 @@ val codeUpload = Translatable(
     "Загрузка кода...",
     hashMapOf(
         ENGLISH to "Uploading..."
+    )
+)
+val projectLoading = Translatable(
+    "Загрузка проекта...",
+    hashMapOf(
+        ENGLISH to "Loading project..."
     )
 )
 val addPin = Translatable(

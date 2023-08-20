@@ -4913,7 +4913,7 @@
         "name": "Новая локация игрока",
         "description": "Получает новую локацию игрока.",
         "worksWith": [
-            "Событиями передвижения игрока"
+            "Событием \"Игрок передвигается\""
         ]
     },
     {
@@ -5251,6 +5251,26 @@
         "id": "native_branch",
         "name": "Ветвление",
         "description": "Если условие истинно, поток выполнения идёт в True, иначе в False"
+    },
+    {
+        "id": "native_function_reference",
+        "name": "Запустить функцию",
+        "description": "Вызывает строку кода функции."
+    },
+    {
+        "id": "native_process_reference",
+        "name": "Запустить процесс",
+        "description": "Запускает строку кода процесса."
+    },
+    {
+        "id": "native_function_declaration",
+        "name": "Функция",
+        "description": "Функция"
+    },
+    {
+        "id": "native_process_declaration",
+        "name": "Процесс",
+        "description": "Процесс"
     },
     {
         "id": "native_array_factory",

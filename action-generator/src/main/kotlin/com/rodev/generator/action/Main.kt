@@ -322,7 +322,8 @@ class DefaultNodeInterpreter(
             output = emptyList(),
             iconPath = iconPathFrom("actions", action.id),
             category = categoryResolver.resolveCategoryFor(action) ?: "no-category",
-            details = details
+            details = details,
+            actionType = ActionType.DEFAULT
         )
     }
 }

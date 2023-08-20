@@ -1,4 +1,4 @@
-package com.rodev.jbpkmp.domain.repository
+package com.rodev.jbpkmp.domain.source
 
 import com.rodev.generator.action.entity.Action
 import com.rodev.generator.action.entity.Category
@@ -13,6 +13,6 @@ interface ActionDataSource {
         filter: (Action) -> Boolean = { true }
     ): List<T>
 
-    fun getActionById(id: String): Action
+    fun getActionById(id: String): Action?
 
 }

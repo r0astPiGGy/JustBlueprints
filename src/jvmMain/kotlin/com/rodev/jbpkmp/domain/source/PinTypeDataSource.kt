@@ -1,4 +1,4 @@
-package com.rodev.jbpkmp.domain.repository
+package com.rodev.jbpkmp.domain.source
 
 import com.rodev.generator.action.entity.PinType
 

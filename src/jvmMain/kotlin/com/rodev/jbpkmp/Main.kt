@@ -31,34 +31,32 @@ typealias DarkThemeSetter = (Boolean) -> Unit
 val LocalMutableLocale = compositionLocalOf<LocaleSetter> { { } }
 val LocalMutableTheme = compositionLocalOf<DarkThemeSetter> { { } }
 
-fun main() {
-    singleWindowApplication(
-        title = appName,
-        icon = BitmapPainter(useResource("images/logo.png", ::loadImageBitmap)),
-        state = WindowState(placement = WindowPlacement.Maximized)
+fun main() = singleWindowApplication(
+    title = appName,
+    icon = BitmapPainter(useResource("images/logo.png", ::loadImageBitmap)),
+    state = WindowState(placement = WindowPlacement.Maximized)
+) {
+    KoinApplication(
+        application = {
+            modules(appModule())
+        }
     ) {
-        KoinApplication(
-            application = {
-                modules(appModule())
-            }
-        ) {
-            val navController by rememberNavController(Screen.WelcomeScreen.name)
+        val navController by rememberNavController(Screen.WelcomeScreen.name)
 
-            val repository = koinInject<ProgramDataRepository>()
-            val programData = remember { repository.load() }
+        val repository = koinInject<ProgramDataRepository>()
+        val programData = remember { repository.load() }
 
-            var locale by remember { mutableStateOf(Locale(programData.settings.languageCode)) }
-            var useDarkTheme by remember { mutableStateOf(programData.settings.useDarkTheme) }
+        var locale by remember { mutableStateOf(Locale(programData.settings.languageCode)) }
+        var useDarkTheme by remember { mutableStateOf(programData.settings.useDarkTheme) }
 
-            AppTheme(useDarkTheme = useDarkTheme) {
-                CompositionLocalProvider(
-                    LocalMutableLocale provides { locale = it },
-                    LocalMutableTheme provides { useDarkTheme = it }
-                ) {
-                    Localization(locale = locale) {
-                        Surface {
-                            JustBlueprintsNavigationHost(navController)
-                        }
+        AppTheme(useDarkTheme = useDarkTheme) {
+            CompositionLocalProvider(
+                LocalMutableLocale provides { locale = it },
+                LocalMutableTheme provides { useDarkTheme = it }
+            ) {
+                Localization(locale = locale) {
+                    Surface {
+                        JustBlueprintsNavigationHost(navController)
                     }
                 }
             }

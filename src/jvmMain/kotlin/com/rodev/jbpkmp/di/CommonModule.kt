@@ -1,19 +1,17 @@
 package com.rodev.jbpkmp.di
 
+import com.rodev.generator.action.entity.ActionType
 import com.rodev.jbpkmp.data.*
 import com.rodev.jbpkmp.domain.compiler.BlueprintCompiler
+import com.rodev.jbpkmp.domain.compiler.Nodes
 import com.rodev.jbpkmp.domain.remote.CodeUploadService
 import com.rodev.jbpkmp.domain.repository.*
+import com.rodev.jbpkmp.domain.source.*
 import com.rodev.jbpkmp.domain.usecase.upload.BlueprintCompileUseCase
 import com.rodev.jbpkmp.domain.usecase.upload.CodeUploadUseCase
 import com.rodev.jbpkmp.presentation.screens.editor_screen.*
-import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.DefaultPinTypeComparator
-import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.ViewPortViewModel
-import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.ViewPortViewModelFactory
-import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.node.ArrayNodeStateFactory
-import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.node.DefaultNodeStateFactory
-import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.node.NodeStateFactoryRegistry
-import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.node.VariableNodeStateFactory
+import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.*
+import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.node.*
 import com.rodev.jbpkmp.presentation.screens.settings_screen.SettingsScreenViewModel
 import com.rodev.jbpkmp.presentation.screens.welcome_screen.WelcomeScreenViewModel
 import com.rodev.nodeui.components.graph.PinTypeComparator
@@ -37,7 +35,9 @@ val commonModule = module {
     single<PinTypeComparator> { DefaultPinTypeComparator }
     single<DynamicVariableStateProvider> { DynamicVariableStateProvider() }
     single<VariableStateProvider> { get<DynamicVariableStateProvider>() }
-    single<NodeStateFactory>(createdAtStart = true) { NodeStateFactoryRegistry().apply {
+    single<DynamicInvokableReferenceProvider> { DynamicInvokableReferenceProvider() }
+    single<InvokableReferenceProvider> { get<DynamicInvokableReferenceProvider>() }
+    single<NodeStateFactory>(createdAtStart = true) { NodeStateFactoryRegistry(get()).apply {
         setDefaultNodeStateFactory(
             DefaultNodeStateFactory(
                 nodeDataSource = get(),
@@ -50,8 +50,14 @@ val commonModule = module {
                 iconDataSource = get()
             )
         )
-        registerNodeStateFactory(
-            typeId = "native_array_factory", ArrayNodeStateFactory(
+
+        // TODO Collapsible nodes
+//        registerNodeStateFactoryByActionType(
+//            actionType = ActionType.FACTORY, ArrayNodeStateFactory()
+//        )
+
+        registerNodeStateFactoryByActionType(
+            actionType = ActionType.HIDDEN, InvokableDeclarationNodeStateFactory(
                 nodeDataSource = get(),
                 nodeTypeDataSource = get(),
                 actionDataSource = get(),
@@ -62,30 +68,102 @@ val commonModule = module {
                 iconDataSource = get()
             )
         )
-        registerNodeStateFactory(
-            typeId = VARIABLE_TYPE_TAG, VariableNodeStateFactory(
+
+        // TODO Invokable references
+        listOf(Nodes.Type.FUNCTION_REFERENCE, Nodes.Type.PROCESS_REFERENCE).forEach { nodeId ->
+            registerNodeStateFactoryByNodeId(
+                nodeId = nodeId, InvokableReferenceNodeStateFactory(
+                    nodeDataSource = get(),
+                    nodeTypeDataSource = get(),
+                    actionDataSource = get(),
+                    pinTypeDataSource = get(),
+                    selectorDataSource = get(),
+                    selectionHandler = get(),
+                    actionDetailsDataSource = get(),
+                    iconDataSource = get(),
+                    invokableReferenceProvider = get()
+                )
+            )
+        }
+
+        registerNodeStateFactoryByNodeId(
+            nodeId = Nodes.Factory.ARRAY.id, ArrayNodeStateFactory(
+                nodeDataSource = get(),
+                nodeTypeDataSource = get(),
+                actionDataSource = get(),
+                pinTypeDataSource = get(),
+                selectorDataSource = get(),
+                selectionHandler = get(),
+                actionDetailsDataSource = get(),
+                iconDataSource = get()
+            )
+        )
+        registerNodeStateFactoryByNodeId(
+            nodeId = VARIABLE_TYPE_TAG, VariableNodeStateFactory(
                 selectionHandler = get(),
                 variableStateProvider = get(),
                 pinTypeDataSource = get()
             )
         )
     } }
+    single<LocalProjectLoader> {
+        LocalProjectLoaderImpl(get())
+    }
     single<ViewPortViewModelFactory> {
-        ViewPortViewModelFactory {
-            ViewPortViewModel(
-                pinTypeComparator = get(),
-                nodeStateFactory = get(),
-                actionDataSource = get(),
-                nodeDataSource = get(),
-                iconDataSource = get()
-            )
+        object : ViewPortViewModelFactory {
+
+            override fun createEventGraphViewModel(): ViewPortViewModel {
+                return ViewPortViewModel(
+                    pinTypeComparator = get(),
+                    nodeStateFactory = get(),
+                    actionDataSource = get(),
+                    nodeDataSource = get(),
+                    iconDataSource = get(),
+                    detailsDataSource = get()
+                )
+            }
+
+            override fun createFunctionGraphViewModel(): ViewPortViewModel {
+                return FunctionGraphViewModel(
+                    pinTypeComparator = get(),
+                    nodeStateFactory = get(),
+                    actionDataSource = get(),
+                    nodeDataSource = get(),
+                    iconDataSource = get(),
+                    detailsDataSource = get()
+                )
+            }
+
+            override fun createProcessGraphViewModel(): ViewPortViewModel {
+                return createFunctionGraphViewModel()
+            }
         }
     }
+    single<GraphStateFactory> { GraphStateFactoryImpl(get(), get(), get()) }
 
     factory<BlueprintCompiler> { BlueprintCompiler(get()) }
     factory<BlueprintCompileUseCase> { BlueprintCompileUseCase(get()) }
     factory<CodeUploadUseCase> { CodeUploadUseCase(get()) }
-    factory { params -> EditorScreenViewModel(params.get(), get(), get(), get(), get(), get(), get(), get()) }
+    factory<EditorScreenViewModel> { params ->
+        val projectPath: String = params.get()
+        val projectLoader: LocalProjectLoader = get()
+
+        EditorScreenViewModel(
+            projectReference = projectLoader.loadProjectFromFolder(projectPath),
+            repository = get(),
+            compile = get(),
+            uploadCode = get(),
+            selectionDispatcher = get(),
+            graphStateFactory = get(),
+            dynamicVariableStateProvider = get(),
+            dynamicInvokableReferenceProvider = get()
+        )
+    }
     factory { SettingsScreenViewModel(get()) }
-    factory { WelcomeScreenViewModel(get()) }
+    factory {
+        WelcomeScreenViewModel(
+            projectLoader = get(),
+            repository = get()
+        )
+    }
 }

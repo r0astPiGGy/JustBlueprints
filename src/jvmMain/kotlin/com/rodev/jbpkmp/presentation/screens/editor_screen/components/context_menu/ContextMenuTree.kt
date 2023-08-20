@@ -27,7 +27,8 @@ sealed class ContextTreeNode {
     class Leaf(
         override val name: String,
         val id: String,
-        private val iconProvider: IconProvider
+        private val iconProvider: IconProvider,
+        val tooltipComposable: TooltipComposable? = null
     ) : ContextTreeNode() {
 
         @get:Composable
@@ -42,6 +43,8 @@ sealed class ContextTreeNode {
 }
 
 typealias IconProvider = () -> ImageBitmap?
+
+typealias TooltipComposable = @Composable () -> Unit
 
 fun ContextTreeNode.updateVisibility(
     onEachRoot: ContextTreeNode.Root.(matchesPredicate: Boolean) -> Unit = {},

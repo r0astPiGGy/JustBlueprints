@@ -13,6 +13,11 @@ val ENGLISH = Locale("en")
 
 internal val defaultLocalization: Localization = Localization(RUSSIAN)
 
+val languageNameByLocale = mapOf(
+    RUSSIAN to "Русский",
+    ENGLISH to "English"
+)
+
 private val supportedLocales: MutableSet<Locale> = mutableSetOf()
 
 internal val localizationMap = hashMapOf<Locale, Localization>()

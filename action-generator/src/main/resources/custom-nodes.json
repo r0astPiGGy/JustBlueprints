@@ -58,9 +58,170 @@
         "type": "exec-container"
       }
     } ],
+    "actionType": "DEFAULT",
     "iconPath": "images/icons/native/native_branch.png",
     "details": {
       "description": "Если условие истинно, поток выполнения идёт в True, иначе в False"
+    }
+  },
+  {
+    "id": "native_function_reference",
+    "type": "function_reference",
+    "name": "Вызвать функцию %s",
+    "category": "",
+    "input": [
+      {
+        "id": "in-exec",
+        "type": "exec",
+        "label": " ",
+        "extra": {
+          "type": "exec-pair"
+        }
+      }
+    ],
+    "output": [
+      {
+        "id": "out-exec",
+        "type": "exec",
+        "label": " ",
+        "extra": {
+          "type": "compound_extra_data",
+          "extras": [
+            {
+              "type": "exec-pair"
+            },
+            {
+              "type": "exec-next"
+            }
+          ]
+        }
+      }
+    ],
+    "iconPath": "images/icons/actions/call_function.png",
+    "actionType": "HIDDEN",
+    "details": {
+      "name": "Запустить функцию",
+      "description": "Вызывает строку кода функции."
+    }
+  },
+  {
+    "id": "native_process_reference",
+    "type": "process_reference",
+    "name": "Запустить процесс %s",
+    "category": "",
+    "input": [
+      {
+        "id": "in-exec",
+        "type": "exec",
+        "label": " ",
+        "extra": {
+          "type": "exec-pair"
+        }
+      },
+      {
+        "id": "local_variables_mode",
+        "type": "enum",
+        "label": "Режим переменных",
+        "extra": {
+          "type": "compound_extra_data",
+          "extras": [
+            {
+              "type": "enum",
+              "values": [
+                {
+                  "id": "DONT_COPY",
+                  "name": "Не дублировать"
+                },
+                {
+                  "id": "COPY",
+                  "name": "Дублировать"
+                },
+                {
+                  "id": "SHARE",
+                  "name": "Общие"
+                }
+              ]
+            },
+            {
+              "type": "connection_disabled"
+            }
+          ]
+        }
+      }
+    ],
+    "output": [
+      {
+        "id": "out-exec",
+        "type": "exec",
+        "label": " ",
+        "extra": {
+          "type": "compound_extra_data",
+          "extras": [
+            {
+              "type": "exec-pair"
+            },
+            {
+              "type": "exec-next"
+            }
+          ]
+        }
+      }
+    ],
+    "iconPath": "images/icons/actions/start_process.png",
+    "actionType": "HIDDEN",
+    "details": {
+      "name": "Запустить процесс",
+      "description": "Запускает строку кода процесса."
+    }
+  },
+  {
+    "id": "native_function_declaration",
+    "type" : "function_declaration",
+    "name" : "Функция",
+    "category" : "",
+    "input" : [],
+    "output" : [
+      {
+        "id" : "out-exec",
+        "label" : "Тело функции",
+        "type" : "exec",
+        "extra": {
+          "type": "exec-next"
+        }
+      }
+    ],
+    "extra": {
+      "type": "function"
+    },
+    "actionType": "HIDDEN",
+    "iconPath": "images/icons/native/native_function_declaration.png",
+    "details": {
+      "description": "Функция"
+    }
+  },
+  {
+    "id": "native_process_declaration",
+    "type" : "process_declaration",
+    "name" : "Процесс",
+    "category" : "",
+    "input" : [],
+    "output" : [
+      {
+        "id" : "out-exec",
+        "label" : "Тело процесса",
+        "type" : "exec",
+        "extra": {
+          "type": "exec-next"
+        }
+      }
+    ],
+    "extra": {
+      "type": "process"
+    },
+    "actionType": "HIDDEN",
+    "iconPath": "images/icons/native/native_process_declaration.png",
+    "details": {
+      "description": "Процесс"
     }
   },
   {
@@ -76,6 +237,7 @@
         "type" : "array"
       }
     ],
+    "actionType": "FACTORY",
     "iconPath": "images/icons/native/native_array_factory.png",
     "details": {
       "description": "Список"
@@ -103,6 +265,7 @@
         "type" : "item"
       }
     ],
+    "actionType": "FACTORY",
     "iconPath": "images/icons/native/native_item_factory.png",
     "details": {
       "description": "Предмет"
@@ -130,6 +293,7 @@
         "type" : "text"
       }
     ],
+    "actionType": "FACTORY",
     "iconPath": "images/icons/native/native_text_factory.png",
     "details": {
       "description": "Текст"
@@ -157,6 +321,7 @@
         "type" : "number"
       }
     ],
+    "actionType": "FACTORY",
     "iconPath": "images/icons/native/native_number_factory.png",
     "details": {
       "description": "Число"
@@ -200,6 +365,7 @@
         "type" : "sound"
       }
     ],
+    "actionType": "FACTORY",
     "iconPath": "images/icons/native/native_sound_factory.png",
     "details": {
       "description": "Звук"
@@ -259,6 +425,7 @@
         "type" : "location"
       }
     ],
+    "actionType": "FACTORY",
     "iconPath": "images/icons/native/native_location_factory.png",
     "details": {
       "description": "Локация"

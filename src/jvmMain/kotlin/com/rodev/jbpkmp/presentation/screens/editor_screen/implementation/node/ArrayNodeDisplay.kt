@@ -3,7 +3,7 @@ package com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.node
 import androidx.compose.runtime.Composable
 import com.rodev.generator.action.entity.ActionDetails
 import com.rodev.jbpkmp.domain.model.NodeEntity
-import com.rodev.jbpkmp.domain.repository.IconDataSource
+import com.rodev.jbpkmp.domain.source.IconDataSource
 import com.rodev.jbpkmp.presentation.screens.editor_screen.SelectionHandler
 import com.rodev.jbpkmp.presentation.screens.editor_screen.components.ArrayNode
 import com.rodev.nodeui.components.node.NodeState

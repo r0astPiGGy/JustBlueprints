@@ -1,7 +1,11 @@
 package com.rodev.jbpkmp.presentation.screens.editor_screen.implementation
 
-fun interface ViewPortViewModelFactory {
+interface ViewPortViewModelFactory {
 
-    fun create(): ViewPortViewModel
+    fun createEventGraphViewModel(): ViewPortViewModel
+
+    fun createFunctionGraphViewModel(): ViewPortViewModel
+
+    fun createProcessGraphViewModel(): ViewPortViewModel
 
 }

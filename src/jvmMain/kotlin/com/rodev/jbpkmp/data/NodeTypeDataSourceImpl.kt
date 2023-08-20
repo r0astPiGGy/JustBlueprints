@@ -2,7 +2,7 @@ package com.rodev.jbpkmp.data
 
 import androidx.compose.ui.res.useResource
 import com.rodev.generator.action.entity.NodeType
-import com.rodev.jbpkmp.domain.repository.NodeTypeDataSource
+import com.rodev.jbpkmp.domain.source.NodeTypeDataSource
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream

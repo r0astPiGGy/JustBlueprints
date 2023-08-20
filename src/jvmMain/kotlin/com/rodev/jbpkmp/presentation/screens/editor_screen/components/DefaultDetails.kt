@@ -15,9 +15,7 @@ import com.rodev.jbpkmp.presentation.localization.description
 import com.rodev.jbpkmp.presentation.localization.worksWith
 
 @Composable
-fun DetailsPanel(details: ActionDetails) {
-    val localization = Vocabulary.localization
-
+fun NodeDetailsPanel(details: ActionDetails) {
     Text(
         text = details.name,
         fontStyle = FontStyle.Italic,
@@ -25,6 +23,13 @@ fun DetailsPanel(details: ActionDetails) {
     )
 
     Spacer(modifier = Modifier.size(8.dp))
+
+    DetailsPanel(details)
+}
+
+@Composable
+fun DetailsPanel(details: ActionDetails) {
+    val localization = Vocabulary.localization
 
     details.description?.let {
         Text(

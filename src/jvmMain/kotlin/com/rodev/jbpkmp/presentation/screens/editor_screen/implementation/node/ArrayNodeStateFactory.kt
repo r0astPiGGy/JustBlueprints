@@ -2,7 +2,7 @@ package com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.node
 
 import com.rodev.generator.action.entity.PinModel
 import com.rodev.jbpkmp.domain.model.NodeEntity
-import com.rodev.jbpkmp.domain.repository.*
+import com.rodev.jbpkmp.domain.source.*
 import com.rodev.jbpkmp.presentation.screens.editor_screen.SelectionHandler
 import com.rodev.jbpkmp.presentation.screens.editor_screen.createPin
 import com.rodev.jbpkmp.presentation.screens.editor_screen.getType
@@ -80,7 +80,7 @@ class ArrayNodeStateFactory(
     private fun getNodeRepresentation(typeId: String): NodeDisplay {
         val node = nodeDataSource.getNodeModelById(typeId)!!
         val nodeType = nodeTypeDataSource[node.type]!!
-        val action = actionDataSource.getActionById(typeId)
+        val action = actionDataSource.getActionById(typeId)!!
 
         return ArrayNodeDisplay(
             nodeEntity = NodeEntity(

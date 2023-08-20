@@ -3,7 +3,7 @@ package com.rodev.jbpkmp.data
 import androidx.compose.ui.res.useResource
 import com.rodev.generator.action.entity.SelectorType
 import com.rodev.jbpkmp.domain.model.SelectorGroup
-import com.rodev.jbpkmp.domain.repository.SelectorDataSource
+import com.rodev.jbpkmp.domain.source.SelectorDataSource
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream

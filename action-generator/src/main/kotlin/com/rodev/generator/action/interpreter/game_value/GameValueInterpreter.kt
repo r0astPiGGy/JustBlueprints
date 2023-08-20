@@ -53,7 +53,8 @@ class GameValueInterpreter(
                 name = name,
                 description = localeProvider.translateGameValueDescription(gameValue),
                 worksWith = localeProvider.translateGameValueWorksWith(gameValue)
-            )
+            ),
+            actionType = ActionType.GAME_VALUE_GETTER
         )
     }
 
@@ -70,7 +71,7 @@ class GameValueInterpreter(
             return PinModel(
                 id = id,
                 label = "",
-                type = type
+                type = type.takeIf { it != "list" } ?: "array"
             )
         }
 

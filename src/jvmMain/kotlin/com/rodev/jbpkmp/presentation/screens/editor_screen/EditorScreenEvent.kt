@@ -1,6 +1,8 @@
 package com.rodev.jbpkmp.presentation.screens.editor_screen
 
 import androidx.compose.ui.geometry.Offset
+import com.rodev.jbpkmp.domain.model.variable.GlobalVariable
+import com.rodev.jbpkmp.domain.model.variable.Variable
 
 sealed class EditorScreenEvent {
     object BuildProject : EditorScreenEvent()
@@ -8,8 +10,12 @@ sealed class EditorScreenEvent {
     object OpenSettingsScreen : EditorScreenEvent()
     object CloseSettingsScreen : EditorScreenEvent()
     object CloseProject : EditorScreenEvent()
-    data class AddLocalVariable(val variable: LocalVariableState) : EditorScreenEvent()
-    data class AddGlobalVariable(val variable: GlobalVariableState) : EditorScreenEvent()
-    data class OnDragAndDrop(val variable: VariableState, val position: Offset) :
+    data class AddLocalVariable(val name: String) : EditorScreenEvent()
+    data class AddGlobalVariable(val name: String, val type: Variable.Type) : EditorScreenEvent()
+    data class AddProcess(val name: String) : EditorScreenEvent()
+    data class AddFunction(val name: String) : EditorScreenEvent()
+    data class OpenFunction(val function: FunctionState) : EditorScreenEvent()
+    data class OpenProcess(val process: ProcessState) : EditorScreenEvent()
+    data class OnDragAndDrop(val target: DragAndDropTarget, val position: Offset) :
         EditorScreenEvent()
 }

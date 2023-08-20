@@ -43502,7 +43502,7 @@
         "output": [
             {
                 "id": "armor_items",
-                "type": "list"
+                "type": "array"
             }
         ],
         "extra": {
@@ -43526,7 +43526,7 @@
         "output": [
             {
                 "id": "hotbar_items",
-                "type": "list"
+                "type": "array"
             }
         ],
         "extra": {
@@ -43550,7 +43550,7 @@
         "output": [
             {
                 "id": "inventory_items",
-                "type": "list"
+                "type": "array"
             }
         ],
         "extra": {
@@ -43574,7 +43574,7 @@
         "output": [
             {
                 "id": "custom_inventory_items",
-                "type": "list"
+                "type": "array"
             }
         ],
         "extra": {
@@ -43886,7 +43886,7 @@
         "output": [
             {
                 "id": "potion_effects",
-                "type": "list"
+                "type": "array"
             }
         ],
         "extra": {
@@ -43934,7 +43934,7 @@
         "output": [
             {
                 "id": "passengers",
-                "type": "list"
+                "type": "array"
             }
         ],
         "extra": {
@@ -43982,7 +43982,7 @@
         "output": [
             {
                 "id": "attached_leads",
-                "type": "list"
+                "type": "array"
             }
         ],
         "extra": {
@@ -44078,7 +44078,7 @@
         "output": [
             {
                 "id": "event_blocks_involved",
-                "type": "list"
+                "type": "array"
             }
         ],
         "extra": {
@@ -44398,7 +44398,7 @@
         "output": [
             {
                 "id": "event_slots_involved",
-                "type": "list"
+                "type": "array"
             }
         ],
         "extra": {
@@ -44646,7 +44646,7 @@
         "output": [
             {
                 "id": "selection_target_names",
-                "type": "list"
+                "type": "array"
             }
         ],
         "extra": {
@@ -44662,7 +44662,7 @@
         "output": [
             {
                 "id": "selection_target_uuids",
-                "type": "list"
+                "type": "array"
             }
         ],
         "extra": {
@@ -44889,6 +44889,138 @@
                 }
             }
         ]
+    },
+    {
+        "id": "native_function_reference",
+        "type": "function_reference",
+        "input": [
+            {
+                "id": "in-exec",
+                "type": "exec",
+                "label": " ",
+                "extra": {
+                    "type": "exec-pair"
+                }
+            }
+        ],
+        "output": [
+            {
+                "id": "out-exec",
+                "type": "exec",
+                "label": " ",
+                "extra": {
+                    "type": "compound_extra_data",
+                    "extras": [
+                        {
+                            "type": "exec-pair"
+                        },
+                        {
+                            "type": "exec-next"
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "id": "native_process_reference",
+        "type": "process_reference",
+        "input": [
+            {
+                "id": "in-exec",
+                "type": "exec",
+                "label": " ",
+                "extra": {
+                    "type": "exec-pair"
+                }
+            },
+            {
+                "id": "local_variables_mode",
+                "type": "enum",
+                "label": "Режим переменных",
+                "extra": {
+                    "type": "compound_extra_data",
+                    "extras": [
+                        {
+                            "type": "enum",
+                            "values": [
+                                {
+                                    "id": "DONT_COPY",
+                                    "name": "Не дублировать"
+                                },
+                                {
+                                    "id": "COPY",
+                                    "name": "Дублировать"
+                                },
+                                {
+                                    "id": "SHARE",
+                                    "name": "Общие"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "connection_disabled"
+                        }
+                    ]
+                }
+            }
+        ],
+        "output": [
+            {
+                "id": "out-exec",
+                "type": "exec",
+                "label": " ",
+                "extra": {
+                    "type": "compound_extra_data",
+                    "extras": [
+                        {
+                            "type": "exec-pair"
+                        },
+                        {
+                            "type": "exec-next"
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "id": "native_function_declaration",
+        "type": "function_declaration",
+        "input": [
+        ],
+        "output": [
+            {
+                "id": "out-exec",
+                "type": "exec",
+                "label": "Тело функции",
+                "extra": {
+                    "type": "exec-next"
+                }
+            }
+        ],
+        "extra": {
+            "type": "function"
+        }
+    },
+    {
+        "id": "native_process_declaration",
+        "type": "process_declaration",
+        "input": [
+        ],
+        "output": [
+            {
+                "id": "out-exec",
+                "type": "exec",
+                "label": "Тело процесса",
+                "extra": {
+                    "type": "exec-next"
+                }
+            }
+        ],
+        "extra": {
+            "type": "process"
+        }
     },
     {
         "id": "native_array_factory",

@@ -32,6 +32,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.rodev.jbpkmp.presentation.localization.Vocabulary
+import com.rodev.jbpkmp.presentation.localization.variableType
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.node.VariableNodeState
 import com.rodev.nodeui.components.node.NodeState
 import kotlin.math.roundToInt
@@ -70,6 +72,10 @@ fun VariableNode(
             derivedStateOf {
                 bodyOffset + Offset(nodeState.x, nodeState.y) + rowOffset
             }
+        }
+        val localization = Vocabulary.localization
+        val variableType by derivedStateOf {
+            localization.variableType(state.subHeader)
         }
 
         Column(
@@ -131,7 +137,7 @@ fun VariableNode(
                                 maxLines = 1,
                             )
                             Text(
-                                text = state.subHeader.typeName,
+                                text = variableType,
                                 overflow = TextOverflow.Ellipsis,
                                 maxLines = 1,
                                 fontSize = 13.sp,

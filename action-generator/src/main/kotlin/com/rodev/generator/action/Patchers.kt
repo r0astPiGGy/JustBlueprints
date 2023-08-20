@@ -114,37 +114,3 @@ private fun useFields(vararg fields: Field, block: () -> Unit) {
     block()
     fields.forEach { it.isAccessible = false }
 }
-
-fun main() {
-    val category = Category(
-        path = "event.bebra",
-        name = "bebeaebabee"
-    )
-
-    val categoryPatch = CategoryPatch(
-        path = "event.bebra",
-        name = "testss"
-    )
-
-    patchFields(category, categoryPatch)
-    println(category.name)
-
-    val action = Action(
-        id = "fafsd",
-        name = "sdfaf",
-        input = emptySet(),
-        output = emptySet(),
-        iconPath = "fasdf",
-        category = "adfaas"
-    )
-
-    val actionPatch = ActionPatch(
-        id = "dfasdf",
-        name = "dsfasdfasd"
-    )
-
-    val prevValue = action.name
-    patchFields(action, actionPatch)
-
-    println("CHANGED = ${prevValue != action.name}")
-}

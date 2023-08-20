@@ -2,6 +2,7 @@ package com.rodev.jbpkmp.presentation.screens.editor_screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
@@ -12,14 +13,16 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.focusTarget
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import com.rodev.jbpkmp.presentation.components.HorizontalDivider
 import com.rodev.jbpkmp.presentation.components.MaterialIconButton
@@ -28,6 +31,7 @@ import com.rodev.jbpkmp.presentation.components.VerticalDivider
 import com.rodev.jbpkmp.presentation.localization.Vocabulary.localization
 import com.rodev.jbpkmp.presentation.localization.codeUpload
 import com.rodev.jbpkmp.presentation.localization.projectCompile
+import com.rodev.jbpkmp.presentation.localization.projectLoading
 import com.rodev.jbpkmp.presentation.localization.projectSave
 import com.rodev.jbpkmp.presentation.navigation.NavController
 import com.rodev.jbpkmp.presentation.screens.editor_screen.components.*
@@ -39,6 +43,7 @@ import org.koin.core.parameter.parametersOf
 fun EditorScreen(navController: NavController, projectPath: String) {
     val viewModel: EditorScreenViewModel = koinInject { parametersOf(projectPath) }
     val state = remember { viewModel.state }
+    val focusRequester = remember { FocusRequester() }
 
     // Auto-save
     DisposableEffect(Unit) {
@@ -57,9 +62,15 @@ fun EditorScreen(navController: NavController, projectPath: String) {
         }
     }
 
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
+    }
+
     Surface(
         modifier = Modifier
             .onKeyEvent(viewModel::handleKeyEvent)
+            .focusRequester(focusRequester)
+            .focusTarget()
     ) {
         Column(
             modifier = Modifier
@@ -89,11 +100,7 @@ fun EditorScreen(navController: NavController, projectPath: String) {
 
                     VerticalDivider()
 
-                    val currentGraph = viewModel.currentGraph
-
-                    if (currentGraph != null) {
-                        ViewPortPanel(viewModel, currentGraph)
-                    }
+                    ViewPortPanel(viewModel)
                 }
             }
 
@@ -108,7 +115,10 @@ fun EditorScreen(navController: NavController, projectPath: String) {
             )
         }
 
-        ResultScreen(screenState = state)
+        ResultScreen(
+            screenState = state,
+            onRuntimeError = { viewModel.onEvent(EditorScreenEvent.CloseProject) }
+        )
 
         Sheet(
             presented = state.showSettingsScreen,
@@ -143,7 +153,7 @@ fun TopBarPanel(
             )
         },
         centerContent = {
-            Text(text = viewModel.project.name)
+            Text(text = viewModel.projectName)
         },
         endContent = {
             // Build button
@@ -191,35 +201,45 @@ fun RightPanel(
 
 @Composable
 fun ViewPortPanel(
-    viewModel: EditorScreenViewModel,
-    currentGraph: GraphState
+    viewModel: EditorScreenViewModel
 ) {
-    DropTarget<VariableState>(
-        modifier = Modifier
-    ) { isInBound, data, position ->
-        data?.let {
-            if (isInBound) {
-                viewModel.onEvent(
-                    EditorScreenEvent.OnDragAndDrop(
-                        data,
-                        position
-                    )
+    EditorScreenTabLayout(
+        modifier = Modifier,
+        state = viewModel.tabLayoutHostState
+    ) { currentTab ->
+        if (currentTab == null) {
+            return@EditorScreenTabLayout
+        }
+
+        key(currentTab) {
+            DropTarget<DragAndDropTarget>(
+                modifier = Modifier
+            ) { isInBound, data, position ->
+                data?.let {
+                    if (isInBound) {
+                        viewModel.onEvent(
+                            EditorScreenEvent.OnDragAndDrop(
+                                data,
+                                position
+                            )
+                        )
+                    }
+                }
+
+                BlueprintViewPort(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .then(
+                            if (isInBound) {
+                                Modifier.border(4.dp, color = Color.Blue)
+                            } else {
+                                Modifier
+                            }
+                        ),
+                    viewModel = currentTab.data.viewModel
                 )
             }
         }
-
-        BlueprintViewPort(
-            modifier = Modifier
-                .fillMaxSize()
-                .then(
-                    if (isInBound) {
-                        Modifier.border(4.dp, color = Color.Blue)
-                    } else {
-                        Modifier
-                    }
-                ),
-            viewModel = currentGraph.viewModel
-        )
     }
 }
 
@@ -241,6 +261,7 @@ fun ActionBar(
                 LoadingState.SAVE -> localization.projectSave()
                 LoadingState.COMPILE -> localization.projectCompile()
                 LoadingState.UPLOAD -> localization.codeUpload()
+                LoadingState.LOAD -> localization.projectLoading()
             }
 
             Text(text = message)

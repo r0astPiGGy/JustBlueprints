@@ -13,7 +13,9 @@ class NodeStateSelectableWrapper(
     private val selectGetter: () -> Boolean,
     private val nodeSupplier: () -> Node,
     private val nodeState: NodeState,
-    private val detailsComposable: @Composable () -> Unit
+    private val detailsComposable: @Composable () -> Unit,
+    private val copyEnabled: Boolean = true,
+    private val deletionEnabled: Boolean = true,
 ) : Selectable {
 
     private val clipboardEntry = ClipboardEntryImpl()
@@ -25,7 +27,9 @@ class NodeStateSelectableWrapper(
         }
 
     override fun onDelete(actionVisitor: SelectionActionVisitor) {
-        actionVisitor.deleteNode(nodeState)
+        if (deletionEnabled) {
+            actionVisitor.deleteNode(nodeState)
+        }
     }
 
     override fun isClipboardEntryOwner(clipboardEntry: ClipboardEntry): Boolean {
@@ -43,7 +47,9 @@ class NodeStateSelectableWrapper(
 
     private inner class ClipboardEntryImpl : ClipboardEntry {
         override fun onPaste(actionVisitor: ClipboardActionVisitor) {
-            actionVisitor.pasteNode(nodeSupplier())
+            if (copyEnabled) {
+                actionVisitor.pasteNode(nodeSupplier())
+            }
         }
 
     }

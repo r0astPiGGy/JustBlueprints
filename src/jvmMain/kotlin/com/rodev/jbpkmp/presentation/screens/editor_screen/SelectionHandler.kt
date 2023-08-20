@@ -5,9 +5,4 @@ interface SelectionHandler {
     fun onSelect(selectable: Selectable)
 
     fun resetSelection()
-
-    companion object Default : SelectionHandler {
-        override fun onSelect(selectable: Selectable) {}
-        override fun resetSelection() {}
-    }
 }

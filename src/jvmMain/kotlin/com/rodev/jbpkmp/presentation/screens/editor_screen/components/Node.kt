@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.*
 import com.rodev.generator.action.entity.PinType
 import com.rodev.generator.action.entity.Pins
 import com.rodev.jbpkmp.domain.model.NodeEntity
-import com.rodev.jbpkmp.domain.repository.IconDataSource
+import com.rodev.jbpkmp.domain.source.IconDataSource
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.node.*
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.pin.DefaultPinShape
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.pin.ExecPinShape
@@ -221,7 +221,7 @@ fun OutputPinRow(
                         start = boundSpacing.dp,
                         end = boundSpacingWithPin.dp
                     )
-                    .width(IntrinsicSize.Min)
+                    .width(IntrinsicSize.Max)
             ) {
                 Text(
                     text = pinRowState.pinState.pinDisplay.name,
@@ -262,12 +262,10 @@ fun PinComposable(
 
     val absolutePinCenter by remember {
         derivedStateOf {
-            updatableRowOffset + pinOffset + centerInParent
+            // Костыль?
+            pinState.center = updatableRowOffset + pinOffset + centerInParent
         }
     }
-
-    // TODO remove Side effect
-    pinState.center = absolutePinCenter
 
     val shape = remember {
         if (pinState.isExec()) {
@@ -287,6 +285,10 @@ fun PinComposable(
             .clip(shape)
             .indication(interactionSource, PinHoverIndication)
     ) {
+        // При чтении derivedStateOf обновляется абсолютная позиция PinState, что исправляет визуальный баг при рисовании линий
+        // Костыль?
+        absolutePinCenter.let {  }
+
         // TODO add outline
         drawRect(color = Color(pinState.pinDisplay.color))
     }

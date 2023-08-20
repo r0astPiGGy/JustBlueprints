@@ -20,6 +20,22 @@
         "color": -8750465
     },
     {
+        "id": "function_reference",
+        "color": -12042254
+    },
+    {
+        "id": "process_reference",
+        "color": -12042254
+    },
+    {
+        "id": "function_declaration",
+        "color": -12042254
+    },
+    {
+        "id": "process_declaration",
+        "color": -12042254
+    },
+    {
         "id": "factory",
         "color": -27392
     }

@@ -236,6 +236,10 @@
         "name": "Игровые значения"
     },
     {
+        "path": "",
+        "name": "creative_plus.category._action.name"
+    },
+    {
         "path": "factory",
         "name": "Фабрики"
     }

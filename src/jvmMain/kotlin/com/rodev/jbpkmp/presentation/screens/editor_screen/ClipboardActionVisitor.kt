@@ -1,5 +1,6 @@
 package com.rodev.jbpkmp.presentation.screens.editor_screen
 
+import com.rodev.jbpkmp.domain.model.graph.FunctionGraph
 import com.rodev.jbpkmp.domain.model.variable.GlobalVariable
 import com.rodev.jbpkmp.domain.model.variable.LocalVariable
 import com.rodev.nodeui.model.Node
@@ -11,5 +12,9 @@ interface ClipboardActionVisitor {
     fun pasteLocalVariable(variable: LocalVariable)
 
     fun pasteGlobalVariable(variable: GlobalVariable)
+
+    fun pasteFunction(function: FunctionGraph)
+
+    fun pasteProcess(process: FunctionGraph)
 
 }

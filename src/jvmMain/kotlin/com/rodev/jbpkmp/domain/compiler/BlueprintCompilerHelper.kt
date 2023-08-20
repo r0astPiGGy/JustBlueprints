@@ -12,6 +12,9 @@ import com.rodev.jbp.compiler.module.action.CodeAction
 import com.rodev.jbp.compiler.module.action.CodeBasicAction
 import com.rodev.jbp.compiler.module.action.CodeContainingAction
 import com.rodev.jbp.compiler.module.handler.CodeEvent
+import com.rodev.jbp.compiler.module.handler.CodeFunction
+import com.rodev.jbp.compiler.module.handler.CodeHandler
+import com.rodev.jbp.compiler.module.handler.CodeProcess
 import com.rodev.jbp.compiler.module.value.EmptyValue
 import com.rodev.jbp.compiler.module.value.GameValue
 import com.rodev.jbp.compiler.module.value.Value
@@ -20,62 +23,137 @@ import com.rodev.jbp.compiler.module.value.constants.*
 import com.rodev.jbpkmp.domain.compiler.Nodes.Factory.Companion.toFactory
 import com.rodev.jbpkmp.domain.compiler.exception.BlueprintCompileException
 import com.rodev.jbpkmp.domain.model.Blueprint
+import com.rodev.jbpkmp.domain.model.graph.FunctionGraph
 import com.rodev.jbpkmp.domain.model.variable.GlobalVariable
 import com.rodev.jbpkmp.domain.model.variable.LocalVariable
 import com.rodev.jbpkmp.domain.model.variable.Variable
-import com.rodev.jbpkmp.domain.repository.NodeDataSource
+import com.rodev.jbpkmp.domain.source.NodeDataSource
 import com.rodev.jbpkmp.presentation.screens.editor_screen.*
 import com.rodev.jbpkmp.util.castOrNull
 import com.rodev.jbpkmp.util.contains
+import com.rodev.nodeui.model.Graph
 import com.rodev.nodeui.model.Node
 import com.rodev.nodeui.model.Pin
+import com.rodev.nodeui.model.PinConnection
 
 class BlueprintCompilerHelper(
     private val nodeDataSource: NodeDataSource,
     blueprint: Blueprint
 ) {
-    val connections = blueprint.eventGraph.graph.connections
-    val graphNodes = blueprint.eventGraph.graph.nodes
-    val localVariables = blueprint.eventGraph.localVariables
-    val globalVariables = blueprint.eventGraph.globalVariables
-    val localVariablesById = localVariables.toMap(LocalVariable::id)
-    val globalVariablesById = globalVariables.toMap(GlobalVariable::id)
-    val valueFactory: ValueFactory = DefaultValueFactory
 
-    val nodes = mutableListOf<NodeAdapter>()
-    val pinsById = mutableMapOf<String, PinAdapter>()
+    private val connections: List<PinConnection>
+    private val graphNodes: List<Node>
+
+    init {
+
+        // merge all graphs
+        val (connections, graphNodes) = listOf(blueprint.eventGraph.graph).asSequence()
+            .plus(blueprint.processes.map(FunctionGraph::graph))
+            .plus(blueprint.functions.map(FunctionGraph::graph))
+            .fold(mutableListOf<PinConnection>() to mutableListOf<Node>()) { acc, graph ->
+                acc.first.addAll(graph.connections)
+                acc.second.addAll(graph.nodes)
+                acc
+            }
+
+        this.connections = connections
+        this.graphNodes = graphNodes
+    }
+
+    private val localVariables = blueprint.localVariables
+    private val globalVariables = blueprint.globalVariables
+    private val processes = blueprint.processes
+    private val functions = blueprint.functions
+    private val localVariablesById = localVariables.toMap(LocalVariable::id)
+    private val globalVariablesById = globalVariables.toMap(GlobalVariable::id)
+    private val valueFactory: ValueFactory = DefaultValueFactory
+
+    private val nodes = mutableListOf<NodeAdapter>()
+    private val pinsById = mutableMapOf<String, PinAdapter>()
+    private val invokableHandlerNamesById = mutableMapOf<String, String>()
 
     fun compile(): String {
         interpretNodes()
         connectPins()
+        findInvokableHandlers()
 
         val handlers = Handlers().apply {
-            adaptEvents().forEach {
-                this += it
-            }
+            this += adaptHandlers()
         }
 
         return handlers.toJson().toString()
     }
 
-    private fun adaptEvents() = nodes.mapNotNull(::adaptEvent)
+    private fun findInvokableHandlers() {
+        listOf(functions, processes).forEach { list ->
+            list.forEach {
+                invokableHandlerNamesById[it.id] = it.name
+            }
+        }
+    }
 
-    private fun adaptEvent(node: NodeAdapter): CodeEvent? {
+    private fun adaptHandlers() = nodes.mapNotNull {
+        listOf(
+            adaptProcess(it),
+            adaptEvent(it),
+            adaptFunction(it)
+        ).firstOrNull { handler -> handler != null }
+    }
+
+    private fun <T : CodeHandler> adaptHandler(
+        node: NodeAdapter,
+        handlerFactory: (NodeModelAdapter) -> T?
+    ): T? {
         if (node !is NodeModelAdapter) return null
 
-        val model = node.nodeModel
+        val handler = handlerFactory(node) ?: return null
 
-        val handlerExtraData = model.extra.castOrNull<HandlerExtraData>() ?: return null
+        CodeContainerScope.using(handler) {
+            val outputExecPin = node.findOutputExecPin()
 
-        val codeEvent = CodeEvent(handlerExtraData.id)
+            require(outputExecPin != null) {
+                "Output exec pin not found in node ${node.nodeModel}"
+            }
 
-        CodeContainerScope.using(codeEvent) {
-            node.findOutputExecPin()!!.findNextNodes().forEach {
+            outputExecPin.findNextNodes().forEach {
                 it.onAdapt(this)
             }
         }
 
-        return codeEvent
+        return handler
+    }
+
+    private fun adaptProcess(node: NodeAdapter): CodeProcess? {
+        return adaptHandler(node) {
+            if (it.nodeModel.id != Nodes.Type.PROCESS_DECLARATION)
+                return@adaptHandler null
+
+            val processId = node.node.getInvokableId()
+            val processName = invokableHandlerNamesById[processId]!!
+
+            CodeProcess(name = processName)
+        }
+    }
+
+    private fun adaptFunction(node: NodeAdapter): CodeFunction? {
+        return adaptHandler(node) {
+            if (it.nodeModel.id != Nodes.Type.FUNCTION_DECLARATION)
+                return@adaptHandler null
+
+            val functionId = node.node.getInvokableId()
+            val functionName = invokableHandlerNamesById[functionId]!!
+
+            CodeFunction(name = functionName)
+        }
+    }
+
+    private fun adaptEvent(node: NodeAdapter): CodeEvent? {
+        return adaptHandler(node) {
+            val model = it.nodeModel
+            val handlerExtraData = model.extra.castOrNull<HandlerExtraData>() ?: return@adaptHandler null
+
+            CodeEvent(handlerExtraData.id)
+        }
     }
 
     private fun CodeContainerScope.adaptBranch(adapter: NodeModelAdapter) {
@@ -122,13 +200,63 @@ class BlueprintCompilerHelper(
 
     }
 
+    private fun CodeContainerScope.adaptFunctionReference(adapter: NodeModelAdapter) {
+        val invokableId = adapter.node.getInvokableId()
+        val functionName = invokableHandlerNamesById[invokableId] ?: return
+
+        push(Nodes.Action.CALL_FUNCTION(functionName))
+    }
+
+    private fun CodeContainerScope.adaptProcessReference(adapter: NodeModelAdapter) {
+        val invokableId = adapter.node.getInvokableId()
+        val processName = invokableHandlerNamesById[invokableId] ?: return
+        val args = ArgumentAdapter(adapter.inputPins).also(ArgumentAdapter::adapt).args
+
+        push(Nodes.Action.START_PROCESS(processName, args))
+    }
+
     private fun CodeContainerScope.handleCustomModel(id: String, adapter: NodeModelAdapter): Boolean {
-        if (id == Nodes.Type.BRANCH) {
-            adaptBranch(adapter)
-            return true
+        when (id) {
+            Nodes.Type.BRANCH -> adaptBranch(adapter)
+            Nodes.Type.PROCESS_REFERENCE -> adaptProcessReference(adapter)
+            Nodes.Type.FUNCTION_REFERENCE -> adaptFunctionReference(adapter)
+            else -> return false
         }
 
-        return false
+        return true
+    }
+
+    private inner class ArgumentAdapter(
+        private val inputPins: List<PinAdapter>
+    ) {
+
+        var selection: String? = null
+        var conditional: CodeAction? = null
+        var inverted = false
+        val args = mutableMapOf<String, Value>()
+
+        fun adapt() {
+            inputPins.mapNotNull { it as? PinModelAdapter }.forEach {
+                when {
+                    it.pinModel.type == Pins.Type.CONDITION -> {
+                        conditional = it.connectedPins.firstOrNull()?.owner?.adaptSelf()
+                    }
+                    Pins.Type.SELECTOR.contains(it.pinModel.type) -> {
+                        selection = it.pin.getValue()
+                    }
+                    it.pinModel.extra.contains<InvertConditionExtraData>() -> {
+                        inverted = it.pin.getValue().toString().lowercase() == "true"
+                    }
+                    it.pinModel.type == Pins.Type.EXECUTION -> {
+                        // ignore
+                    }
+                    else -> {
+                        args[it.pinModel.id] = it.asArgument()
+                    }
+                }
+            }
+        }
+
     }
 
     private fun CodeContainerScope.adaptModel(adapter: NodeModelAdapter) {
@@ -137,31 +265,13 @@ class BlueprintCompilerHelper(
 
         if (handleCustomModel(nodeModel.id, adapter)) return
 
-        val id = nodeModel.id
-        var selection: String? = null
-        var conditional: CodeAction? = null
-        var inverted = false
-        val args = mutableMapOf<String, Value>()
+        val argumentAdapter = ArgumentAdapter(adapter.inputPins).also(ArgumentAdapter::adapt)
 
-        adapter.inputPins.mapNotNull { it as? PinModelAdapter }.forEach {
-            when {
-                it.pinModel.type == Pins.Type.CONDITION -> {
-                    conditional = it.connectedPins.firstOrNull()?.owner?.adaptSelf()
-                }
-                Pins.Type.SELECTOR.contains(it.pinModel.type) -> {
-                    selection = it.pin.getValue()
-                }
-                it.pinModel.extra.contains<InvertConditionExtraData>() -> {
-                    inverted = it.pin.getValue().toString().lowercase() == "true"
-                }
-                it.pinModel.type == Pins.Type.EXECUTION -> {
-                    // ignore
-                }
-                else -> {
-                    args[it.pinModel.id] = it.asArgument()
-                }
-            }
-        }
+        val id = nodeModel.id
+        val selection: String? = argumentAdapter.selection
+        val conditional: CodeAction? = argumentAdapter.conditional
+        val inverted = argumentAdapter.inverted
+        val args = argumentAdapter.args
 
         val codeAction = if (extraData.contains<ContainerExtraData>()) {
             CodeContainingAction(
@@ -285,12 +395,7 @@ class BlueprintCompilerHelper(
             ValueType.Variable -> {
                 variableConstant?.let { return it }
 
-                throw BlueprintCompileException.WrongArgument(
-                    expected = ValueType.Variable,
-                    actual = (connection as? PinModelAdapter)?.getValueType(),
-                    nodeId = owner.node.uniqueId,
-                    pinId = pin.uniqueId
-                )
+                return EmptyValue
             }
             ValueType.Any -> {
                 if (!connected) return EmptyValue
@@ -303,7 +408,7 @@ class BlueprintCompilerHelper(
             ValueType.Enum -> throw IllegalStateException()
             ValueType.Empty -> throw IllegalStateException()
             else -> { // Item, Location, Particle, Sound, Vector
-                requireConnected(connected)
+                if (!connected) return EmptyValue
 
                 if (variableConstant != null) {
                     return variableConstant
@@ -342,16 +447,6 @@ class BlueprintCompilerHelper(
         val type = getValueType() ?: throw IllegalStateException("Unknown type: ${model.type}")
 
         return asArgument(type)
-    }
-
-    @Throws(BlueprintCompileException::class)
-    private fun PinModelAdapter.requireConnected(connected: Boolean) {
-        if (!connected) {
-            throw BlueprintCompileException.NotConnected(
-                nodeId = owner.node.uniqueId,
-                pinId = pin.uniqueId
-            )
-        }
     }
 
     @Throws(BlueprintCompileException::class)

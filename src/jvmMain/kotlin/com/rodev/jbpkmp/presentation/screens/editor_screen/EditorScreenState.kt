@@ -4,11 +4,9 @@ import androidx.compose.runtime.*
 import com.rodev.jbpkmp.domain.model.CodeLoadCommand
 
 class EditorScreenState(
-    variables: List<GlobalVariableState> = emptyList(),
     forceCodeLoad: Boolean = false
 ) {
 
-    val variables = mutableStateListOf<GlobalVariableState>()
     var result: EditorScreenResult? by mutableStateOf(null)
     var showSettingsScreen by mutableStateOf(false)
 
@@ -17,12 +15,7 @@ class EditorScreenState(
     }
 
     var forceCodeLoad by mutableStateOf(forceCodeLoad)
-
     var navigationResult: NavigationResult by mutableStateOf(NavigationResult.Empty)
-
-    init {
-        this.variables.addAll(variables)
-    }
 
     fun reset() {
         navigationResult = NavigationResult.Empty
@@ -43,10 +36,13 @@ sealed class EditorScreenResult {
 
     class Error(val stage: LoadingState, val message: String?, val stackTrace: String?) : EditorScreenResult()
 
+    class RuntimeError(val message: String?, val stackTrace: String?) : EditorScreenResult()
+
 }
 
 enum class LoadingState {
     SAVE,
+    LOAD,
     COMPILE,
     UPLOAD
 }

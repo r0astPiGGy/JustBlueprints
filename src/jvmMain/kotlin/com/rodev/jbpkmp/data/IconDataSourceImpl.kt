@@ -3,8 +3,8 @@ package com.rodev.jbpkmp.data
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.res.loadImageBitmap
 import androidx.compose.ui.res.useResource
-import com.rodev.jbpkmp.domain.repository.ActionDataSource
-import com.rodev.jbpkmp.domain.repository.IconDataSource
+import com.rodev.jbpkmp.domain.source.ActionDataSource
+import com.rodev.jbpkmp.domain.source.IconDataSource
 
 class IconDataSourceImpl(
     actionDataSource: ActionDataSource

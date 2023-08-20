@@ -8,17 +8,11 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import com.rodev.jbpkmp.LocalMutableLocale
 import com.rodev.jbpkmp.LocalMutableTheme
-import com.rodev.jbpkmp.presentation.localization.Vocabulary
-import com.rodev.jbpkmp.presentation.localization.cancel
-import com.rodev.jbpkmp.presentation.localization.language
-import com.rodev.jbpkmp.presentation.localization.languageDescription
-import com.rodev.jbpkmp.presentation.localization.openLastProject
-import com.rodev.jbpkmp.presentation.localization.save
-import com.rodev.jbpkmp.presentation.localization.supportedLocalesNow
-import com.rodev.jbpkmp.presentation.localization.useDarkTheme
+import com.rodev.jbpkmp.presentation.localization.*
 import com.rodev.jbpkmp.presentation.screens.settings_screen.components.BooleanProperty
 import com.rodev.jbpkmp.presentation.screens.settings_screen.components.EnumProperty
 import org.koin.compose.koinInject
@@ -82,7 +76,7 @@ fun SettingsScreen(
             // Locale
             EnumProperty(
                 label = localization.languageDescription(),
-                propertyText = selectedLocale.displayLanguage.replaceFirstChar(Char::titlecase),
+                propertyText = languageNameByLocale[selectedLocale] ?: selectedLocale.displayLanguage,
             ) { state ->
                 supportedLocalesNow.forEach {
                     DropdownMenuItem(
@@ -92,7 +86,7 @@ fun SettingsScreen(
                             state.expanded = false
                         }
                     ) {
-                        Text(it.displayLanguage.replaceFirstChar(Char::titlecase))
+                        Text(languageNameByLocale[it] ?: it.displayLanguage)
                     }
                 }
             }
@@ -120,6 +114,8 @@ fun SettingsScreen(
             Divider(Modifier.fillMaxWidth())
 
             Spacer(Modifier.weight(1f))
+
+            LocalDensity.current
 
             Row(
                 horizontalArrangement = Arrangement.End,

@@ -2,11 +2,7 @@ package com.rodev.jbpkmp.presentation.screens.editor_screen.components.context_m
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.VerticalScrollbar
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,10 +19,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -40,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
@@ -201,6 +195,18 @@ fun TreeNode(
     }
 }
 
+typealias Content = @Composable () -> Unit
+
+@Composable
+fun wrapIf(condition: Boolean, wrapper: @Composable (Content) -> Unit, content: Content) {
+    if (condition) {
+        wrapper(content)
+    } else {
+        content()
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TreeNodeLeaf(
     nodeLeaf: ContextTreeNode.Leaf
@@ -208,26 +214,48 @@ fun TreeNodeLeaf(
     if (nodeLeaf.visible) {
         val onTreeNodeClick = LocalOnTreeNodeClick.current
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(5.dp))
-                .clickable { onTreeNodeClick(nodeLeaf) }
+        wrapIf(
+            nodeLeaf.tooltipComposable != null,
+            wrapper = {
+                TooltipArea(
+                    tooltip = {
+                        Surface(
+                            modifier = Modifier.shadow(4.dp),
+                            color = MaterialTheme.colors.background,
+                            shape = RoundedCornerShape(4.dp)
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(10.dp)
+                            ) {
+                                nodeLeaf.tooltipComposable!!.invoke()
+                            }
+                        }
+                    },
+                    content = it
+                )
+            }
         ) {
-            Spacer(
-                modifier = Modifier.width(5.dp)
-            )
-            Image(
-                painter = nodeLeaf.icon,
+            Row(
                 modifier = Modifier
-                    .size(25.dp),
-                contentDescription = null
-            )
-            Text(
-                text = nodeLeaf.name,
-                modifier = Modifier.padding(2.dp),
-                color = MaterialTheme.colors.onSurface
-            )
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(5.dp))
+                    .clickable { onTreeNodeClick(nodeLeaf) }
+            ) {
+                Spacer(
+                    modifier = Modifier.width(5.dp)
+                )
+                Image(
+                    painter = nodeLeaf.icon,
+                    modifier = Modifier
+                        .size(25.dp),
+                    contentDescription = null
+                )
+                Text(
+                    text = nodeLeaf.name,
+                    modifier = Modifier.padding(2.dp),
+                    color = MaterialTheme.colors.onSurface
+                )
+            }
         }
         Spacer(modifier = Modifier.height(5.dp))
     }

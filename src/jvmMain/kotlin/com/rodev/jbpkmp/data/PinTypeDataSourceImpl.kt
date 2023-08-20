@@ -2,7 +2,7 @@ package com.rodev.jbpkmp.data
 
 import androidx.compose.ui.res.useResource
 import com.rodev.generator.action.entity.PinType
-import com.rodev.jbpkmp.domain.repository.PinTypeDataSource
+import com.rodev.jbpkmp.domain.source.PinTypeDataSource
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream

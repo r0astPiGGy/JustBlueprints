@@ -13,21 +13,21 @@ import androidx.compose.ui.unit.dp
 const val dividerSize = 1
 
 @Composable
-fun VerticalDivider() {
+fun VerticalDivider(color: Color = Color.Black) {
     Divider(
         modifier = Modifier
             .fillMaxHeight()
             .width(dividerSize.dp),
-        color = Color.Black
+        color = color
     )
 }
 
 @Composable
-fun HorizontalDivider() {
+fun HorizontalDivider(color: Color = Color.Black) {
     Divider(
         modifier = Modifier
             .fillMaxWidth()
             .height(dividerSize.dp),
-        color = Color.Black
+        color = color
     )
 }

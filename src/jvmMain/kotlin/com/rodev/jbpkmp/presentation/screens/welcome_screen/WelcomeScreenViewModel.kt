@@ -2,7 +2,7 @@ package com.rodev.jbpkmp.presentation.screens.welcome_screen
 
 import com.rodev.jbpkmp.domain.model.Project
 import com.rodev.jbpkmp.domain.model.RecentProject
-import com.rodev.jbpkmp.domain.model.save
+import com.rodev.jbpkmp.domain.repository.LocalProjectLoader
 import com.rodev.jbpkmp.domain.repository.ProgramDataRepository
 import com.rodev.jbpkmp.domain.repository.update
 import kotlinx.datetime.Clock
@@ -11,6 +11,7 @@ import kotlinx.datetime.todayIn
 import java.io.File
 
 class WelcomeScreenViewModel(
+    private val projectLoader: LocalProjectLoader,
     private val repository: ProgramDataRepository
 ) {
     val state = WelcomeScreenState()
@@ -22,7 +23,7 @@ class WelcomeScreenViewModel(
         val openLastProject = programData.settings.openLastProject
 
         if (openLastProject && lastOpenProjectPath != null) {
-            if (Project.isValid(lastOpenProjectPath)) {
+            if (projectLoader.isValidFolder(lastOpenProjectPath)) {
                 state.result = WelcomeScreenResult.OpenProject(lastOpenProjectPath)
             } else {
                 repository.update {
@@ -38,7 +39,7 @@ class WelcomeScreenViewModel(
         when (event) {
             is WelcomeScreenEvent.LoadAndOpenProject -> {
                 val project = try {
-                    Project.loadFromFile(event.path)
+                    projectLoader.loadProjectFromFile(event.path).project
                 } catch (e: Exception) {
                     state.result = WelcomeScreenResult.Failure(
                         WelcomeScreenResult.Failure.Error.INVALID_PROJECT
@@ -68,7 +69,8 @@ class WelcomeScreenViewModel(
                     path = directory,
                     lastOpeningDate = Clock.System.todayIn(TimeZone.currentSystemDefault())
                 )
-                project.save()
+
+                projectLoader.referenceOf(project).save()
 
                 openProject(recentProject)
             }
@@ -106,7 +108,7 @@ class WelcomeScreenViewModel(
     private fun getRecentProjects() {
         val recentProjects =
             repository.update {
-                recentProjects.removeIf { !Project.isValid(it.path) }
+                recentProjects.removeIf { !projectLoader.isValidFolder(it.path) }
             }
             .recentProjects
             .sortedBy(RecentProject::lastOpeningDate) // Sort

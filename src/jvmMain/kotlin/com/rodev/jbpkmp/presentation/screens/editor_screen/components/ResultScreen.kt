@@ -27,7 +27,8 @@ import com.rodev.jbpkmp.theme.gray
 
 @Composable
 fun ResultScreen(
-    screenState: EditorScreenState
+    screenState: EditorScreenState,
+    onRuntimeError: () -> Unit = {},
 ) {
     val presented by remember { derivedStateOf {
         screenState.result != null && !screenState.isLoading
@@ -58,6 +59,17 @@ fun ResultScreen(
                         .fillMaxSize(0.5f),
                     error = result,
                     onDismiss = dismissRequest
+                )
+            }
+            is EditorScreenResult.RuntimeError -> {
+                RuntimeErrorScreen(
+                    modifier = Modifier
+                        .fillMaxSize(0.5f),
+                    error = result,
+                    onDismiss = {
+                        dismissRequest()
+                        onRuntimeError()
+                    }
                 )
             }
             is EditorScreenResult.Loading -> {}
@@ -192,8 +204,41 @@ fun ErrorScreen(
         LoadingState.UPLOAD -> localization.uploadError()
         LoadingState.SAVE -> localization.saveError()
         LoadingState.COMPILE -> localization.compileError()
+        LoadingState.LOAD -> localization.loadError()
     }
 
+    ErrorScreen(
+        modifier = modifier,
+        title = title,
+        message = error.message,
+        stackTrace = error.stackTrace,
+        onDismiss = onDismiss
+    )
+}
+
+@Composable
+fun RuntimeErrorScreen(
+    modifier: Modifier = Modifier,
+    error: EditorScreenResult.RuntimeError,
+    onDismiss: () -> Unit,
+) {
+    ErrorScreen(
+        modifier = modifier,
+        title = localization.runtimeError(),
+        message = error.message,
+        stackTrace = error.stackTrace,
+        onDismiss = onDismiss
+    )
+}
+
+@Composable
+fun ErrorScreen(
+    modifier: Modifier = Modifier,
+    title: String,
+    message: String? = null,
+    stackTrace: String? = null,
+    onDismiss: () -> Unit
+) {
     Surface(
         shape = RoundedCornerShape(10.dp),
         modifier = modifier
@@ -211,7 +256,7 @@ fun ErrorScreen(
                     text = title,
                     fontSize = MaterialTheme.typography.h3.fontSize
                 )
-                error.message?.let {
+                message?.let {
                     Text(
                         text = it,
                         maxLines = 1
@@ -227,7 +272,7 @@ fun ErrorScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f),
-                text = error.stackTrace ?: "No stacktrace provided",
+                text = stackTrace ?: "No stacktrace provided",
             )
 
             Spacer(modifier = Modifier.height(columnPadding))

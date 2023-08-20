@@ -5,68 +5,98 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.key.*
 import com.rodev.jbpkmp.domain.model.*
-import com.rodev.jbpkmp.domain.model.graph.EventGraph
+import com.rodev.jbpkmp.domain.model.graph.FunctionGraph
 import com.rodev.jbpkmp.domain.model.variable.GlobalVariable
 import com.rodev.jbpkmp.domain.model.variable.LocalVariable
 import com.rodev.jbpkmp.domain.repository.ProgramDataRepository
+import com.rodev.jbpkmp.domain.repository.LocalProjectReference
 import com.rodev.jbpkmp.domain.repository.update
+import com.rodev.jbpkmp.domain.repository.updateEditorData
 import com.rodev.jbpkmp.domain.usecase.upload.BlueprintCompileUseCase
 import com.rodev.jbpkmp.domain.usecase.upload.CodeUploadException
 import com.rodev.jbpkmp.domain.usecase.upload.CodeUploadUseCase
-import com.rodev.jbpkmp.presentation.screens.editor_screen.SelectionHandler.Default.resetSelection
+import com.rodev.jbpkmp.presentation.screens.editor_screen.components.InvokableTab
+import com.rodev.jbpkmp.presentation.components.TabLayoutHostState
+import com.rodev.jbpkmp.presentation.components.TabState
+import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.CreateFunctionGraphEvent
+import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.CreateProcessGraphEvent
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.CreateVariableGraphEvent
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.NodeAddAtCursorEvent
-import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.ViewPortViewModelFactory
+import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.node.InvokableReferenceDisplay
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.node.VariableNodeDisplay
+import com.rodev.jbpkmp.util.generateUniqueId
 import com.rodev.nodeui.components.node.NodeState
 import com.rodev.nodeui.model.Node
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.Json
+
+typealias EditorTabLayoutState = TabLayoutHostState<GraphState>
+
+typealias EditorTabState = TabState<GraphState>
 
 class EditorScreenViewModel(
-    projectPath: String,
-    private val json: Json,
+    private val projectReference: LocalProjectReference,
     private val repository: ProgramDataRepository,
-    private val compile: BlueprintCompileUseCase,
-    private val uploadCode: CodeUploadUseCase,
     private val selectionDispatcher: SelectionDispatcher,
-    private val viewPortViewModelFactory: ViewPortViewModelFactory,
-    private val dynamicVariableStateProvider: DynamicVariableStateProvider
+    private val graphStateFactory: GraphStateFactory,
+    private val dynamicVariableStateProvider: DynamicVariableStateProvider,
+    private val dynamicInvokableReferenceProvider: DynamicInvokableReferenceProvider,
+    private val uploadCode: CodeUploadUseCase,
+    private val compile: BlueprintCompileUseCase
 ) {
 
-    lateinit var project: Project
+    val projectName = projectReference.project.name
 
-    var currentGraph by mutableStateOf<GraphState?>(null)
-        private set
+    val tabLayoutHostState = EditorTabLayoutState()
+    val currentGraph by derivedStateOf {
+        tabLayoutHostState.currentTab?.data
+    }
+    val state = EditorScreenState()
 
     private var buildJob: Job? = null
-    private val selectionActionVisitor: SelectionActionVisitor = SelectionActionVisitorImpl()
 
-    private val clipboardActionVisitor: ClipboardActionVisitor = ClipboardActionVisitorImpl()
     private var clipboardEntry: ClipboardEntry? = null
+    private val clipboardActionVisitor: ClipboardActionVisitor = ClipboardActionVisitorImpl()
 
     private val selectionHandler = SelectionHandlerImpl()
+    private val selectionActionVisitor: SelectionActionVisitor = SelectionActionVisitorImpl()
     val selectable by derivedStateOf {
         selectionHandler.selectable
     }
 
     private val variableStateProvider = VariableStateProviderImpl()
+    private val invokableReferenceProvider = InvokableReferenceProviderImpl()
 
-    val state = EditorScreenState(
-        forceCodeLoad = repository.load().settings.forceCodeLoad
-    )
+    private val blueprintState: BlueprintState
 
     init {
+        state.forceCodeLoad = repository.load().settings.forceCodeLoad
+
         selectionDispatcher.registerSelectionHandler(selectionHandler)
         dynamicVariableStateProvider.setVariableStateProvider(variableStateProvider)
+        dynamicInvokableReferenceProvider.setInvokableReferenceProvider(invokableReferenceProvider)
 
-        load(projectPath)
+        blueprintState = load()
+    }
+
+    val globalVariables: List<GlobalVariableState> by derivedStateOf {
+        blueprintState.globalVariables
+    }
+
+    val processes: List<ProcessState> by derivedStateOf { 
+        blueprintState.processGraphs
+    }
+
+    val functions: List<FunctionState> by derivedStateOf {
+        blueprintState.functionGraphs
+    }
+
+    init {
+        restoreTabs()
     }
 
     fun onEvent(event: EditorScreenEvent) {
@@ -76,12 +106,17 @@ class EditorScreenViewModel(
             }
 
             is EditorScreenEvent.SaveProject -> {
-                currentGraph?.let(::saveGraphModel)
+                projectReference.updateEditorData {
+                    saveTabs()
+                }
+                projectReference.blueprint.save(
+                    blueprint = blueprintState.toBlueprint()
+                )
             }
 
             is EditorScreenEvent.AddLocalVariable -> {
                 currentGraph?.let {
-                    val variable = event.variable
+                    val variable = LocalVariableState(name = event.name)
 
                     variableStateProvider.addVariable(variable)
                     it.variables.add(variable)
@@ -89,14 +124,59 @@ class EditorScreenViewModel(
             }
 
             is EditorScreenEvent.AddGlobalVariable -> {
-                event.variable.let {
+                GlobalVariableState(
+                    name = event.name,
+                    type = event.type
+                ).let {
                     variableStateProvider.addVariable(it)
-                    state.variables.add(it)
+                    blueprintState.globalVariables.add(it)
                 }
             }
 
+            is EditorScreenEvent.AddProcess -> {
+                val graphState = graphStateFactory.createProcessGraph()
+                val process = ProcessState(
+                    reference = invokableReferenceProvider.createAndAdd(
+                        id = graphState.id,
+                        name = event.name
+                    ),
+                    graphState = graphState
+                )
+                blueprintState.processGraphs.add(process)
+
+                tabLayoutHostState.openTab(
+                    tabState = InvokableTab(process)
+                )
+            }
+
+            is EditorScreenEvent.AddFunction -> {
+                val graphState = graphStateFactory.createFunctionGraph()
+                val function = FunctionState(
+                    reference = invokableReferenceProvider.createAndAdd(
+                        id = graphState.id,
+                        name = event.name
+                    ),
+                    graphState = graphState
+                )
+                blueprintState.functionGraphs.add(function)
+
+                tabLayoutHostState.openTab(
+                    tabState = InvokableTab(function)
+                )
+            }
+
             is EditorScreenEvent.OnDragAndDrop -> {
-                handleDragAndDropEvent(event.variable, event.position)
+                val target = event.target
+                val position = event.position
+
+                val graphEvent = when (target) {
+                    is VariableState -> CreateVariableGraphEvent(target, position)
+                    is ProcessState -> CreateProcessGraphEvent(target, position)
+                    is FunctionState -> CreateFunctionGraphEvent(target, position)
+                    else -> throw IllegalStateException("Unknown drag and drop target")
+                }
+
+                currentGraph?.viewModel?.onEvent(graphEvent)
             }
 
             EditorScreenEvent.CloseProject -> {
@@ -113,36 +193,136 @@ class EditorScreenViewModel(
             EditorScreenEvent.CloseSettingsScreen -> {
                 state.showSettingsScreen = false
             }
+
+            is EditorScreenEvent.OpenFunction -> {
+                tabLayoutHostState.openTab(
+                    InvokableTab(event.function)
+                )
+            }
+
+            is EditorScreenEvent.OpenProcess -> {
+                tabLayoutHostState.openTab(
+                    InvokableTab(event.process)
+                )
+            }
         }
     }
 
-    private fun load(projectPath: String) {
-        project = Project.loadFromFolder(projectPath)
+    private fun load(): BlueprintState {
+        val blueprint = try {
+            projectReference.blueprint.load()
+        } catch (e: Exception) {
+            state.result = EditorScreenResult.RuntimeError(
+                message = e.message,
+                stackTrace = e.stackTraceToString()
+            )
+            emptyBlueprint()
+        }
 
-        val blueprint = project.loadBlueprint()
-        val eventGraph = blueprint.eventGraph
+        listOf(blueprint.functions, blueprint.processes).forEach { list ->
+            list.forEach {
+                invokableReferenceProvider.createAndAdd(
+                    id = it.id,
+                    name = it.name
+                )
+            }
+        }
 
-        val localVariables = eventGraph.localVariables.map { it.toState() }
-        val globalVariables = eventGraph.globalVariables.map { it.toState() }
+        blueprint.localVariables.map { it.toState() }.forEach(variableStateProvider::addVariable)
+        val variables = blueprint.globalVariables.map { it.toState() }.also(variableStateProvider::addVariables)
 
-        localVariables.forEach(variableStateProvider::addVariable)
-        globalVariables.forEach(variableStateProvider::addVariable)
-
-        val viewModel = viewPortViewModelFactory.create()
-        viewModel.load(eventGraph.graph)
-
-        currentGraph = GraphState(
-            viewModel = viewModel,
-            variables = localVariables
-        )
-
-        state.variables.addAll(
-            globalVariables
+        return BlueprintState(
+            eventGraph = graphStateFactory.createEventGraph(blueprint.eventGraph),
+            functions = loadFunctions(blueprint.functions),
+            processes = loadProcesses(blueprint.processes),
+            variables = variables
         )
     }
 
+    private fun saveTabs(): EditorData {
+        return EditorData(
+            selectedTabId = currentGraph!!.id,
+            openedTabs = tabLayoutHostState.tabs.map { tab ->
+                val id = tab.data.id
+                if (id == blueprintState.eventGraph.id) {
+                    EventGraphTab(id)
+                } else {
+                    InvokableGraphTab(id)
+                }
+            }.toSet()
+        )
+    }
+
+    private fun restoreTabs() {
+        val editorData = projectReference.project.editorData
+        val eventGraph = blueprintState.eventGraph
+
+        if (editorData == null) {
+            tabLayoutHostState.addTab(
+                EditorTabState(
+                    name = "Event Graph",
+                    closeable = false,
+                    data = eventGraph
+                )
+            )
+            return
+        }
+
+        val selectedTabId = editorData.selectedTabId
+        var selectedGraphState: GraphState? = null
+
+        editorData.openedTabs.forEach { tab ->
+            when (tab) {
+                is EventGraphTab -> {
+                    tabLayoutHostState.addTab(
+                        EditorTabState(
+                            name = "Event Graph",
+                            closeable = false,
+                            data = eventGraph
+                        )
+                    )
+                    if (selectedTabId == eventGraph.id) {
+                        selectedGraphState = eventGraph
+                    }
+                }
+                is InvokableGraphTab -> {
+                    val invokableState = blueprintState.findGraphById(tab.id)
+
+                    tabLayoutHostState.addTab(
+                        InvokableTab(
+                            invokableState = invokableState
+                        )
+                    )
+                    if (selectedTabId == invokableState.id) {
+                        selectedGraphState = invokableState.graphState
+                    }
+                }
+            }
+
+            tabLayoutHostState.openTabIf { it.data == selectedGraphState }
+        }
+    }
+
+    private fun loadFunctions(functions: List<FunctionGraph>): List<FunctionState> {
+        return functions.map { graph ->
+            FunctionState(
+                reference = invokableReferenceProvider.getInvokableReferenceById(graph.id)!!,
+                graphState = graphStateFactory.createFunctionGraph(graph)
+            )
+        }
+    }
+
+    private fun loadProcesses(processes: List<FunctionGraph>): List<ProcessState> {
+        return processes.map { graph ->
+            ProcessState(
+                reference = invokableReferenceProvider.getInvokableReferenceById(graph.id)!!,
+                graphState = graphStateFactory.createProcessGraph(graph)
+            )
+        }
+    }
+
     fun onDispose() {
-        resetSelection()
+        selectionHandler.resetSelection()
         onEvent(EditorScreenEvent.SaveProject)
         repository.update {
             settings.forceCodeLoad = state.forceCodeLoad
@@ -150,11 +330,20 @@ class EditorScreenViewModel(
         buildJob?.cancel()
         buildJob = null
         dynamicVariableStateProvider.unregister()
+        dynamicInvokableReferenceProvider.unregister()
         selectionDispatcher.unregisterSelectionHandler(selectionHandler)
     }
 
     @OptIn(ExperimentalComposeUiApi::class)
     fun handleKeyEvent(keyEvent: KeyEvent): Boolean {
+        if (keyEvent.key == Key.DirectionLeft && keyEvent.isAltPressed && keyEvent.type == KeyEventType.KeyDown) {
+            return handleLeftTabScroll()
+        }
+
+        if (keyEvent.key == Key.DirectionRight && keyEvent.isAltPressed && keyEvent.type == KeyEventType.KeyDown) {
+            return handleRightTabScroll()
+        }
+
         if (keyEvent.type != KeyEventType.KeyUp) return false
 
         if (keyEvent.key == Key.Delete) {
@@ -170,6 +359,32 @@ class EditorScreenViewModel(
         }
 
         return false
+    }
+
+    private fun handleLeftTabScroll(): Boolean {
+        scrollTabBy(-1)
+        return true
+    }
+
+    private fun handleRightTabScroll(): Boolean {
+        scrollTabBy(1)
+        return true
+    }
+
+    private fun scrollTabBy(i: Int) {
+        val tabSize = tabLayoutHostState.tabs.size - 1
+        if (tabSize == 0) return
+
+        val currentIndex = tabLayoutHostState.currentTabIndex
+        var target = currentIndex + i
+
+        target = when {
+            target > tabSize -> 0
+            target < 0 -> tabSize
+            else -> target
+        }
+
+        tabLayoutHostState.openTab(target)
     }
 
     private fun handleCopyEvent(): Boolean {
@@ -190,7 +405,7 @@ class EditorScreenViewModel(
 
     private fun handleDeleteEvent(): Boolean {
         val selectable = this.selectable
-        resetSelection()
+        selectionHandler.resetSelection()
 
         selectable?.let {
             if (it.isClipboardEntryOwner(clipboardEntry)) {
@@ -218,7 +433,7 @@ class EditorScreenViewModel(
     private fun pasteLocalVariable(variable: LocalVariable) {
         onEvent(
             EditorScreenEvent.AddLocalVariable(
-                variable.toState()
+                name = variable.name
             )
         )
     }
@@ -226,7 +441,8 @@ class EditorScreenViewModel(
     private fun pasteGlobalVariable(variable: GlobalVariable) {
         onEvent(
             EditorScreenEvent.AddGlobalVariable(
-                variable.toState()
+                name = variable.name,
+                type = variable.type
             )
         )
     }
@@ -244,41 +460,59 @@ class EditorScreenViewModel(
     }
 
     private fun deleteGlobalVariable(variable: GlobalVariableState) {
-        currentGraph?.let { graph ->
-            graph.removeVariable(variable)
-            state.variables.removeIf { it.id == variable.id }
-            variableStateProvider.removeVariable(variable)
+        blueprintState.forEachGraph { it.removeVariable(variable) }
+        blueprintState.globalVariables.removeIf { it.id == variable.id }
+        variableStateProvider.removeVariable(variable)
+    }
+
+    private fun deleteFunction(function: FunctionState) {
+        blueprintState.functionGraphs.remove(function)
+        deleteInvokable(function)
+    }
+
+    private fun deleteProcess(process: ProcessState) {
+        blueprintState.processGraphs.remove(process)
+        deleteInvokable(process)
+    }
+
+    private fun deleteInvokable(invokableState: InvokableState) {
+        tabLayoutHostState.removeIf { it.data == invokableState.graphState }
+        invokableState.graphState.variables.forEach(variableStateProvider::removeVariable)
+        blueprintState.forEachGraph { graph ->
+            graph.deleteNodesByPredicate {
+                val display = it.nodeDisplay
+
+                if (display is InvokableReferenceDisplay) {
+                    return@deleteNodesByPredicate display.invokableId == invokableState.id
+                }
+
+                false
+            }
         }
+        invokableReferenceProvider.removeReference(invokableState.reference)
     }
 
     private fun GraphState.removeVariable(variable: VariableState) {
-        viewModel.nodeStates.filter { node ->
+        deleteNodesByPredicate { node ->
             val representation = node.nodeDisplay
             if (representation is VariableNodeDisplay) {
-                return@filter representation.variableId == variable.id
+                return@deleteNodesByPredicate representation.variableId == variable.id
             }
 
             false
-        }.let { nodes ->
-            viewModel.deleteNodes(nodes)
         }
     }
 
-    private fun handleDragAndDropEvent(variableState: VariableState, position: Offset) {
-        val currentGraph = currentGraph ?: return
-        val targetPosition = currentGraph.viewModel.scrollOffset + position
-
-        currentGraph.viewModel.onEvent(
-            CreateVariableGraphEvent(variableState, targetPosition)
-        )
+    private fun GraphState.findNodes(predicate: (NodeState) -> Boolean): List<NodeState> {
+        return viewModel.nodeStates.filter(predicate)
     }
 
-    private fun getBlueprint(): Blueprint? {
-        return currentGraph?.let(::getBlueprint)
+    private fun GraphState.deleteNodesByPredicate(predicate: (NodeState) -> Boolean) {
+        findNodes(predicate).let(viewModel::deleteNodes)
     }
 
     private fun buildProject() {
-        val blueprint = getBlueprint() ?: return
+        val blueprint = blueprintState.toBlueprint()
 
         // Build project async
         buildJob = CoroutineScope(Dispatchers.Default).launch {
@@ -305,7 +539,7 @@ class EditorScreenViewModel(
 
         state.result = EditorScreenResult.Loading(state = LoadingState.UPLOAD)
 
-        project.writeCompileOutput(data)
+        projectReference.writeData("output.json", data)
 
         try {
             state.result = EditorScreenResult.SuccessUpload(
@@ -320,27 +554,6 @@ class EditorScreenViewModel(
         }
     }
 
-    private fun getBlueprint(graphState: GraphState): Blueprint {
-        val graph = graphState.viewModel.save()
-
-        return Blueprint(
-            eventGraph = EventGraph(
-                localVariables = graphState.variables.map { it.toLocalVariable() },
-                globalVariables = state.variables.map { it.toGlobalVariable() },
-                graph = graph
-            ),
-            processes = emptyList(),
-            functions = emptyList()
-        )
-    }
-
-    private fun saveGraphModel(graphState: GraphState) {
-        project.saveBlueprint(
-            json = json,
-            blueprint = getBlueprint(graphState)
-        )
-    }
-
     private inner class SelectionActionVisitorImpl : SelectionActionVisitor {
         override fun deleteNode(nodeState: NodeState) {
             this@EditorScreenViewModel.deleteNode(nodeState)
@@ -352,6 +565,14 @@ class EditorScreenViewModel(
 
         override fun deleteGlobalVariable(variable: GlobalVariableState) {
             this@EditorScreenViewModel.deleteGlobalVariable(variable)
+        }
+
+        override fun deleteFunction(function: FunctionState) {
+            this@EditorScreenViewModel.deleteFunction(function)
+        }
+
+        override fun deleteProcess(processState: ProcessState) {
+            this@EditorScreenViewModel.deleteProcess(processState)
         }
     }
 
@@ -367,6 +588,42 @@ class EditorScreenViewModel(
         override fun pasteGlobalVariable(variable: GlobalVariable) {
             this@EditorScreenViewModel.pasteGlobalVariable(variable)
         }
+
+        override fun pasteFunction(function: FunctionGraph) {
+            // TODO
+        }
+
+        override fun pasteProcess(process: FunctionGraph) {
+            // TODO
+        }
+    }
+
+    private inner class InvokableReferenceProviderImpl : InvokableReferenceProvider {
+
+        private val referencesById = hashMapOf<String, InvokableReference>()
+
+        override fun getInvokableReferenceById(id: String): InvokableReference? {
+            return referencesById[id]
+        }
+
+        fun addReference(reference: InvokableReference) {
+            referencesById[reference.id] = reference
+        }
+
+        fun addReferences(references: List<InvokableReference>) {
+            references.forEach(::addReference)
+        }
+
+        fun removeReference(reference: InvokableReference) {
+            referencesById.remove(reference.id)
+        }
+
+        fun createAndAdd(id: String, name: String): InvokableReference {
+            return InvokableReference(id, name).also {
+                addReference(it)
+            }
+        }
+
     }
 
     private inner class VariableStateProviderImpl : VariableStateProvider {
@@ -379,6 +636,10 @@ class EditorScreenViewModel(
 
         fun addVariable(variable: VariableState) {
             variablesById[variable.id] = variable
+        }
+
+        fun addVariables(variables: List<VariableState>) {
+            variables.forEach(::addVariable)
         }
 
         fun removeVariable(variable: VariableState) {

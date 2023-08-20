@@ -35,7 +35,8 @@ class EventInterpreter(
                 description = localeProvider.translateEventDescription(eventData),
                 additionalInfo = localeProvider.translateEventAdditionalInformation(eventData),
                 worksWith = localeProvider.translateEventWorksWith(eventData)
-            )
+            ),
+            actionType = ActionType.EVENT
         )
     }
 

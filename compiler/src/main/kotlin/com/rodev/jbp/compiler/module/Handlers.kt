@@ -18,8 +18,8 @@ class Handlers {
     private var values = mutableListOf<CodeHandler>()
     private var built: Boolean = false
 
-    operator fun plusAssign(codeHandler: CodeHandler) {
-        values += codeHandler
+    operator fun plusAssign(codeHandlers: List<CodeHandler>) {
+        values += codeHandlers
     }
 
     private fun build() {

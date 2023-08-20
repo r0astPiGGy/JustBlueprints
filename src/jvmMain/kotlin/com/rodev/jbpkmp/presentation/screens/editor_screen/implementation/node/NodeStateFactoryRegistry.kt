@@ -1,10 +1,14 @@
 package com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.node
 
+import com.rodev.generator.action.entity.ActionType
+import com.rodev.jbpkmp.domain.source.ActionDataSource
 import com.rodev.nodeui.components.node.NodeState
 import com.rodev.nodeui.components.node.NodeStateFactory
 import com.rodev.nodeui.model.Node
 
-class NodeStateFactoryRegistry : NodeStateFactory {
+class NodeStateFactoryRegistry(
+    private val actionDataSource: ActionDataSource
+) : NodeStateFactory {
 
     companion object {
 
@@ -12,11 +16,16 @@ class NodeStateFactoryRegistry : NodeStateFactory {
 
     }
 
-    private val registeredNodeFactories = hashMapOf<String, NodeStateFactory>()
+    private val nodeFactoriesByNodeId = hashMapOf<String, NodeStateFactory>()
+    private val nodeFactoriesByNodeType = hashMapOf<ActionType, NodeStateFactory>()
     private var defaultNodeStateFactory: NodeStateFactory? = null
 
-    fun registerNodeStateFactory(typeId: String, nodeStateFactory: NodeStateFactory) {
-        registeredNodeFactories[typeId] = nodeStateFactory
+    fun registerNodeStateFactoryByNodeId(nodeId: String, nodeStateFactory: NodeStateFactory) {
+        nodeFactoriesByNodeId[nodeId] = nodeStateFactory
+    }
+
+    fun registerNodeStateFactoryByActionType(actionType: ActionType, nodeStateFactory: NodeStateFactory) {
+        nodeFactoriesByNodeType[actionType] = nodeStateFactory
     }
 
     fun setDefaultNodeStateFactory(nodeStateFactory: NodeStateFactory) {
@@ -28,11 +37,31 @@ class NodeStateFactoryRegistry : NodeStateFactory {
 
         require(type != null) { "Invalid node provided: No type tag" }
 
-        val nodeStateFactory = registeredNodeFactories.getOrDefault(type, defaultNodeStateFactory)
+        val nodeStateFactory = nodeFactoriesByNodeId[type]
 
-        require(nodeStateFactory != null) { "NodeStateFactory is not registered: Unknown node type '$type'" }
+        if (nodeStateFactory != null) {
+            return nodeStateFactory.createNodeState(node)
+        }
 
-        return nodeStateFactory.createNodeState(node)
+        val action = actionDataSource.getActionById(type)
+
+        if (action != null) {
+            val nodeState = createNodeStateByActionType(node, action.type)
+
+            if (nodeState != null) {
+                return nodeState
+            }
+        }
+
+        val defaultNodeStateFactory = defaultNodeStateFactory
+
+        require(defaultNodeStateFactory != null) { "Default NodeStateFactory is not registered!" }
+
+        return defaultNodeStateFactory.createNodeState(node)
+    }
+
+    private fun createNodeStateByActionType(node: Node, actionType: ActionType): NodeState? {
+        return nodeFactoriesByNodeType[actionType]?.createNodeState(node)
     }
 
 }

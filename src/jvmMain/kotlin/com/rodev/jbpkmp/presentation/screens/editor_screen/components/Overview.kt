@@ -22,9 +22,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.rodev.jbpkmp.domain.model.variable.Variable
-import com.rodev.jbpkmp.presentation.localization.Vocabulary
-import com.rodev.jbpkmp.presentation.localization.globalVariables
-import com.rodev.jbpkmp.presentation.localization.localVariables
+import com.rodev.jbpkmp.presentation.localization.*
 import com.rodev.jbpkmp.presentation.screens.editor_screen.*
 import org.koin.compose.koinInject
 
@@ -35,12 +33,22 @@ fun OverviewPanel(
 ) {
     val selectionHandler = koinInject<SelectionHandler>()
 
-    Column(
+    LazyColumn(
         modifier = modifier
             .background(MaterialTheme.colors.background)
     ) {
-        LocalVariables(viewModel, selectionHandler)
-        GlobalVariables(viewModel, selectionHandler)
+        item {
+            LocalVariables(viewModel, selectionHandler)
+        }
+        item {
+            GlobalVariables(viewModel, selectionHandler)
+        }
+        item {
+            Functions(viewModel, selectionHandler)
+        }
+        item {
+            Processes(viewModel, selectionHandler)
+        }
     }
 }
 
@@ -59,10 +67,8 @@ private fun LocalVariables(
             createVariableDialogPresented = true
         }
     ) {
-        if (currentGraph != null) {
-            items(currentGraph.variables, key = { it.id }) {
-                VariableView(selectionHandler, it)
-            }
+        currentGraph?.variables?.forEach {
+            VariableView(selectionHandler, it)
         }
     }
 
@@ -71,12 +77,111 @@ private fun LocalVariables(
             onDismissRequest = { createVariableDialogPresented = false },
             onSelect = {
                 EditorScreenEvent.AddLocalVariable(
-                    LocalVariableState(
-                        name = it
-                    )
+                    name = it
                 ).let(viewModel::onEvent)
             }
         )
+    }
+}
+
+@Composable
+private fun Functions(
+    viewModel: EditorScreenViewModel,
+    selectionHandler: SelectionHandler
+) {
+    var createDialogPresented by remember { mutableStateOf(false) }
+
+    CollapsibleList(
+        header = Vocabulary.localization.functions(),
+        onAddAction = {
+            createDialogPresented = true
+        }
+    ) {
+        viewModel.functions.forEach {
+            InvokableView(selectionHandler, it) { _ ->
+                viewModel.onEvent(EditorScreenEvent.OpenFunction(it))
+            }
+        }
+    }
+
+    if (createDialogPresented) {
+        CreateVariableDialog(
+            onDismissRequest = { createDialogPresented = false },
+            onSelect = {
+                EditorScreenEvent.AddFunction(
+                    name = it
+                ).let(viewModel::onEvent)
+            }
+        )
+    }
+}
+
+@Composable
+private fun Processes(
+    viewModel: EditorScreenViewModel,
+    selectionHandler: SelectionHandler
+) {
+    var createDialogPresented by remember { mutableStateOf(false) }
+
+    CollapsibleList(
+        header = Vocabulary.localization.processes(),
+        onAddAction = {
+            createDialogPresented = true
+        }
+    ) {
+        viewModel.processes.forEach {
+            InvokableView(selectionHandler, it) { _ ->
+                viewModel.onEvent(EditorScreenEvent.OpenProcess(it))
+            }
+        }
+    }
+
+    if (createDialogPresented) {
+        CreateVariableDialog(
+            onDismissRequest = { createDialogPresented = false },
+            onSelect = {
+                EditorScreenEvent.AddProcess(
+                    name = it
+                ).let(viewModel::onEvent)
+            }
+        )
+    }
+}
+
+@Composable
+fun InvokableView(
+    selectionHandler: SelectionHandler,
+    invokable: InvokableState,
+    onSelectedClick: (InvokableState) -> Unit
+) {
+    Surface(
+        border = if (invokable.selected) BorderStroke(2.dp, Color.White) else null,
+        shape = RoundedCornerShape(size = 6.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .clickable {
+                    if (invokable.selected) {
+                        onSelectedClick(invokable)
+                    } else {
+                        selectionHandler.onSelect(
+                            invokable
+                        )
+                    }
+                }
+                .fillMaxWidth()
+                .padding(6.dp),
+        ) {
+            DragTarget(
+                dataToDrop = invokable,
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                Text(
+                    invokable.name
+                )
+            }
+        }
     }
 }
 
@@ -92,9 +197,7 @@ fun VariableView(
         Column(
             modifier = Modifier
                 .clickable {
-                    if (variable.selected) {
-                        selectionHandler.resetSelection()
-                    } else {
+                    if (!variable.selected) {
                         selectionHandler.onSelect(
                             variable
                         )
@@ -130,7 +233,7 @@ private fun GlobalVariables(
             createVariableDialogPresented = true
         }
     ) {
-        items(viewModel.state.variables, key = { it.id }) {
+        viewModel.globalVariables.forEach {
             VariableView(selectionHandler, it)
         }
     }
@@ -140,11 +243,8 @@ private fun GlobalVariables(
             onDismissRequest = { createVariableDialogPresented = false },
             onSelect = {
                 EditorScreenEvent.AddGlobalVariable(
-                    GlobalVariableState(
-                        name = it,
-                        // TODO
-                        type = Variable.Type.Game
-                    )
+                    name = it,
+                    type = Variable.Type.Game
                 ).let(viewModel::onEvent)
             }
         )
@@ -155,7 +255,7 @@ private fun GlobalVariables(
 fun CollapsibleList(
     header: String,
     onAddAction: () -> Unit = {},
-    content: LazyListScope.() -> Unit
+    content: @Composable ColumnScope.() -> Unit
 ) {
     var visible by remember { mutableStateOf(true) }
     val rotation by animateFloatAsState(
@@ -198,7 +298,7 @@ fun CollapsibleList(
         }
 
         AnimatedVisibility(visible) {
-            LazyColumn(
+            Column(
                 modifier = Modifier.padding(start = 15.dp, end = 15.dp),
                 verticalArrangement = Arrangement.spacedBy(5.dp),
                 content = content

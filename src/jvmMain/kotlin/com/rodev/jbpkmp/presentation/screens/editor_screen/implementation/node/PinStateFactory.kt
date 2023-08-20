@@ -6,9 +6,9 @@ import com.rodev.generator.action.entity.Pins
 import com.rodev.generator.action.entity.SelectorType
 import com.rodev.generator.action.entity.extra_data.EnumExtraData
 import com.rodev.jbpkmp.domain.repository.DefaultValueComposableRegistry
-import com.rodev.jbpkmp.domain.repository.PinTypeDataSource
-import com.rodev.jbpkmp.domain.repository.SelectorDataSource
-import com.rodev.jbpkmp.domain.repository.get
+import com.rodev.jbpkmp.domain.source.PinTypeDataSource
+import com.rodev.jbpkmp.domain.source.SelectorDataSource
+import com.rodev.jbpkmp.domain.source.get
 import com.rodev.jbpkmp.presentation.screens.editor_screen.getId
 import com.rodev.jbpkmp.presentation.screens.editor_screen.getValue
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.BooleanInputComposable

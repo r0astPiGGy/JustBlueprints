@@ -14,9 +14,9 @@ sealed interface Variable {
 
     fun toVariableConstant() : VariableConstant
 
-    enum class Type(val typeName: String) {
-        Local("Локальная переменная"),
-        Game("Игровая переменная"),
-        Save("Сохранённая переменная")
+    enum class Type {
+        Local,
+        Game,
+        Save
     }
 }

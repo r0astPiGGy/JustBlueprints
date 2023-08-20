@@ -10,4 +10,8 @@ interface SelectionActionVisitor {
 
     fun deleteGlobalVariable(variable: GlobalVariableState)
 
+    fun deleteFunction(function: FunctionState)
+
+    fun deleteProcess(processState: ProcessState)
+
 }

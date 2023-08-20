@@ -28,7 +28,7 @@ import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.rodev.jbpkmp.domain.model.NodeEntity
-import com.rodev.jbpkmp.domain.repository.IconDataSource
+import com.rodev.jbpkmp.domain.source.IconDataSource
 import com.rodev.jbpkmp.presentation.localization.Vocabulary
 import com.rodev.jbpkmp.presentation.localization.addPin
 import com.rodev.nodeui.components.node.NodeState

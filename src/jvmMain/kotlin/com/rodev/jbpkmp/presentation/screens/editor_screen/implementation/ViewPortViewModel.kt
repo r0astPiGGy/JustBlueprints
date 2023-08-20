@@ -5,14 +5,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import com.rodev.jbpkmp.domain.repository.ActionDataSource
-import com.rodev.jbpkmp.domain.repository.IconDataSource
-import com.rodev.jbpkmp.domain.repository.NodeDataSource
-import com.rodev.jbpkmp.domain.repository.getNodeById
-import com.rodev.jbpkmp.presentation.screens.editor_screen.VariableState
+import com.rodev.generator.action.entity.Action
+import com.rodev.generator.action.entity.ActionType
+import com.rodev.jbpkmp.domain.compiler.Nodes
+import com.rodev.jbpkmp.domain.source.*
+import com.rodev.jbpkmp.presentation.screens.editor_screen.*
+import com.rodev.jbpkmp.presentation.screens.editor_screen.components.DetailsPanel
 import com.rodev.jbpkmp.presentation.screens.editor_screen.components.context_menu.ContextMenuModel
 import com.rodev.jbpkmp.presentation.screens.editor_screen.components.context_menu.ContextTreeNode
-import com.rodev.jbpkmp.presentation.screens.editor_screen.toNode
+import com.rodev.jbpkmp.presentation.screens.editor_screen.components.context_menu.TooltipComposable
 import com.rodev.nodeui.components.graph.GraphEvent
 import com.rodev.nodeui.components.graph.GraphViewModel
 import com.rodev.nodeui.components.graph.NodeAddEvent
@@ -24,16 +25,15 @@ import com.rodev.nodeui.model.Node
 import kotlin.random.Random
 
 open class ViewPortViewModel(
-    pinTypeComparator: PinTypeComparator = PinTypeComparator.Default,
+    pinTypeComparator: PinTypeComparator,
     nodeStateFactory: NodeStateFactory,
-    wireFactory: WireFactory = WireFactory(),
     private val actionDataSource: ActionDataSource,
+    private val detailsDataSource: ActionDetailsDataSource,
     private val nodeDataSource: NodeDataSource,
     private val iconDataSource: IconDataSource
 ) : GraphViewModel(
     nodeStateFactory = nodeStateFactory,
-    pinTypeComparator = pinTypeComparator,
-    wireFactory = wireFactory
+    pinTypeComparator = pinTypeComparator
 ) {
 
     var showContextMenu by mutableStateOf(false)
@@ -91,12 +91,42 @@ open class ViewPortViewModel(
             }
 
             is CreateVariableGraphEvent -> {
-                val (x, y) = event.position
+                val (x, y) = event.position + scrollOffset
                 val variable = event.variable
 
                 onEvent(
                     NodeAddEvent(
                         node = variable.toNode().copy(x = x, y = y)
+                    )
+                )
+            }
+
+            is CreateFunctionGraphEvent -> {
+                val (x, y) = event.position + scrollOffset
+                val functionState = event.function
+
+                val node = nodeDataSource
+                    .getNodeById(Nodes.Type.FUNCTION_REFERENCE)
+                    .setInvokableId(functionState.id)
+
+                onEvent(
+                    NodeAddEvent(
+                        node = node.copy(x = x, y = y)
+                    )
+                )
+            }
+
+            is CreateProcessGraphEvent -> {
+                val (x, y) = event.position + scrollOffset
+                val processState = event.process
+
+                val node = nodeDataSource
+                    .getNodeById(Nodes.Type.PROCESS_REFERENCE)
+                    .setInvokableId(processState.id)
+
+                onEvent(
+                    NodeAddEvent(
+                        node = node.copy(x = x, y = y)
                     )
                 )
             }
@@ -115,15 +145,30 @@ open class ViewPortViewModel(
         // Show context menu
     }
 
-    open fun provideContextMenuData(): List<ContextTreeNode> {
+    protected open val actionFilter: (Action) -> Boolean = { it.type != ActionType.HIDDEN }
+
+    private fun provideContextMenuData(): List<ContextTreeNode> {
         return actionDataSource.transformActions<ContextTreeNode>(
+            filter = actionFilter,
             rootTransformFunction = { category, child ->
                 ContextTreeNode.Root(child, category.name)
             },
             leafTransformFunction = {
-                ContextTreeNode.Leaf(name = it.name, id = it.id) {
-                    iconDataSource.getIconById(it.iconPath)
+                val details = detailsDataSource.getActionDetailsById(it.id)
+                val tooltipComposable: TooltipComposable? = details?.let {
+                    {
+                        DetailsPanel(it)
+                    }
                 }
+
+                ContextTreeNode.Leaf(
+                    name = it.name,
+                    id = it.id,
+                    tooltipComposable = tooltipComposable,
+                    iconProvider = {
+                        iconDataSource.getIconById(it.iconPath)
+                    }
+                )
             }
         )
     }
@@ -146,5 +191,15 @@ data class ActionSelectedGraphEvent(
 
 data class CreateVariableGraphEvent(
     val variable: VariableState,
+    val position: Offset
+) : GraphEvent
+
+data class CreateProcessGraphEvent(
+    val process: ProcessState,
+    val position: Offset
+) : GraphEvent
+
+data class CreateFunctionGraphEvent(
+    val function: FunctionState,
     val position: Offset
 ) : GraphEvent

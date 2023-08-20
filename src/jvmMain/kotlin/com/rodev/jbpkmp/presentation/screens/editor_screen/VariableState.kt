@@ -14,11 +14,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.rodev.jbpkmp.domain.model.variable.GlobalVariable
@@ -26,9 +22,11 @@ import com.rodev.jbpkmp.domain.model.variable.LocalVariable
 import com.rodev.jbpkmp.domain.model.variable.Variable
 import com.rodev.jbpkmp.presentation.localization.Vocabulary
 import com.rodev.jbpkmp.presentation.localization.variableName
+import com.rodev.jbpkmp.presentation.localization.variableType
+import com.rodev.jbpkmp.util.generateUniqueId
 import java.util.UUID
 
-sealed interface VariableState : Selectable {
+sealed interface VariableState : Selectable, DragAndDropTarget {
 
     val id: String
     var name: String
@@ -37,7 +35,7 @@ sealed interface VariableState : Selectable {
 }
 
 class LocalVariableState(
-    override val id: String = UUID.randomUUID().toString(),
+    override val id: String = generateUniqueId(),
     name: String
 ) : VariableState {
 
@@ -90,7 +88,7 @@ class LocalVariableState(
 }
 
 class GlobalVariableState(
-    override val id: String = UUID.randomUUID().toString(),
+    override val id: String = generateUniqueId(),
     name: String,
     type: Variable.Type
 ) : VariableState {
@@ -116,6 +114,9 @@ class GlobalVariableState(
     @Composable
     override fun Details() {
         val localization = Vocabulary.localization
+        val variableType by derivedStateOf {
+            localization.variableType(type)
+        }
 
         OutlinedTextField(
             value = name,
@@ -141,7 +142,7 @@ class GlobalVariableState(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(type.typeName)
+                    Text(variableType)
 
                     Icon(
                         imageVector = Icons.Default.ArrowDropDown,
@@ -162,7 +163,7 @@ class GlobalVariableState(
                             expanded = false
                         }
                     ) {
-                        Text(it.typeName)
+                        Text(localization.variableType(it))
                     }
                 }
             }

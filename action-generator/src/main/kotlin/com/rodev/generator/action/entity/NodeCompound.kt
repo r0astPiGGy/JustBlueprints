@@ -15,6 +15,7 @@ data class NodeCompound(
     val category: String,
     val details: ActionDetails,
     val extra: ExtraData? = null,
+    val actionType: ActionType
 )
 
 fun NodeCompound.toNodeModel(): NodeModel {
@@ -34,12 +35,13 @@ fun NodeCompound.toAction(): Action {
         input = extractTypes(input),
         output = extractTypes(output),
         iconPath = iconPath,
-        category = category
+        category = category,
+        type = actionType
     )
 }
 
 fun NodeCompound.toActionDetails(): ActionDetails {
-    return details.copy(id = id, name = name)
+    return details.copy(id = id, name = details.name.ifEmpty { name })
 }
 
 fun extractTypes(pinModels: List<PinModel>): Set<String> {

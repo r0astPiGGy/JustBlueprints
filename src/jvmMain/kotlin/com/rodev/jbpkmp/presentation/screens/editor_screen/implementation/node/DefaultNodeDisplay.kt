@@ -7,9 +7,10 @@ import com.rodev.generator.action.entity.extra_data.ConnectionDisabledExtraData
 import com.rodev.generator.action.entity.extra_data.ExecPairExtraData
 import com.rodev.generator.action.entity.extra_data.ExtraData
 import com.rodev.jbpkmp.domain.model.NodeEntity
-import com.rodev.jbpkmp.domain.repository.IconDataSource
+import com.rodev.jbpkmp.domain.source.IconDataSource
 import com.rodev.jbpkmp.presentation.screens.editor_screen.SelectionHandler
 import com.rodev.jbpkmp.presentation.screens.editor_screen.components.DetailsPanel
+import com.rodev.jbpkmp.presentation.screens.editor_screen.components.NodeDetailsPanel
 import com.rodev.jbpkmp.presentation.screens.editor_screen.components.StyledNode
 import com.rodev.jbpkmp.presentation.screens.editor_screen.createNodeTypeTag
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.pin.extra
@@ -24,7 +25,9 @@ open class DefaultNodeDisplay(
     private val nodeEntity: NodeEntity,
     private val selectionHandler: SelectionHandler,
     private val iconDataSource: IconDataSource,
-    private val actionDetails: ActionDetails?
+    private val actionDetails: ActionDetails?,
+    private val copyEnabled: Boolean = true,
+    private val deletionEnabled: Boolean = true
 ) : NodeDisplay {
 
     var selected: Boolean by mutableStateOf(false)
@@ -44,7 +47,7 @@ open class DefaultNodeDisplay(
     @Composable
     private fun Details() {
         actionDetails?.let {
-            DetailsPanel(it)
+            NodeDetailsPanel(it)
         }
     }
 
@@ -59,7 +62,9 @@ open class DefaultNodeDisplay(
                 selectSetter = { selected = it },
                 nodeState = nodeState,
                 nodeSupplier = { copyToNode(nodeState) },
-                detailsComposable = { Details() }
+                detailsComposable = { Details() },
+                copyEnabled = copyEnabled,
+                deletionEnabled = deletionEnabled
             )
         )
     }

@@ -19,7 +19,7 @@ import com.rodev.nodeui.model.Graph
 open class GraphViewModel(
     initialScrollX: Int = 0,
     initialScrollY: Int = 0,
-    pinTypeComparator: PinTypeComparator = PinTypeComparator.Default,
+    pinTypeComparator: PinTypeComparator,
     private val nodeStateFactory: NodeStateFactory,
     private val wireFactory: WireFactory = WireFactory()
 ) : PinDragListener {

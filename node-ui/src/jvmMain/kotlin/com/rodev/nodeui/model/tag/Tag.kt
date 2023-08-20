@@ -37,6 +37,14 @@ fun buildMapTag(scope: MapTagBuilderScope.() -> Unit): MapTag {
     }
 }
 
+fun inheritBuilder(mapTag: MapTag, scope: MapTagBuilderScope.() -> Unit): MapTag {
+    return with(MapTagBuilderScopeImpl()) {
+        map.putAll(mapTag.value)
+        scope()
+        MapTag(map)
+    }
+}
+
 private class MapTagBuilderScopeImpl : MapTagBuilderScope {
 
     val map = hashMapOf<String, Tag>()
