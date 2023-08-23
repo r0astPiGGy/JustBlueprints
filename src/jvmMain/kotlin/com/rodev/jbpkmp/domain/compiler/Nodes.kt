@@ -23,7 +23,10 @@ object Nodes {
         TEXT("native_text_factory", ValueType.Text),
         NUMBER("native_number_factory", ValueType.Number),
         SOUND("native_sound_factory", ValueType.Sound),
-        ARRAY("native_array_factory", ValueType.Array)
+        ARRAY("native_array_factory", ValueType.Array),
+        PARTICLE("native_particle_factory", ValueType.Particle),
+        POTION("native_potion_factory", ValueType.Potion),
+        VECTOR("native_vector_factory", ValueType.Vector)
 
         ;
 

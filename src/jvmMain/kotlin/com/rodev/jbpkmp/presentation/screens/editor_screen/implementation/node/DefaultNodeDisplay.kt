@@ -45,7 +45,7 @@ open class DefaultNodeDisplay(
     }
 
     @Composable
-    private fun Details() {
+    protected open fun Details(nodeState: NodeState) {
         actionDetails?.let {
             NodeDetailsPanel(it)
         }
@@ -62,7 +62,7 @@ open class DefaultNodeDisplay(
                 selectSetter = { selected = it },
                 nodeState = nodeState,
                 nodeSupplier = { copyToNode(nodeState) },
-                detailsComposable = { Details() },
+                detailsComposable = { Details(nodeState) },
                 copyEnabled = copyEnabled,
                 deletionEnabled = deletionEnabled
             )

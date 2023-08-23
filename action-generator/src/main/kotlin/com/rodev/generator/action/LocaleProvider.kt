@@ -61,11 +61,19 @@ class LocaleProvider(
     }
 
     fun translateEventAdditionalInformation(eventData: EventData): List<String> {
-        val additionalInfo = eventData.additionalInfo ?: return emptyList()
+        val info = mutableListOf<String>()
+        if (eventData.cancellable)
+            info.add("Отменяемое")
 
-        return additionalInfo.map {
+        val additionalInfo = eventData.additionalInfo ?: return info
+
+        val mappedInfo = additionalInfo.map {
             localeDataSource.getOrDefault("creative_plus.trigger.${eventData.id}.additional_information.$it")
         }
+
+        info.addAll(mappedInfo)
+
+        return info
     }
 
     fun translateEventWorksWith(eventData: EventData): List<String> {

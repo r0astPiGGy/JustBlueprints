@@ -2,7 +2,6 @@ package com.rodev.jbpkmp.presentation.screens.editor_screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
@@ -20,19 +19,18 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.focusTarget
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.key.onKeyEvent
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.Density
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.rodev.jbpkmp.domain.model.variable.Variable
 import com.rodev.jbpkmp.presentation.components.HorizontalDivider
 import com.rodev.jbpkmp.presentation.components.MaterialIconButton
 import com.rodev.jbpkmp.presentation.components.Sheet
 import com.rodev.jbpkmp.presentation.components.VerticalDivider
+import com.rodev.jbpkmp.presentation.components.validator.textValidator
+import com.rodev.jbpkmp.presentation.localization.*
 import com.rodev.jbpkmp.presentation.localization.Vocabulary.localization
-import com.rodev.jbpkmp.presentation.localization.codeUpload
-import com.rodev.jbpkmp.presentation.localization.projectCompile
-import com.rodev.jbpkmp.presentation.localization.projectLoading
-import com.rodev.jbpkmp.presentation.localization.projectSave
 import com.rodev.jbpkmp.presentation.navigation.NavController
 import com.rodev.jbpkmp.presentation.screens.editor_screen.components.*
 import com.rodev.jbpkmp.presentation.screens.settings_screen.SettingsScreen
@@ -115,6 +113,11 @@ fun EditorScreen(navController: NavController, projectPath: String) {
             )
         }
 
+        EditorScreenDialogs(
+            viewModel = viewModel,
+            panelState = viewModel.overviewPanelState
+        )
+
         ResultScreen(
             screenState = state,
             onRuntimeError = { viewModel.onEvent(EditorScreenEvent.CloseProject) }
@@ -158,7 +161,7 @@ fun TopBarPanel(
         endContent = {
             // Build button
             MaterialIconButton(
-                imageVector = Icons.Default.Build,
+                painter = painterResource("images/icons/ui/build.svg"),
                 enabled = !viewModel.state.isLoading,
                 onClick = { viewModel.onEvent(EditorScreenEvent.BuildProject) }
             )
@@ -185,7 +188,8 @@ fun RightPanel(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f),
-            viewModel = viewModel
+            viewModel = viewModel,
+            panelState = viewModel.overviewPanelState
         )
 
         HorizontalDivider()

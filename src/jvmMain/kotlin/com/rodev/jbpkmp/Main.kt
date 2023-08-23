@@ -1,5 +1,8 @@
 package com.rodev.jbpkmp
 
+import androidx.compose.foundation.DarkDefaultContextMenuRepresentation
+import androidx.compose.foundation.LightDefaultContextMenuRepresentation
+import androidx.compose.foundation.LocalContextMenuRepresentation
 import androidx.compose.material.Surface
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
@@ -49,10 +52,17 @@ fun main() = singleWindowApplication(
         var locale by remember { mutableStateOf(Locale(programData.settings.languageCode)) }
         var useDarkTheme by remember { mutableStateOf(programData.settings.useDarkTheme) }
 
+        val contextMenuRepresentation = if (useDarkTheme) {
+            DarkDefaultContextMenuRepresentation
+        } else {
+            LightDefaultContextMenuRepresentation
+        }
+
         AppTheme(useDarkTheme = useDarkTheme) {
             CompositionLocalProvider(
                 LocalMutableLocale provides { locale = it },
-                LocalMutableTheme provides { useDarkTheme = it }
+                LocalMutableTheme provides { useDarkTheme = it },
+                LocalContextMenuRepresentation provides contextMenuRepresentation
             ) {
                 Localization(locale = locale) {
                     Surface {

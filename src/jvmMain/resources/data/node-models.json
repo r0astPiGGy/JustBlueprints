@@ -30069,7 +30069,7 @@
             {
                 "id": "hide_place_on",
                 "type": "enum",
-                "label": "Скрытие \\\"Можно ставить на\\\"",
+                "label": "Скрытие \"Можно ставить на\"",
                 "extra": {
                     "type": "compound_extra_data",
                     "extras": [
@@ -30099,7 +30099,7 @@
             {
                 "id": "hide_destroys",
                 "type": "enum",
-                "label": "Скрытие \\\"Может ломать\\\"",
+                "label": "Скрытие \"Может ломать\"",
                 "extra": {
                     "type": "compound_extra_data",
                     "extras": [
@@ -32821,7 +32821,7 @@
             {
                 "id": "namespace",
                 "type": "text",
-                "label": "Пространство имён (minecraft\\: и т.п.)"
+                "label": "Пространство имён (minecraft: и т.п.)"
             },
             {
                 "id": "value",
@@ -33812,7 +33812,7 @@
                                 },
                                 {
                                     "id": "FOLDER_NORMAL",
-                                    "name": "Отклонение в сторону >"
+                                    "name": "Отклонение в сторону >= μ"
                                 }
                             ]
                         },
@@ -35881,12 +35881,12 @@
             {
                 "id": "pattern",
                 "type": "text",
-                "label": "Шаблон времени (например, mm\\:ss)"
+                "label": "Шаблон времени (например, mm:ss)"
             },
             {
                 "id": "zone_id",
                 "type": "text",
-                "label": "Часовой пояс (GMT+1\\.\\.13, GMT-1\\.\\.13)"
+                "label": "Часовой пояс (GMT+1..13, GMT-1..13)"
             },
             {
                 "id": "locale",
@@ -35909,19 +35909,19 @@
                                 },
                                 {
                                     "id": "DD_MM_YYYY_HH_MM_S",
-                                    "name": "01\\/01\\/1970 00\\:00\\:00 (dd_mm_yyyy_hh_mm_s)"
+                                    "name": "01/01/1970 00:00:00 (dd_mm_yyyy_hh_mm_s)"
                                 },
                                 {
                                     "id": "DD_MM_YYYY",
-                                    "name": "01\\/01\\/1970 (dd_mm_yyyy)"
+                                    "name": "01/01/1970 (dd_mm_yyyy)"
                                 },
                                 {
                                     "id": "YYYY_MM_DD_HH_MM_S",
-                                    "name": "1970\\/01\\/01 00\\:00\\:00 (yyyy_mm_dd_hh_mm_s)"
+                                    "name": "1970/01/01 00:00:00 (yyyy_mm_dd_hh_mm_s)"
                                 },
                                 {
                                     "id": "YYYY_MM_DD",
-                                    "name": "1970\\/01\\/01 (yyyy_mm_dd)"
+                                    "name": "1970/01/01 (yyyy_mm_dd)"
                                 },
                                 {
                                     "id": "EEE_D_MMMM",
@@ -35941,11 +35941,11 @@
                                 },
                                 {
                                     "id": "HH_MM_SS",
-                                    "name": "00\\:00\\:00 (hh_mm_ss)"
+                                    "name": "00:00:00 (hh_mm_ss)"
                                 },
                                 {
                                     "id": "H_MM_A",
-                                    "name": "00\\:00 AM (h_mm_a)"
+                                    "name": "00:00 AM (h_mm_a)"
                                 },
                                 {
                                     "id": "H_H_M_M_S_S",
@@ -45184,6 +45184,80 @@
             {
                 "id": "output",
                 "type": "location",
+                "label": " "
+            }
+        ]
+    },
+    {
+        "id": "native_vector_factory",
+        "type": "factory",
+        "input": [
+            {
+                "id": "x",
+                "type": "number",
+                "label": "X",
+                "extra": {
+                    "type": "connection_disabled"
+                }
+            },
+            {
+                "id": "y",
+                "type": "number",
+                "label": "Y",
+                "extra": {
+                    "type": "connection_disabled"
+                }
+            },
+            {
+                "id": "z",
+                "type": "number",
+                "label": "Z",
+                "extra": {
+                    "type": "connection_disabled"
+                }
+            }
+        ],
+        "output": [
+            {
+                "id": "output",
+                "type": "vector",
+                "label": " "
+            }
+        ]
+    },
+    {
+        "id": "native_potion_factory",
+        "type": "factory",
+        "input": [
+            {
+                "id": "potion",
+                "type": "text",
+                "label": "Зелье",
+                "extra": {
+                    "type": "connection_disabled"
+                }
+            },
+            {
+                "id": "amplifier",
+                "type": "number",
+                "label": "Сила",
+                "extra": {
+                    "type": "connection_disabled"
+                }
+            },
+            {
+                "id": "duration",
+                "type": "number",
+                "label": "Длительность",
+                "extra": {
+                    "type": "connection_disabled"
+                }
+            }
+        ],
+        "output": [
+            {
+                "id": "output",
+                "type": "potion",
                 "label": " "
             }
         ]

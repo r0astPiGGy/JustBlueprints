@@ -20,6 +20,7 @@ import com.rodev.jbpkmp.domain.usecase.upload.CodeUploadUseCase
 import com.rodev.jbpkmp.presentation.screens.editor_screen.components.InvokableTab
 import com.rodev.jbpkmp.presentation.components.TabLayoutHostState
 import com.rodev.jbpkmp.presentation.components.TabState
+import com.rodev.jbpkmp.presentation.screens.editor_screen.components.OverviewPanelState
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.CreateFunctionGraphEvent
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.CreateProcessGraphEvent
 import com.rodev.jbpkmp.presentation.screens.editor_screen.implementation.CreateVariableGraphEvent
@@ -56,6 +57,7 @@ class EditorScreenViewModel(
         tabLayoutHostState.currentTab?.data
     }
     val state = EditorScreenState()
+    val overviewPanelState = OverviewPanelState()
 
     private var buildJob: Job? = null
 
@@ -72,6 +74,8 @@ class EditorScreenViewModel(
     private val invokableReferenceProvider = InvokableReferenceProviderImpl()
 
     private val blueprintState: BlueprintState
+
+    val contextMenuActionHandler: ContextMenuActionHandler = ContextMenuActionHandlerImpl()
 
     init {
         state.forceCodeLoad = repository.load().settings.forceCodeLoad
@@ -204,6 +208,14 @@ class EditorScreenViewModel(
                 tabLayoutHostState.openTab(
                     InvokableTab(event.process)
                 )
+            }
+
+            is EditorScreenEvent.OnFunctionRename -> {
+                event.function.reference.name = event.name
+            }
+
+            is EditorScreenEvent.OnProcessRename -> {
+                event.process.reference.name = event.name
             }
         }
     }
@@ -387,12 +399,24 @@ class EditorScreenViewModel(
         tabLayoutHostState.openTab(target)
     }
 
+    private fun handleFunctionRename(function: FunctionState) {
+        overviewPanelState.onEvent(OverviewPanelState.Event.RenameFunction(function))
+    }
+
+    private fun handleProcessRename(process: ProcessState) {
+        overviewPanelState.onEvent(OverviewPanelState.Event.RenameProcess(process))
+    }
+
     private fun handleCopyEvent(): Boolean {
         val selectable = this.selectable ?: return false
 
-        clipboardEntry = selectable.asClipboardEntry()
+        handleCopyEvent(selectable)
 
         return true
+    }
+
+    private fun handleCopyEvent(selectable: Selectable) {
+        clipboardEntry = selectable.asClipboardEntry()
     }
 
     private fun handlePasteEvent(): Boolean {
@@ -574,6 +598,26 @@ class EditorScreenViewModel(
         override fun deleteProcess(processState: ProcessState) {
             this@EditorScreenViewModel.deleteProcess(processState)
         }
+    }
+
+    private inner class ContextMenuActionHandlerImpl : ContextMenuActionHandler {
+        override fun onEvent(event: ContextMenuEvent) {
+            when (event) {
+                is ContextMenuEvent.CopyVariable -> handleCopyEvent(event.variable)
+                is ContextMenuEvent.DeleteFunction -> deleteFunction(event.function)
+                is ContextMenuEvent.DeleteProcess -> deleteProcess(event.process)
+                is ContextMenuEvent.DeleteVariable -> {
+                    when (val variable = event.variable) {
+                        is GlobalVariableState -> deleteGlobalVariable(variable)
+                        is LocalVariableState -> deleteLocalVariable(variable)
+                    }
+                }
+                is ContextMenuEvent.PasteVariable -> handlePasteEvent()
+                is ContextMenuEvent.RenameFunction -> handleFunctionRename(event.function)
+                is ContextMenuEvent.RenameProcess -> handleProcessRename(event.process)
+            }
+        }
+
     }
 
     private inner class ClipboardActionVisitorImpl : ClipboardActionVisitor {

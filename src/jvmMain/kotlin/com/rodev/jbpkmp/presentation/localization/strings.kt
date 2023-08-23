@@ -156,6 +156,30 @@ fun Localization.variableType(type: Variable.Type): String {
         Variable.Type.Save -> savedVariable()
     }
 }
+val renameAction = Translatable(
+    "Переименовать",
+    hashMapOf(
+        ENGLISH to "Rename"
+    )
+)
+val copyAction = Translatable(
+    "Скопировать",
+    hashMapOf(
+        ENGLISH to "Copy"
+    )
+)
+val pasteAction = Translatable(
+    "Вставить",
+    hashMapOf(
+        ENGLISH to "Paste"
+    )
+)
+val deleteAction = Translatable(
+    "Удалить",
+    hashMapOf(
+        ENGLISH to "Delete"
+    )
+)
 
 val localVariable = Translatable(
     "Локальная переменная",
@@ -273,16 +297,70 @@ val errorMessage = Translatable(
         ENGLISH to "Name cannot be empty"
     )
 )
+val notEmptyErrorMessage = Translatable(
+    "Это поле не может быть пустым",
+    hashMapOf(
+        ENGLISH to "This field cannot be empty"
+    )
+)
 val ok = Translatable(
     "Окей",
     hashMapOf(
         ENGLISH to "Okay"
     )
 )
+val hideArguments = Translatable(
+    "Скрыть аргументы",
+    hashMapOf(
+        ENGLISH to "Hide arguments"
+    )
+)
+val applyText = Translatable(
+    "Применить",
+    hashMapOf(
+        ENGLISH to "Apply"
+    )
+)
 val copyButton = Translatable(
     "Скопировать",
     hashMapOf(
         ENGLISH to "Copy"
+    )
+)
+val createVariableName = Translatable(
+    "Название переменной",
+    hashMapOf(
+        ENGLISH to "Variable name"
+    )
+)
+val dialogFunctionName = Translatable(
+    "Название функции",
+    hashMapOf(
+        ENGLISH to "Function name"
+    )
+)
+val dialogProcessName = Translatable(
+    "Название процесса",
+    hashMapOf(
+        ENGLISH to "Process name"
+    )
+)
+val processAlreadyExists = Translatable(
+    "Данный процесс уже существует!",
+    hashMapOf(
+        ENGLISH to "This process already exists!"
+    )
+)
+val functionAlreadyExists = Translatable(
+    "Данная функция уже существует!",
+    hashMapOf(
+        ENGLISH to "This function already exists!"
+    )
+)
+val createProjectName = Translatable(
+    "Название проекта",
+    hashMapOf(
+        ENGLISH to "Project name"
     )
 )
 val name = Translatable(

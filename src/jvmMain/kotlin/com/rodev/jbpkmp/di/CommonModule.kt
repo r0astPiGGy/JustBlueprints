@@ -51,10 +51,18 @@ val commonModule = module {
             )
         )
 
-        // TODO Collapsible nodes
-//        registerNodeStateFactoryByActionType(
-//            actionType = ActionType.FACTORY, ArrayNodeStateFactory()
-//        )
+        registerNodeStateFactoryByActionType(
+            actionType = ActionType.FACTORY, CollapsibleActionNodeStateFactory(
+                nodeDataSource = get(),
+                nodeTypeDataSource = get(),
+                actionDataSource = get(),
+                pinTypeDataSource = get(),
+                selectorDataSource = get(),
+                selectionHandler = get(),
+                actionDetailsDataSource = get(),
+                iconDataSource = get()
+            )
+        )
 
         registerNodeStateFactoryByActionType(
             actionType = ActionType.HIDDEN, InvokableDeclarationNodeStateFactory(
@@ -69,7 +77,6 @@ val commonModule = module {
             )
         )
 
-        // TODO Invokable references
         listOf(Nodes.Type.FUNCTION_REFERENCE, Nodes.Type.PROCESS_REFERENCE).forEach { nodeId ->
             registerNodeStateFactoryByNodeId(
                 nodeId = nodeId, InvokableReferenceNodeStateFactory(

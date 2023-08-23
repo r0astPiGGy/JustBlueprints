@@ -9262,7 +9262,7 @@
     },
     {
         "id": "set_variable_decrement",
-        "name": "Отнимание (-",
+        "name": "Отнимание (-=)",
         "input": [
             "exec",
             "variable",
@@ -9309,7 +9309,7 @@
     },
     {
         "id": "set_variable_increment",
-        "name": "Прибавление (+",
+        "name": "Прибавление (+=)",
         "input": [
             "exec",
             "variable",
@@ -9791,7 +9791,7 @@
     },
     {
         "id": "set_variable_value",
-        "name": "Установить значение (",
+        "name": "Установить значение (=)",
         "input": [
             "exec",
             "variable",
@@ -13706,6 +13706,33 @@
             "location"
         ],
         "iconPath": "images/icons/native/native_location_factory.png",
+        "category": "factory",
+        "type": "FACTORY"
+    },
+    {
+        "id": "native_vector_factory",
+        "name": "Вектор",
+        "input": [
+            "number"
+        ],
+        "output": [
+            "vector"
+        ],
+        "iconPath": "images/icons/native/native_vector_factory.png",
+        "category": "factory",
+        "type": "FACTORY"
+    },
+    {
+        "id": "native_potion_factory",
+        "name": "Зелье",
+        "input": [
+            "text",
+            "number"
+        ],
+        "output": [
+            "potion"
+        ],
+        "iconPath": "images/icons/native/native_potion_factory.png",
         "category": "factory",
         "type": "FACTORY"
     }

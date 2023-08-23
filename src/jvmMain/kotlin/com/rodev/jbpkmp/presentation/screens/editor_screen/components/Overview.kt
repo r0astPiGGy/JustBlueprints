@@ -2,9 +2,7 @@ package com.rodev.jbpkmp.presentation.screens.editor_screen.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
@@ -23,31 +21,73 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.rodev.jbpkmp.domain.model.variable.Variable
 import com.rodev.jbpkmp.presentation.localization.*
+import com.rodev.jbpkmp.presentation.localization.Vocabulary.localization
 import com.rodev.jbpkmp.presentation.screens.editor_screen.*
 import org.koin.compose.koinInject
+
+class OverviewPanelState {
+
+    var dialogType: DialogType by mutableStateOf(DialogType.Empty)
+        private set
+
+    fun onEvent(event: Event) {
+        dialogType = when (event) {
+            Event.CreateFunction -> DialogType.CreateFunction
+            Event.CreateGlobalVariable -> DialogType.CreateGlobalVariable
+            Event.CreateLocalVariable -> DialogType.CreateLocalVariable
+            Event.CreateProcess -> DialogType.CreateProcess
+            Event.CloseDialog -> DialogType.Empty
+            is Event.RenameFunction -> DialogType.RenameFunction(event.function)
+            is Event.RenameProcess -> DialogType.RenameProcess(event.process)
+        }
+    }
+
+    sealed class DialogType {
+        object CreateLocalVariable : DialogType()
+        object CreateGlobalVariable : DialogType()
+        object CreateFunction : DialogType()
+        object CreateProcess : DialogType()
+        data class RenameProcess(val process: ProcessState) : DialogType()
+        data class RenameFunction(val function: FunctionState) : DialogType()
+        object Empty : DialogType()
+    }
+
+    sealed class Event {
+        object CreateLocalVariable : Event()
+        object CreateGlobalVariable : Event()
+        object CreateFunction : Event()
+        object CreateProcess : Event()
+        object CloseDialog : Event()
+        data class RenameProcess(val process: ProcessState) : Event()
+        data class RenameFunction(val function: FunctionState) : Event()
+    }
+
+}
 
 @Composable
 fun OverviewPanel(
     modifier: Modifier = Modifier,
+    panelState: OverviewPanelState,
     viewModel: EditorScreenViewModel
 ) {
     val selectionHandler = koinInject<SelectionHandler>()
+    val actionHandler = viewModel.contextMenuActionHandler
 
     LazyColumn(
         modifier = modifier
             .background(MaterialTheme.colors.background)
     ) {
-        item {
-            LocalVariables(viewModel, selectionHandler)
+        item("local_variables") {
+            LocalVariables(viewModel, panelState, actionHandler, selectionHandler)
         }
-        item {
-            GlobalVariables(viewModel, selectionHandler)
+        item("global_variables") {
+            GlobalVariables(viewModel, panelState, actionHandler, selectionHandler)
         }
-        item {
-            Functions(viewModel, selectionHandler)
+        item("functions") {
+            Functions(viewModel, panelState, actionHandler, selectionHandler)
         }
-        item {
-            Processes(viewModel, selectionHandler)
+        item("processes") {
+            Processes(viewModel, panelState, actionHandler, selectionHandler)
         }
     }
 }
@@ -55,96 +95,96 @@ fun OverviewPanel(
 @Composable
 private fun LocalVariables(
     viewModel: EditorScreenViewModel,
+    panelState: OverviewPanelState,
+    actionHandler: ContextMenuActionHandler,
     selectionHandler: SelectionHandler
 ) {
     val localization = Vocabulary.localization
     val currentGraph = viewModel.currentGraph
-    var createVariableDialogPresented by remember { mutableStateOf(false) }
 
     CollapsibleList(
         header = localization.localVariables(),
         onAddAction = {
-            createVariableDialogPresented = true
+            panelState.onEvent(OverviewPanelState.Event.CreateLocalVariable)
         }
     ) {
         currentGraph?.variables?.forEach {
-            VariableView(selectionHandler, it)
+            VariableView(
+                selectionHandler,
+                it,
+                onDelete = {
+                    actionHandler.onEvent(ContextMenuEvent.DeleteVariable(it))
+                },
+                onCopy = {
+                    actionHandler.onEvent(ContextMenuEvent.CopyVariable(it))
+                },
+                onPaste = {
+                    actionHandler.onEvent(ContextMenuEvent.PasteVariable(it))
+                }
+            )
         }
-    }
-
-    if (createVariableDialogPresented) {
-        CreateVariableDialog(
-            onDismissRequest = { createVariableDialogPresented = false },
-            onSelect = {
-                EditorScreenEvent.AddLocalVariable(
-                    name = it
-                ).let(viewModel::onEvent)
-            }
-        )
     }
 }
 
 @Composable
 private fun Functions(
     viewModel: EditorScreenViewModel,
+    panelState: OverviewPanelState,
+    actionHandler: ContextMenuActionHandler,
     selectionHandler: SelectionHandler
 ) {
-    var createDialogPresented by remember { mutableStateOf(false) }
-
     CollapsibleList(
         header = Vocabulary.localization.functions(),
         onAddAction = {
-            createDialogPresented = true
+            panelState.onEvent(OverviewPanelState.Event.CreateFunction)
         }
     ) {
         viewModel.functions.forEach {
-            InvokableView(selectionHandler, it) { _ ->
-                viewModel.onEvent(EditorScreenEvent.OpenFunction(it))
-            }
+            InvokableView(
+                selectionHandler = selectionHandler,
+                invokable = it,
+                onRename = {
+                    actionHandler.onEvent(ContextMenuEvent.RenameFunction(it))
+                },
+                onDelete = {
+                    actionHandler.onEvent(ContextMenuEvent.DeleteFunction(it))
+                },
+                onSelectedClick = {
+                    viewModel.onEvent(EditorScreenEvent.OpenFunction(it))
+                }
+            )
         }
-    }
-
-    if (createDialogPresented) {
-        CreateVariableDialog(
-            onDismissRequest = { createDialogPresented = false },
-            onSelect = {
-                EditorScreenEvent.AddFunction(
-                    name = it
-                ).let(viewModel::onEvent)
-            }
-        )
     }
 }
 
 @Composable
 private fun Processes(
     viewModel: EditorScreenViewModel,
+    panelState: OverviewPanelState,
+    actionHandler: ContextMenuActionHandler,
     selectionHandler: SelectionHandler
 ) {
-    var createDialogPresented by remember { mutableStateOf(false) }
-
     CollapsibleList(
         header = Vocabulary.localization.processes(),
         onAddAction = {
-            createDialogPresented = true
+            panelState.onEvent(OverviewPanelState.Event.CreateProcess)
         }
     ) {
         viewModel.processes.forEach {
-            InvokableView(selectionHandler, it) { _ ->
-                viewModel.onEvent(EditorScreenEvent.OpenProcess(it))
-            }
+            InvokableView(
+                selectionHandler = selectionHandler,
+                invokable = it,
+                onRename = {
+                    actionHandler.onEvent(ContextMenuEvent.RenameProcess(it))
+                },
+                onDelete = {
+                    actionHandler.onEvent(ContextMenuEvent.DeleteProcess(it))
+                },
+                onSelectedClick = {
+                    viewModel.onEvent(EditorScreenEvent.OpenProcess(it))
+                }
+            )
         }
-    }
-
-    if (createDialogPresented) {
-        CreateVariableDialog(
-            onDismissRequest = { createDialogPresented = false },
-            onSelect = {
-                EditorScreenEvent.AddProcess(
-                    name = it
-                ).let(viewModel::onEvent)
-            }
-        )
     }
 }
 
@@ -152,34 +192,48 @@ private fun Processes(
 fun InvokableView(
     selectionHandler: SelectionHandler,
     invokable: InvokableState,
-    onSelectedClick: (InvokableState) -> Unit
+    onRename: () -> Unit,
+    onDelete: () -> Unit,
+    onSelectedClick: () -> Unit
 ) {
+
+    val localization = Vocabulary.localization
+
     Surface(
         border = if (invokable.selected) BorderStroke(2.dp, Color.White) else null,
         shape = RoundedCornerShape(size = 6.dp)
     ) {
-        Column(
-            modifier = Modifier
-                .clickable {
-                    if (invokable.selected) {
-                        onSelectedClick(invokable)
-                    } else {
-                        selectionHandler.onSelect(
-                            invokable
-                        )
-                    }
-                }
-                .fillMaxWidth()
-                .padding(6.dp),
-        ) {
-            DragTarget(
-                dataToDrop = invokable,
-                modifier = Modifier
-                    .fillMaxWidth()
-            ) {
-                Text(
-                    invokable.name
+        ContextMenuArea(
+            items = {
+                listOf(
+                    ContextMenuItem(renameAction(localization), onRename),
+                    ContextMenuItem(deleteAction(localization), onDelete)
                 )
+            },
+        ) {
+            Column(
+                modifier = Modifier
+                    .clickable {
+                        if (invokable.selected) {
+                            onSelectedClick()
+                        } else {
+                            selectionHandler.onSelect(
+                                invokable
+                            )
+                        }
+                    }
+                    .fillMaxWidth()
+                    .padding(6.dp),
+            ) {
+                DragTarget(
+                    dataToDrop = invokable,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    Text(
+                        invokable.name
+                    )
+                }
             }
         }
     }
@@ -188,32 +242,48 @@ fun InvokableView(
 @Composable
 fun VariableView(
     selectionHandler: SelectionHandler,
-    variable: VariableState
+    variable: VariableState,
+    onCopy: () -> Unit,
+    onPaste: () -> Unit,
+    onDelete: () -> Unit,
 ) {
+
+    val localization = Vocabulary.localization
+
     Surface(
         border = if (variable.selected) BorderStroke(2.dp, Color.White) else null,
         shape = RoundedCornerShape(size = 6.dp)
     ) {
-        Column(
-            modifier = Modifier
-                .clickable {
-                    if (!variable.selected) {
-                        selectionHandler.onSelect(
-                            variable
-                        )
-                    }
-                }
-                .fillMaxWidth()
-                .padding(6.dp),
-        ) {
-            DragTarget(
-                dataToDrop = variable,
-                modifier = Modifier
-                    .fillMaxWidth()
-            ) {
-                Text(
-                    variable.name
+        ContextMenuArea(
+            items = {
+                listOf(
+                    ContextMenuItem(pasteAction(localization), onPaste),
+                    ContextMenuItem(copyAction(localization), onCopy),
+                    ContextMenuItem(deleteAction(localization), onDelete)
                 )
+            },
+        ) {
+            Column(
+                modifier = Modifier
+                    .clickable {
+                        if (!variable.selected) {
+                            selectionHandler.onSelect(
+                                variable
+                            )
+                        }
+                    }
+                    .fillMaxWidth()
+                    .padding(6.dp),
+            ) {
+                DragTarget(
+                    dataToDrop = variable,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    Text(
+                        variable.name
+                    )
+                }
             }
         }
     }
@@ -222,32 +292,33 @@ fun VariableView(
 @Composable
 private fun GlobalVariables(
     viewModel: EditorScreenViewModel,
+    panelState: OverviewPanelState,
+    actionHandler: ContextMenuActionHandler,
     selectionHandler: SelectionHandler
 ) {
     val localization = Vocabulary.localization
-    var createVariableDialogPresented by remember { mutableStateOf(false) }
 
     CollapsibleList(
         header = localization.globalVariables(),
         onAddAction = {
-            createVariableDialogPresented = true
+            panelState.onEvent(OverviewPanelState.Event.CreateGlobalVariable)
         }
     ) {
         viewModel.globalVariables.forEach {
-            VariableView(selectionHandler, it)
+            VariableView(
+                selectionHandler,
+                it,
+                onDelete = {
+                    actionHandler.onEvent(ContextMenuEvent.DeleteVariable(it))
+                },
+                onCopy = {
+                    actionHandler.onEvent(ContextMenuEvent.CopyVariable(it))
+                },
+                onPaste = {
+                    actionHandler.onEvent(ContextMenuEvent.PasteVariable(it))
+                }
+            )
         }
-    }
-
-    if (createVariableDialogPresented) {
-        CreateVariableDialog(
-            onDismissRequest = { createVariableDialogPresented = false },
-            onSelect = {
-                EditorScreenEvent.AddGlobalVariable(
-                    name = it,
-                    type = Variable.Type.Game
-                ).let(viewModel::onEvent)
-            }
-        )
     }
 }
 

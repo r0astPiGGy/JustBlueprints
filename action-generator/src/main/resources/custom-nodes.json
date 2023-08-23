@@ -240,7 +240,7 @@
     "actionType": "FACTORY",
     "iconPath": "images/icons/native/native_array_factory.png",
     "details": {
-      "description": "Список"
+      "description": null
     }
   },
   {
@@ -268,7 +268,7 @@
     "actionType": "FACTORY",
     "iconPath": "images/icons/native/native_item_factory.png",
     "details": {
-      "description": "Предмет"
+      "description": null
     }
   },
   {
@@ -296,7 +296,7 @@
     "actionType": "FACTORY",
     "iconPath": "images/icons/native/native_text_factory.png",
     "details": {
-      "description": "Текст"
+      "description": null
     }
   },
   {
@@ -324,7 +324,7 @@
     "actionType": "FACTORY",
     "iconPath": "images/icons/native/native_number_factory.png",
     "details": {
-      "description": "Число"
+      "description": null
     }
   },
   {
@@ -368,7 +368,7 @@
     "actionType": "FACTORY",
     "iconPath": "images/icons/native/native_sound_factory.png",
     "details": {
-      "description": "Звук"
+      "description": null
     }
   },
   {
@@ -428,7 +428,95 @@
     "actionType": "FACTORY",
     "iconPath": "images/icons/native/native_location_factory.png",
     "details": {
-      "description": "Локация"
+      "description": null
+    }
+  },
+  {
+    "id" : "native_vector_factory",
+    "type" : "factory",
+    "name" : "Вектор",
+    "category" : "factory",
+    "input" : [
+      {
+        "id": "x",
+        "label": "X",
+        "type": "number",
+        "extra": {
+          "type": "connection_disabled"
+        }
+      },
+      {
+        "id": "y",
+        "label": "Y",
+        "type": "number",
+        "extra": {
+          "type": "connection_disabled"
+        }
+      },
+      {
+        "id": "z",
+        "label": "Z",
+        "type": "number",
+        "extra": {
+          "type": "connection_disabled"
+        }
+      }
+    ],
+    "output" : [
+      {
+        "id" : "output",
+        "label" : " ",
+        "type" : "vector"
+      }
+    ],
+    "actionType": "FACTORY",
+    "iconPath": "images/icons/native/native_vector_factory.png",
+    "details": {
+      "description": null
+    }
+  },
+  {
+    "id" : "native_potion_factory",
+    "type" : "factory",
+    "name" : "Зелье",
+    "category" : "factory",
+    "input" : [
+      {
+        "id": "potion",
+        "label": "Зелье",
+        "type": "text",
+        "extra": {
+          "type": "connection_disabled"
+        }
+      },
+      {
+        "id": "amplifier",
+        "label": "Сила",
+        "type": "number",
+        "extra": {
+          "type": "connection_disabled"
+        }
+      },
+      {
+        "id": "duration",
+        "label": "Длительность",
+        "type": "number",
+        "extra": {
+          "type": "connection_disabled"
+        }
+      }
+    ],
+    "output" : [
+      {
+        "id" : "output",
+        "label" : " ",
+        "type" : "potion"
+      }
+    ],
+    "actionType": "FACTORY",
+    "iconPath": "images/icons/native/native_potion_factory.png",
+    "details": {
+      "description": null
     }
   }
 ]

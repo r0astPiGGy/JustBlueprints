@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import com.rodev.generator.action.entity.extra_data.EnumEntry
 import com.rodev.generator.action.utils.toMap
 import com.rodev.jbpkmp.domain.model.Selector
+import com.rodev.jbpkmp.presentation.components.MaterialCheckbox
 import com.rodev.nodeui.components.pin.DefaultValueComposable
 import com.rodev.nodeui.components.pin.PinState
 
@@ -196,7 +197,11 @@ class BooleanInputComposable : DefaultValueComposable {
 
     @Composable
     override fun DefaultValueView(pinState: PinState) {
-        Checkbox(checked = input, onCheckedChange = { input = it }, modifier = Modifier.size(20.dp))
+        MaterialCheckbox(
+            checked = input,
+            onCheckedChange = { input = it },
+            modifier = Modifier.size(20.dp)
+        )
     }
 
     override fun getValue(): String = input.toString()

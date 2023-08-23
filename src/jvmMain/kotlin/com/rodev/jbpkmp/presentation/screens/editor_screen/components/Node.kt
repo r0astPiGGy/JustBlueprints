@@ -376,7 +376,7 @@ private fun DoubleExecPinRow(
 }
 
 @Composable
-private fun DisabledConnectionRow(
+fun DisabledConnectionRow(
     pinRowState: PinRowState
 ) {
     Column(

@@ -8,6 +8,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.rodev.jbpkmp.presentation.components.MaterialCheckbox
 
 @Composable
 fun BooleanProperty(
@@ -26,10 +27,9 @@ fun BooleanProperty(
             style = MaterialTheme.typography.h3
         )
 
-        Checkbox(
+        MaterialCheckbox(
             checked = value,
-            onCheckedChange = onCheckedChange,
-            colors = CheckboxDefaults.colors(checkedColor = MaterialTheme.colors.primary)
+            onCheckedChange = onCheckedChange
         )
     }
 }

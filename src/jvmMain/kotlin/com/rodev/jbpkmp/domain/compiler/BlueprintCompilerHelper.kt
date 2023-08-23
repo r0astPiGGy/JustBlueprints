@@ -66,7 +66,7 @@ class BlueprintCompilerHelper(
     private val functions = blueprint.functions
     private val localVariablesById = localVariables.toMap(LocalVariable::id)
     private val globalVariablesById = globalVariables.toMap(GlobalVariable::id)
-    private val valueFactory: ValueFactory = DefaultValueFactory
+    private val valueFactory = ValueFactory
 
     private val nodes = mutableListOf<NodeAdapter>()
     private val pinsById = mutableMapOf<String, PinAdapter>()

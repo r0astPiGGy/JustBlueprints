@@ -3,6 +3,7 @@ package com.rodev.jbpkmp.presentation.components
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,6 +18,7 @@ import androidx.compose.ui.input.InputModeManager
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalInputModeManager
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import com.rodev.jbpkmp.presentation.screens.editor_screen.components.context_menu.handlePopupOnKeyEvent
 
