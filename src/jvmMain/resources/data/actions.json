@@ -13670,6 +13670,20 @@
         "type": "FACTORY"
     },
     {
+        "id": "native_particle_factory",
+        "name": "Эффект частиц",
+        "input": [
+            "text",
+            "number"
+        ],
+        "output": [
+            "particle"
+        ],
+        "iconPath": "images/icons/native/native_particle_factory.png",
+        "category": "factory",
+        "type": "FACTORY"
+    },
+    {
         "id": "native_number_factory",
         "name": "Число",
         "input": [

@@ -3,6 +3,8 @@ package com.rodev.jbpkmp
 import androidx.compose.foundation.DarkDefaultContextMenuRepresentation
 import androidx.compose.foundation.LightDefaultContextMenuRepresentation
 import androidx.compose.foundation.LocalContextMenuRepresentation
+import androidx.compose.material.LocalTextStyle
+import androidx.compose.material.ProvideTextStyle
 import androidx.compose.material.Surface
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
@@ -24,6 +26,7 @@ import com.rodev.jbpkmp.presentation.navigation.JustBlueprintsNavigationHost
 import com.rodev.jbpkmp.presentation.navigation.Screen
 import com.rodev.jbpkmp.presentation.navigation.rememberNavController
 import com.rodev.jbpkmp.theme.AppTheme
+import com.rodev.jbpkmp.theme.DefaultTextStyle
 import org.koin.compose.KoinApplication
 import org.koin.compose.koinInject
 import java.util.Locale
@@ -62,11 +65,13 @@ fun main() = singleWindowApplication(
             CompositionLocalProvider(
                 LocalMutableLocale provides { locale = it },
                 LocalMutableTheme provides { useDarkTheme = it },
-                LocalContextMenuRepresentation provides contextMenuRepresentation
+                LocalContextMenuRepresentation provides contextMenuRepresentation,
             ) {
-                Localization(locale = locale) {
-                    Surface {
-                        JustBlueprintsNavigationHost(navController)
+                ProvideTextStyle(DefaultTextStyle) {
+                    Localization(locale = locale) {
+                        Surface {
+                            JustBlueprintsNavigationHost(navController)
+                        }
                     }
                 }
             }

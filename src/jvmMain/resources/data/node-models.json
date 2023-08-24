@@ -45078,6 +45078,99 @@
         ]
     },
     {
+        "id": "native_particle_factory",
+        "type": "factory",
+        "input": [
+            {
+                "id": "particle",
+                "type": "text",
+                "label": "ID частицы",
+                "extra": {
+                    "type": "connection_disabled"
+                }
+            },
+            {
+                "id": "count",
+                "type": "number",
+                "label": "Количество",
+                "extra": {
+                    "type": "connection_disabled"
+                }
+            },
+            {
+                "id": "x_motion",
+                "type": "number",
+                "label": "X motion",
+                "extra": {
+                    "type": "connection_disabled"
+                }
+            },
+            {
+                "id": "y_motion",
+                "type": "number",
+                "label": "Y motion",
+                "extra": {
+                    "type": "connection_disabled"
+                }
+            },
+            {
+                "id": "z_motion",
+                "type": "number",
+                "label": "Z motion",
+                "extra": {
+                    "type": "connection_disabled"
+                }
+            },
+            {
+                "id": "x_spread",
+                "type": "number",
+                "label": "X spread",
+                "extra": {
+                    "type": "connection_disabled"
+                }
+            },
+            {
+                "id": "y_spread",
+                "type": "number",
+                "label": "Y spread",
+                "extra": {
+                    "type": "connection_disabled"
+                }
+            },
+            {
+                "id": "material",
+                "type": "text",
+                "label": "Материал",
+                "extra": {
+                    "type": "connection_disabled"
+                }
+            },
+            {
+                "id": "color",
+                "type": "text",
+                "label": "Цвет",
+                "extra": {
+                    "type": "connection_disabled"
+                }
+            },
+            {
+                "id": "size",
+                "type": "text",
+                "label": "Размер",
+                "extra": {
+                    "type": "connection_disabled"
+                }
+            }
+        ],
+        "output": [
+            {
+                "id": "output",
+                "type": "particle",
+                "label": " "
+            }
+        ]
+    },
+    {
         "id": "native_number_factory",
         "type": "factory",
         "input": [
@@ -45105,7 +45198,7 @@
             {
                 "id": "sound",
                 "type": "text",
-                "label": "ID",
+                "label": "ID звука",
                 "extra": {
                     "type": "connection_disabled"
                 }
@@ -45232,7 +45325,7 @@
             {
                 "id": "potion",
                 "type": "text",
-                "label": "Зелье",
+                "label": "ID зелья",
                 "extra": {
                     "type": "connection_disabled"
                 }

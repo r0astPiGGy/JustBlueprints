@@ -300,6 +300,106 @@
     }
   },
   {
+    "id" : "native_particle_factory",
+    "type" : "factory",
+    "name" : "Эффект частиц",
+    "category" : "factory",
+    "input" : [
+      {
+        "id": "particle",
+        "label": "ID частицы",
+        "type": "text",
+        "extra": {
+          "type": "connection_disabled"
+        }
+      },
+      {
+        "id": "count",
+        "label": "Количество",
+        "type": "number",
+        "extra": {
+          "type": "connection_disabled"
+        }
+      },
+      {
+        "id": "x_motion",
+        "label": "X motion",
+        "type": "number",
+        "extra": {
+          "type": "connection_disabled"
+        }
+      },
+      {
+        "id": "y_motion",
+        "label": "Y motion",
+        "type": "number",
+        "extra": {
+          "type": "connection_disabled"
+        }
+      },
+      {
+        "id": "z_motion",
+        "label": "Z motion",
+        "type": "number",
+        "extra": {
+          "type": "connection_disabled"
+        }
+      },
+      {
+        "id": "x_spread",
+        "label": "X spread",
+        "type": "number",
+        "extra": {
+          "type": "connection_disabled"
+        }
+      },
+      {
+        "id": "y_spread",
+        "label": "Y spread",
+        "type": "number",
+        "extra": {
+          "type": "connection_disabled"
+        }
+      },
+      {
+        "id": "material",
+        "label": "Материал",
+        "type": "text",
+        "extra": {
+          "type": "connection_disabled"
+        }
+      },
+      {
+        "id": "color",
+        "label": "Цвет",
+        "type": "text",
+        "extra": {
+          "type": "connection_disabled"
+        }
+      },
+      {
+        "id": "size",
+        "label": "Размер",
+        "type": "text",
+        "extra": {
+          "type": "connection_disabled"
+        }
+      }
+    ],
+    "output" : [
+      {
+        "id" : "output",
+        "label" : " ",
+        "type" : "particle"
+      }
+    ],
+    "actionType": "FACTORY",
+    "iconPath": "images/icons/native/native_particle_factory.png",
+    "details": {
+      "description": null
+    }
+  },
+  {
     "id" : "native_number_factory",
     "type" : "factory",
     "name" : "Число",
@@ -335,7 +435,7 @@
     "input" : [
       {
         "id": "sound",
-        "label": "ID",
+        "label": "ID звука",
         "type": "text",
         "extra": {
           "type": "connection_disabled"
@@ -483,7 +583,7 @@
     "input" : [
       {
         "id": "potion",
-        "label": "Зелье",
+        "label": "ID зелья",
         "type": "text",
         "extra": {
           "type": "connection_disabled"

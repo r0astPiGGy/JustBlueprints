@@ -70,9 +70,7 @@ open class DefaultNodeDisplay(
     }
 
     private fun copyToNode(nodeState: NodeState): Node {
-        return Node(
-            x = nodeState.x,
-            y = nodeState.y,
+        return toNode(nodeState).copy(
             uniqueId = generateUniqueId(),
             inputPins = nodeState.inputPins.map { it.pinState }.map {
                 it.pinDisplay
@@ -84,7 +82,6 @@ open class DefaultNodeDisplay(
                     .toPin(it)
                     .copy(uniqueId = generateUniqueId())
             },
-            tag = createNodeTypeTag(typeId = nodeEntity.id)
         )
     }
 

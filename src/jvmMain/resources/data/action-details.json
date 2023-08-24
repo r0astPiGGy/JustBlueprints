@@ -5583,6 +5583,10 @@
         "name": "Текст"
     },
     {
+        "id": "native_particle_factory",
+        "name": "Эффект частиц"
+    },
+    {
         "id": "native_number_factory",
         "name": "Число"
     },

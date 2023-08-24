@@ -3,6 +3,7 @@ package com.rodev.jbpkmp.domain.compiler
 import com.rodev.jbp.compiler.module.value.Value
 import com.rodev.jbp.compiler.module.value.constants.*
 import com.rodev.jbpkmp.presentation.screens.editor_screen.getId
+import com.rodev.jbpkmp.presentation.screens.editor_screen.getString
 import com.rodev.jbpkmp.presentation.screens.editor_screen.getValue
 import com.rodev.nodeui.model.Node
 
@@ -38,7 +39,22 @@ object ValueFactory {
     }
 
     private fun createParticle(node: Node): Value {
-        TODO()
+        return ParticleConstant(
+            particle = node.getStringOrDefault("particle", ""),
+            count = node.getDouble("count"),
+            motion = ParticleConstant.Motion(
+                x = node.getDouble("x_motion"),
+                y = node.getDouble("y_motion"),
+                z = node.getDouble("z_motion")
+            ),
+            spread = ParticleConstant.Spread(
+                x = node.getDouble("x_spread"),
+                y = node.getDouble("y_spread"),
+            ),
+            material = node.getStringOrDefault("material", ""),
+            color = node.getStringOrDefault("color", ""),
+            size = node.getStringOrDefault("size", "")
+        )
     }
 
     private fun Node.findStringById(id: String): String? {

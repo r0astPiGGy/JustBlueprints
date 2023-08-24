@@ -13,16 +13,29 @@ class IconDataSourceImpl(
     private val icons = mutableMapOf<String, ImageBitmap>()
 
     init {
+        val absentIcons = mutableSetOf<String>()
         actionDataSource.getAllActions().forEach {
-            loadIconByPath(it.iconPath)
+            val result = loadIconByPath(it.iconPath)
+
+            if (!result) {
+                absentIcons.add(it.iconPath)
+            }
+        }
+
+        if (absentIcons.isNotEmpty()) {
+            System.err.println("Icons not found: [${absentIcons.size}]:")
+            absentIcons.forEach {
+                System.err.println("- $it")
+            }
         }
     }
 
-    private fun loadIconByPath(path: String) {
-        try {
+    private fun loadIconByPath(path: String): Boolean {
+        return try {
             icons[path] = useResource(path, ::loadImageBitmap)
+            true
         } catch (e: Exception) {
-            e.printStackTrace()
+            false
         }
     }
 
