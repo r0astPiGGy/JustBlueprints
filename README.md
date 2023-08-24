@@ -15,4 +15,4 @@ JustBlueprints это программа, созданная для исполь
 - JDK 17 или выше
 
 ### Скриншоты
-![image_2023-08-11_19-04-00](https://github.com/r0astPiGGy/JustBlueprints/assets/67550245/3cedf4c3-c87a-4336-aa17-95735a4a9db5)
+<img src="images/screenshot.png">
